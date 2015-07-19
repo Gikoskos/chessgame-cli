@@ -284,7 +284,8 @@ char *findPiece(ch_template chb[8][8], const char *input, int color)
 	return NULL;
 }
 
-void printInstructions(){
+void printInstructions()
+{
 	printf("%s%s\n%s\n%s\n%s\n%s\n\t%s\n\n\n",
 	"Please enter your move in the following format: ", "\'xyz\'", 
 	"where x is the piece you want to move,",
@@ -294,7 +295,8 @@ void printInstructions(){
 	"for example to move Bishop to e2 type Be2 or Pawn to a4 type Pa4");
 }
 
-void clear_screen(){
+void clear_screen()
+{
 	char buf[1024];
 	char *str;
 	tgetent(buf, getenv("TERM"));
@@ -302,7 +304,8 @@ void clear_screen(){
 	fputs(str, stdout);
 } 
 
-bool movePiece(ch_template chb[8][8], char *plInput, char piece[2], int color){
+bool movePiece(ch_template chb[8][8], char *plInput, char piece[2], int color)
+{
 	int startx, starty, endx, endy; //cords for the current tile and for the tile to move the piece to
 	endx = plInput[2] - '1';
 	endy = plInput[1] - 65;
@@ -322,7 +325,48 @@ bool movePiece(ch_template chb[8][8], char *plInput, char piece[2], int color){
 	return false;
 }
 
-bool piecesOverlap(ch_template chb[8][8], int sx, int sy, int ex, int ey){
+bool piecesOverlap(ch_template chb[8][8], int sx, int sy, int ex, int ey)
+{
 	return false;
 	
+}
+
+void date_filename(char *buf, int ln)
+{
+	time_t t_epc = time(NULL);
+	struct tm t;
+
+	t = *localtime(&t_epc);
+	strftime(buf, ln, "%a %Y-%m-%d %H%M%S.txt", &t);
+}
+
+void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
+{
+	static unsigned c = 1;
+	if(round == WHITE){
+		fprintf(logf, "Round #%d:\tWhite moves ", c);
+	}
+	else{
+		fprintf(logf, "         \tBlack moves ");
+		c++;
+	}
+	if(plInput[0] == 'P'){
+		fprintf(logf, "pawn ");
+	}
+	else if(plInput[0] == 'R'){
+		fprintf(logf, "rook ");
+	}
+	else if(plInput[0] == 'N'){
+		fprintf(logf, "knight ");
+	}
+	else if(plInput[0] == 'B'){
+		fprintf(logf, "bishop ");
+	}
+	else if(plInput[0] == 'Q'){
+		fprintf(logf, "queen ");
+	}
+	else if(plInput[0] == 'K'){
+		fprintf(logf, "king ");
+	}
+	fprintf(logf, "from %c%c to %c%c\n", piece[0], piece[1], plInput[1], plInput[2]);
 }
