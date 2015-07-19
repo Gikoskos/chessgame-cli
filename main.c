@@ -9,7 +9,7 @@
 /*                                                                  */
 /* standard chess engine no AI or complicated rules implemented yet */
 /*                                                                  */
-/*                       by george k.                               */
+/*                       by g. k.                               */
 /*                                                                  */
 /********************************************************************/
 
