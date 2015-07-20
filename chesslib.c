@@ -1,7 +1,7 @@
 #include "chesslib.h"
 
 
-void clear_buffer(void)
+extern void clear_buffer(void)
 {
   char clbuf;
   while((clbuf=getchar()) != '\n');
@@ -284,7 +284,7 @@ char *findPiece(ch_template chb[8][8], const char *input, int color)
 	return NULL;
 }
 
-void printInstructions(void)
+extern void printInstructions(void)
 {
 	printf("%s%s\n%s\n%s\n%s\n%s\n\t%s\n\n\n",
 	"Please enter your move in the following format: ", "\'xyz\'", 
@@ -295,7 +295,7 @@ void printInstructions(void)
 	"for example to move Bishop to e2 type Be2 or Pawn to a4 type Pa4");
 }
 
-void clear_screen(void)
+extern void clear_screen(void)
 {
 	char buf[1024];
 	char *str;
