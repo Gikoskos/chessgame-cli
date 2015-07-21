@@ -103,7 +103,7 @@ bool validInput(const char *input)
 char *findPiece(ch_template chb[8][8], const char *input, int color)
 {
 	int i, j, k, l, count;
-	char *retvalue = malloc(2);
+	char *retvalue = calloc(2);
 	
 	for (i = 0; i < 8; i++){
 		for (j = 0; j < 8; j++){

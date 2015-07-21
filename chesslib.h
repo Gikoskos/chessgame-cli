@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <termcap.h>
 #include <time.h>
+#include <alloca.h>
 
 #define KRED  "\x1B[31m"
 #define KYEL  "\x1B[33m"
