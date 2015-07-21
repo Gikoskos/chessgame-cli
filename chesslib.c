@@ -103,7 +103,7 @@ bool validInput(const char *input)
 char *findPiece(ch_template chb[8][8], const char *input, int color)
 {
 	int i, j, k, l, count;
-	char *retvalue = calloc(2);
+	char *retvalue = calloc(2, 1);
 	
 	for (i = 0; i < 8; i++){
 		for (j = 0; j < 8; j++){
@@ -117,7 +117,7 @@ char *findPiece(ch_template chb[8][8], const char *input, int color)
 					k = input[1] - 65;
 					if (color == BLACK){ 
 						if ((i == 6) && (l == i - 2) && (j == k) && (chb[l][k].occ == false)) 
-							return chb[i][j].square; //check for castling
+							return chb[i][j].square;	//check for castling
 						if ((i-1 == 0) && (chb[i-1][j].square[0] == input[1]) && (chb[i-1][j].square[1] == input[2]) && (chb[i-1][j].occ == false)){
 							chb[i-1][j].current = 'Q';
 							chb[i-1][j].occ = true;
@@ -153,7 +153,7 @@ char *findPiece(ch_template chb[8][8], const char *input, int color)
 						}
 					} else {
 						if ((i == 1) && (l == i + 2) && (j == k) && (chb[l][k].occ == false))
-							return chb[i][j].square; //check for castling
+							return chb[i][j].square;	//check for castling
 						if (((i+1) == 0) && (chb[i+1][j].square[0] == input[1] && chb[i+1][j].square[1] == input[2]) && (chb[i+1][j].occ == false)){
 							chb[i+1][j].current = 'Q';
 							chb[i-1][j].occ = true;
@@ -223,19 +223,19 @@ char *findPiece(ch_template chb[8][8], const char *input, int color)
 						}
 					}
 				}
-				if (input[0] == 'B' || input[0] == 'Q') { //different if, to check for queen's diagonal moves
+				if (input[0] == 'B' || input[0] == 'Q') {	//different if, to check for queen's diagonal moves
 					k = i - 1; 
 					l = j - 1;
-					while ( k >= 0 && l >= 0){
+					while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)){
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]){
 							return retvalue;
 						}
 						k--;
-						j--;
+						l--;
 					}
 					k = i - 1;
 					l = j + 1;
-					while ( k >= 0 && l <= 7){
+					while ((k >= 0 && k <= 7) && (l <= 7 && l >= 0)){
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]){
 							return retvalue;
 						}
@@ -244,7 +244,7 @@ char *findPiece(ch_template chb[8][8], const char *input, int color)
 					} 
 					k = i + 1;
 					l = j - 1;
-					while ( k <= 7 && l >= 0){
+					while ((k <= 7 && k >= 0) && (l >= 0 && l <= 0)){
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]){
 							return retvalue;
 						}
@@ -253,7 +253,7 @@ char *findPiece(ch_template chb[8][8], const char *input, int color)
 					}
 					k = i + 1;
 					l = j + 1;
-					while ( k <= 7 && l <= 7){
+					while ((k <= 7 && k >= 0) && (l <= 7 && l >= 0)){
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]){
 							return retvalue;
 						}
