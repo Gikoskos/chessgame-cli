@@ -20,9 +20,15 @@
 int main(int argc, char *argv[])
 {
 	ch_template chess_board[8][8];
-	char playerInput[4], piece_to_move[2], clinearg[5], fn[s_l];
-	int round = 0, roundcount = 1; //round: for each player's round, 1 for black, 2 for white, roundcount: total number of rounds
-	bool gameover = false; //flag to control the game loop, becomes true when the King has no moves
+	char *playerInput = NULL, piece_to_move[2], fn[s_l], attack_guard[5];	/*playerInput: input from stdin
+															 *piece_to_move: the final piece to move
+															 *fn: file name string with s_l length
+															 *attack_guard: double pawn attack guard
+															 *and temporary storage for the return
+															 *of findPiece*/
+	int round = 0, roundcount = 1;	/*round: for each player's round, 1 for black, 2 for white
+								 *roundcount: total number of rounds*/
+	bool gameover = false;	/*flag to control the game loop, becomes true when the King has no moves*/
 	FILE *logfile;
 
 	clear_screen();
@@ -38,14 +44,10 @@ int main(int argc, char *argv[])
 			round = BLACK;
 
 		if (argc > 1){
-			if (strlen(argv[1]) == 4){
-				strcpy(clinearg, argv[1]);
-				if (strcmp(clinearg, "help") ==  0){
-					printInstructions();
-				} else 
-					printf("Command line argument not recognized");
+			if (strcmp(argv[1], "help") ==  0){
+				printInstructions();
 			} else 
-				printf("Command line argument not recognized");
+				fprintf(stderr, "Command line argument not recognized\n");
 		}
 
 		printf("Type 'hlp' and ENTER to view the instructions any time.\n");
@@ -55,43 +57,45 @@ int main(int argc, char *argv[])
 				printf("It\'s black\'s turn: ");
 			else 
 				printf("It\'s white\'s turn: ");
-			fgets(playerInput, sizeof(playerInput), stdin);
-			if (strcmp(playerInput, "hlp") == 0){
-				printInstructions();
-				clear_buffer();
+			playerInput = getPlayerInput();
+			if (!playerInput)
+				continue;
+			if (strlen(playerInput) > 4){
+				fprintf(stderr, "Bad input\n");
+				continue;	/*weird things happen if I change this continue to a goto, on my system I get SIGSEV*/
 			}
 		} while (validInput(playerInput) == false);
 		playerInput[1] = (char)toupper(playerInput[1]);
-
-		if (findPiece(chess_board, playerInput, round) == NULL) {
-			printf("Illegal move\n");
-			clear_buffer();
+		
+		if (!findPiece(chess_board, playerInput, round)) {
+			fprintf(stderr, "Illegal move\n");
 			goto LOOP;
 		}
-
-		if (memcmp(findPiece(chess_board, playerInput, round), "q", 1) == 0){
+		strcpy(attack_guard,findPiece(chess_board, playerInput, round));
+		if(memcmp(findPiece(chess_board, playerInput, round), "q", 1) == 0){
 			printBoard(chess_board);
 			continue;
-		} else if (findPiece(chess_board, playerInput, round) != NULL){
-			memcpy(piece_to_move, findPiece(chess_board, playerInput, round), 2);
+		} else if(strlen(attack_guard) < 3){
+			memcpy(piece_to_move, attack_guard, 2);
+		} else {
+			memcpy(piece_to_move, pawnConflict(attack_guard), 2);
 		}
 		
 		if (movePiece(chess_board, playerInput, piece_to_move, round) == false){
-			printf("Illegal move\n");
-			clear_buffer();
+			fprintf(stderr, "Illegal move\n");
 			goto LOOP;
 		}
 		if (!(logfile = fopen(fn, "a"))){
-			printf("Log file could not be created\n");
+			fprintf(stderr, "Log file could not be created\n");
 		} else {
 			write_to_log(round, logfile, playerInput, piece_to_move);
 		}
 		fclose(logfile);
 		clear_screen();
-		clear_buffer();
 		roundcount++;
 		printf("\n\n\n\n");
 		printBoard(chess_board);
 	}
+	playerInput = NULL;
 	return 0;
 }
