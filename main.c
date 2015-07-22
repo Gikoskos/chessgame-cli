@@ -37,14 +37,14 @@ int main(int argc, char *argv[])
 	printBoard(chess_board);
 	date_filename(fn, s_l);
 
-	while (gameover == false){
+	while (gameover == false) {
 		if (roundcount%2 == 1)
 			round = WHITE;
 		else
 			round = BLACK;
 
-		if (argc > 1){
-			if (strcmp(argv[1], "help") ==  0){
+		if (argc > 1) {
+			if (strcmp(argv[1], "help") ==  0) {
 				printInstructions();
 			} else 
 				fprintf(stderr, "Command line argument not recognized\n");
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 			playerInput = getPlayerInput();
 			if (!playerInput)
 				continue;
-			if (strlen(playerInput) > 4){
+			if (strlen(playerInput) > 4) {
 				fprintf(stderr, "Bad input\n");
 				continue;	/*weird things happen if I change this continue to a goto, on my system I get SIGSEV*/
 			}
@@ -72,20 +72,20 @@ int main(int argc, char *argv[])
 			goto LOOP;
 		}
 		strcpy(attack_guard,findPiece(chess_board, playerInput, round));
-		if(memcmp(findPiece(chess_board, playerInput, round), "q", 1) == 0){
+		if(memcmp(findPiece(chess_board, playerInput, round), "q", 1) == 0) {
 			printBoard(chess_board);
 			continue;
-		} else if(strlen(attack_guard) < 3){
+		} else if(strlen(attack_guard) < 3) {
 			memcpy(piece_to_move, attack_guard, 2);
 		} else {
 			memcpy(piece_to_move, pawnConflict(attack_guard), 2);
 		}
 		
-		if (movePiece(chess_board, playerInput, piece_to_move, round) == false){
+		if (movePiece(chess_board, playerInput, piece_to_move, round) == false) {
 			fprintf(stderr, "Illegal move\n");
 			goto LOOP;
 		}
-		if (!(logfile = fopen(fn, "a"))){
+		if (!(logfile = fopen(fn, "a"))) {
 			fprintf(stderr, "Log file could not be created\n");
 		} else {
 			write_to_log(round, logfile, playerInput, piece_to_move);
