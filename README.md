@@ -5,6 +5,8 @@ The game itself is self-explanatory, but basically it's a very simple chess game
 
 No AI implemented. You type the uppercase letter of the piece you want to move as you see it on the board and the coordinates of the square you want to move to (for example if you want to move Pawn to square A3 you type Pa3), and the game will find the piece you want to move and move it by itself.
 
+A log file that records all the moves that took place, is created during the game.
+
 
 ## Prerequisites
 
