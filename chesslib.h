@@ -36,3 +36,5 @@ inline void clear_buffer(void);
 inline void clear_screen(void);
 void date_filename(char*, int);	//create a string with the current date to be used as the log date_filename
 void write_to_log(int, FILE*, char*, char[]);
+char *getPlayerInput(void);
+char *pawnConflict(const char*);
