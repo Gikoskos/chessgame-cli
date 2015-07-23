@@ -327,6 +327,9 @@ extern void clear_screen(void)
 	tgetent(buf, getenv("TERM"));
 	str = tgetstr("cl", NULL);
 	fputs(str, stdout);
+	/*puts( "\033[2J" ); */
+	/*clear screen using ASCII; doesn't work as well, only use it if you can't install libncurses
+	 *don't forget to delete or comment lines 324-329*/
 } 
 
 bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
@@ -435,4 +438,29 @@ char *pawnConflict(const char *pawn_pos)
 	}
 	fpawn[2] = '\0';
 	return fpawn;
+}
+
+extern void printBanner(const char *banner)
+{
+	struct timespec *start_t = malloc(sizeof(struct timespec));
+	struct timespec *end_t = malloc(sizeof(struct timespec));
+	int i, j, c = 0;
+	
+	*start_t = (struct timespec){0, 80000000};
+	*end_t = (struct timespec){0, 80000000};
+	for (i = 0; i < 3; i++) {
+		for (j = 0; j < 2*strlen(banner); j++) {
+			if (!j || !i || i == 2 || j == (2*strlen(banner) - 1))
+				printf("*");
+			else if (j >= (int)(2*strlen(banner)/4) && c < strlen(banner) && i == 1)
+				printf("%c", banner[c++]);
+			else
+				printf(" ");
+			fflush(stdout);
+			nanosleep(start_t, end_t);
+		}
+		printf("\n");
+	}
+	free(start_t);
+	free(end_t);
 }
