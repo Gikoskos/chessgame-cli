@@ -32,7 +32,9 @@ int main(int argc, char *argv[])
 	FILE *logfile;
 
 	clear_screen();
-	printf("\n\n\tWelcome to my Chess game!\n\n");
+	printf("\n");
+	printBanner("Welcome to my Chess game!");
+	printf("\n\n");
 	initChessboard(chess_board, 0, 'A');
 	printBoard(chess_board);
 	date_filename(fn, s_l);
