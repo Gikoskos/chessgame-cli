@@ -3,8 +3,8 @@
 
 extern void clear_buffer(void)
 {
-  char clbuf;
-  while ((clbuf=getchar()) != '\n');
+	char clbuf;
+	while ((clbuf=getchar()) != '\n');
 }
 
 void initChessboard(ch_template chb[][8], unsigned k, char col)	//k is row, col is column
