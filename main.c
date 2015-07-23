@@ -20,15 +20,16 @@
 int main(int argc, char *argv[])
 {
 	ch_template chess_board[8][8];
-	char *playerInput = NULL, piece_to_move[2], fn[s_l], attack_guard[5];	/*playerInput: input from stdin
-															 *piece_to_move: the final piece to move
-															 *fn: file name string with s_l length
-															 *attack_guard: double pawn attack guard
-															 *and temporary storage for the return
-															 *of findPiece*/
-	int round = 0, roundcount = 1;	/*round: for each player's round, 1 for black, 2 for white
-								 *roundcount: total number of rounds*/
-	bool gameover = false;	/*flag to control the game loop, becomes true when the King has no moves*/
+	char *playerInput = NULL, piece_to_move[2], fn[s_l], attack_guard[5];
+		/*playerInput: input from stdin
+		 *piece_to_move: the final piece to move
+		 *fn: file name string with s_l length
+		 *attack_guard: double pawn attack guard and temporary storage for the return of findPiece*/
+	int round = 0, roundcount = 1;
+		/*round: for each player's round, 1 for black, 2 for white
+		 *roundcount: total number of rounds*/
+	bool gameover = false;
+		/*flag to control the game loop, becomes true when the King has no moves*/
 	FILE *logfile;
 
 	clear_screen();
