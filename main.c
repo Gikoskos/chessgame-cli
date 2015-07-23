@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	clear_screen();
 	printf("\n");
 	printBanner("Welcome to my Chess game!");
-	printf("\n\n");
+	printf("\n");
 	initChessboard(chess_board, 0, 'A');
 	printBoard(chess_board);
 	date_filename(fn, s_l);
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 				fprintf(stderr, "Command line argument not recognized\n");
 		}
 
-		printf("Type 'hlp' and ENTER to view the instructions any time.\n");
+		printf("Type 'help' and ENTER to view the instructions any time.\n");
 
 		LOOP:do {
 			if (round == BLACK) 
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 		fclose(logfile);
 		clear_screen();
 		roundcount++;
-		printf("\n\n\n\n");
+		printf("\n\n\n\n\n");
 		printBoard(chess_board);
 	}
 	playerInput = NULL;

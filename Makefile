@@ -19,6 +19,7 @@ run:
 
 runW:
 	exec ./$(BLDFOLDER)/$(ELF)Wall
+
 .PHONY: clean
 clean:
 	rm -rf build
