@@ -444,15 +444,15 @@ extern void printBanner(const char *banner)
 {
 	struct timespec *start_t = malloc(sizeof(struct timespec));
 	struct timespec *end_t = malloc(sizeof(struct timespec));
-	int i, j, c = 0;
+	int i, j, c = 0, len = (int)strlen(banner);
 	
-	*start_t = (struct timespec){0, 80000000};
-	*end_t = (struct timespec){0, 80000000};
+	*start_t = (struct timespec){0, (BANNER_SPEED)*1000000};
+	*end_t = (struct timespec){0, (BANNER_SPEED)*1000000};
 	for (i = 0; i < 3; i++) {
-		for (j = 0; j < 2*strlen(banner); j++) {
-			if (!j || !i || i == 2 || j == (2*strlen(banner) - 1))
+		for (j = 0; j < 2*len; j++) {
+			if (!j || !i || i == 2 || j == (2*len - 1))
 				printf("*");
-			else if (j >= (int)(2*strlen(banner)/4) && c < strlen(banner) && i == 1)
+			else if (j >= (int)((2*len)/4) && c < len && i == 1)
 				printf("%c", banner[c++]);
 			else
 				printf(" ");
