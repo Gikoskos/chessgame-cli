@@ -15,6 +15,8 @@
 #define WHITE 2
 #define BLACK 1
 #define EMPTY 0
+#define BANNER_SPEED 1000 - R_SPEED
+#define R_SPEED 950	//speed of the animated banner, bigger value bigger speed; maximum value is 999
 #define s_l 26	//length of the filename string
 
 struct ch_template {
