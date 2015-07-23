@@ -15,10 +15,10 @@ chessgameWall: main.c chesslib.c chesslib.h
 	&& $(CC) $(CFLAGS) $(INC_W_LEVEL) $< $(CHESSLIB) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 run:
-	exec ./$(BLDFOLDER)/chessgame
+	exec ./$(BLDFOLDER)/$(ELF)
 
 runW:
-	exec ./$(BLDFOLDER)/chessgameWall
+	exec ./$(BLDFOLDER)/$(ELF)Wall
 .PHONY: clean
 clean:
 	rm -rf build
