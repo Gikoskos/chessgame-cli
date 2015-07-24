@@ -78,23 +78,49 @@ void printBoard(ch_template chb[][8])
 	printf("\n\n");
 }
 
-bool validInput(const char *input)
+bool validInput(const char *input, int *errPtr)
 {
 	if (strcmp(input, "help") == 0) {
 		printInstructions();
 		return false;
 	}
 	if (input[0] != 'R' && input[0] != 'N' && input[0] != 'B' && input[0] != 'Q' && input[0] != 'K' && input[0] != 'P') {
-		printf("Not a valid Chess piece entered. Please use only R for Rook\nN for Knight\nB for Bishop\nQ for Queen\nK for King and P for Pawn\n");
+		*errPtr = 5;
 		return false;
 	} else if (input[1] < 'a' || input[1] > 'h') {
-		printf("Not a valid column letter entered. Please use only a b c d e f g or h\n");
+		*errPtr = 6;
 		return false;
 	} else if (input[2] < '1' || input[2] > '8') {
-		printf("Not a valid row entered. Please use only numbers from 1 to 8.\n");
+		*errPtr = 7;
 		return false;
 	}
 	return true;
+}
+
+void printError(int i)
+{
+	char *error_out[] = { "\n",
+	"Command line argument not recognized.\n", "Bad input.\n",
+	"Illegal move.\n", "Log file could not be created.\n"};
+	
+	if (i < 5)
+		fprintf(stderr, "%s", error_out[i]);
+	else {
+		if (i == 5)
+			fprintf(stderr, "%s\n%s%s\n\t%s\n\t%s\n\t%s\n",
+			"Not a valid Chess piece entered. ",
+			"Please use only R for Rook, ", "N for Knight,", 
+			"B for Bishop,", "Q for Queen,", "K for King and P for Pawn");
+		else if (i == 6)
+			fprintf(stderr, "%s\n",
+			"Not a valid column letter entered. Please use only a b c d e f g or h.");
+		else if (i == 7)
+			fprintf(stderr, "%s\n",
+			"Not a valid row entered. Please use only numbers from 1 to 8.");
+		else
+			fprintf(stderr, "%s%d.\n",
+			"Unrecognized error number ", i);
+	}
 }
 
 char *findPiece(ch_template chb[][8], const char *input, int color)
@@ -241,14 +267,16 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 				} else if (input[0] == 'R' || input[0] == 'Q') {
 					k = i;
 					for (l=0; l < 8; l++) {
-						if (l == j) continue; //to skip the piece itself
+						if (l == j) 
+							continue;	//to skip the piece itself
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
 							return retvalue;
 						}
 					}
 					l = j;
 					for (k = 0; k < 8; k++) {
-						if (k == i) continue;
+						if (k == i)
+							continue;
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
 							return retvalue;
 						}
@@ -329,18 +357,18 @@ extern void clear_screen(void)
 	fputs(str, stdout);
 	/*puts( "\033[2J" ); */
 	/*clear screen using ASCII; doesn't work as well, only use it if you can't install libncurses
-	 *don't forget to delete or comment lines 324-329*/
+	 *don't forget to delete or comment lines 324-331*/
 } 
 
 bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 {
 	int startx, starty, endx, endy; //cords for the current tile and for the tile to move the piece to
+	
 	endx = plInput[2] - '1';
 	endy = plInput[1] - 65;
 	startx = piece[1] - '1';
 	starty = piece[0] - 65;
-	
-	if (piecesOverlap(chb, startx, starty, endx, endy) == false) {
+	if (piecesOverlap(chb, startx, starty, endx, endy, plInput[0]) == false) {
 		if (chb[endx][endy].c != color) {
 			chb[startx][starty].occ = false;
 			chb[startx][starty].c = EMPTY;
@@ -353,10 +381,44 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 	return false;
 }
 
-bool piecesOverlap(ch_template chb[][8], int sx, int sy, int ex, int ey)
+bool piecesOverlap(ch_template chb[][8], const int sx, const int sy, const int ex, const int ey, char piece)
 {
-	return false;
+	/*int tempx = sx, tempy = sy;
+	unsigned p_distance;
 	
+	if (piece == 'R' || piece == 'Q') {
+		p_distance = (sx == ex)? abs(sy-ey):abs(sx-ex);
+		if ((sx-ex)) {
+			if (sy > ey) {
+				printf("t\n");
+				for (; tempy > ey; --tempy)
+					printf("startx %d starty %d endx %d endy %d \n", tempx, tempy, ex, ey);
+					if (chb[sx][tempy].occ)
+						return true;
+			} else {
+				printf("t2\n");
+				for (; tempy < ey; ++tempy)
+					printf("startx %d starty %d endx %d endy %d \n", tempx, tempy, ex, ey);
+					if (chb[sx][tempy].occ)
+						return true;
+			}
+		} else {
+			if (sx > ex) {
+				printf("t3\n");
+				for (; tempx > ex; --tempx)
+					printf("startx %d starty %d endx %d endy %d \n", tempx, tempy, ex, ey);
+					if (chb[tempx][sy].occ)
+						return true;
+			} else {
+				printf("t4\n");
+				for (; tempx < ex; ++tempx)
+					printf("startx %d starty %d endx %d endy %d \n", tempx, tempy, ex, ey);
+					if (chb[tempx][sy].occ)
+						return true;
+			}
+		}
+	}*/
+	return false;
 }
 
 void date_filename(char *buf, int ln)
@@ -373,9 +435,9 @@ void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
 	static unsigned c = 1;
 
 	if (round == WHITE) {
-		fprintf(logf, "Round #%d:\tWhite moves ", c);
+		fprintf(logf, "Round  #%d:\tWhite moves ", c);
 	} else {
-		fprintf(logf, "         \tBlack moves ");
+		fprintf(logf, "            \tBlack moves ");
 		c++;
 	}
 	if (plInput[0] == 'P') {
@@ -397,28 +459,34 @@ void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
 char *getPlayerInput(void)
 {
 	size_t len = 0, max = 1;
-	char c, *str_in = calloc(max, sizeof(*str_in)), *str_temp = str_in;
+	char c, count = 0, *str_in = calloc(max, sizeof(*str_in)), *str_temp = str_in;
 	
 	if (!str_in)
 		return str_in;
 	while ((c = getchar()) != '\n') {
 		str_in[len++] = c;
-		if (len == max){
+		if (len == max && len <= 4){
 			str_temp = realloc(str_in, max*sizeof(*str_in));
 			if (!str_temp){ 
 				return str_in;
-			} else{
+			} else {
 				str_in = str_temp;
 			}
 			max+=1;
+		} else {
+			clear_buffer();
+			break;
 		}
+		count++;
 	}
-	if (str_in[0] == '\n') {
+	if (!count) {
 		str_in[1] = '\0';
+		fflush(stdin);
+		return str_in;
 	} else {
 		str_in[len] = '\0';
 	}
-	return str_in;
+	return realloc(str_in, len*sizeof(*str_in));
 }
 
 char *pawnConflict(const char *pawn_pos)
