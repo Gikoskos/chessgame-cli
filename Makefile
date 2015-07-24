@@ -23,3 +23,6 @@ runW:
 .PHONY: clean
 clean:
 	rm -rf build
+
+cleantxt:
+	rm -rf build/*.txt
