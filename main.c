@@ -25,37 +25,48 @@ int main(int argc, char *argv[])
 		 *piece_to_move: the final piece to move
 		 *fn: file name string with s_l length
 		 *attack_guard: double pawn attack guard and temporary storage for the return of findPiece*/
-	int round = 0, roundcount = 1;
+	int round = 0, roundcount = 1, p_err = 0, loop_count = 1;
 		/*round: for each player's round, 1 for black, 2 for white
-		 *roundcount: total number of rounds*/
+		 *roundcount: total number of rounds
+		 *p_err: holds the position of the error_out array
+		 *loop_count: counter for LOOP*/
 	bool gameover = false;
 		/*flag to control the game loop, becomes true when the King has no moves*/
 	FILE *logfile;
 
-	clear_screen();
-	printf("\n");
-	printBanner("Welcome to my Chess game!");
-	printf("\n");
 	initChessboard(chess_board, 0, 'A');
-	printBoard(chess_board);
 	date_filename(fn, s_l);
+	clear_screen();
 
 	while (gameover == false) {
-		if (roundcount%2 == 1)
+		if (roundcount == 1) {
+			printf("\n");
+			printBanner("Welcome to my Chess game!");
+			printf("\n");
 			round = WHITE;
-		else
-			round = BLACK;
-
+		} else {
+			if (roundcount%2 == 1) 
+				round = WHITE;
+			else 
+				round = BLACK;
+			printf("\n\n\n\n\n");
+		}
 		if (argc > 1) {
 			if (strcmp(argv[1], "help") ==  0) {
 				printInstructions();
 			} else 
-				fprintf(stderr, "Command line argument not recognized\n");
+				p_err = 1;
 		}
 
 		printf("Type 'help' and ENTER to view the instructions any time.\n");
 
 		LOOP:do {
+			if (loop_count > 1) {
+				clear_screen();
+				printf("\n\n\n\n\n\n");
+			}
+			printBoard(chess_board);
+			printError(p_err);
 			if (round == BLACK) 
 				printf("It\'s black\'s turn: ");
 			else 
@@ -63,41 +74,40 @@ int main(int argc, char *argv[])
 			playerInput = getPlayerInput();
 			if (!playerInput)
 				continue;
-			if (strlen(playerInput) > 4) {
-				fprintf(stderr, "Bad input\n");
-				continue;	/*weird things happen if I change this continue to a goto, on my system I get SIGSEV*/
+			if (strlen(playerInput) > 4 || playerInput[0] == '\n') {
+				p_err = 2;
+				continue;
 			}
-		} while (validInput(playerInput) == false);
+			loop_count++;
+		} while (validInput(playerInput, &p_err) == false);
 		playerInput[1] = (char)toupper(playerInput[1]);
 		
 		if (!findPiece(chess_board, playerInput, round)) {
-			fprintf(stderr, "Illegal move\n");
+			p_err = 3;
 			goto LOOP;
 		}
 		strcpy(attack_guard,findPiece(chess_board, playerInput, round));
-		if(memcmp(findPiece(chess_board, playerInput, round), "q", 1) == 0) {
+		if(memcmp(attack_guard, "q", 1) == 0) {
 			printBoard(chess_board);
 			continue;
-		} else if(strlen(attack_guard) < 3) {
+		} else if (strlen(attack_guard) < 3) {
 			memcpy(piece_to_move, attack_guard, 2);
 		} else {
 			memcpy(piece_to_move, pawnConflict(attack_guard), 2);
 		}
 		
 		if (movePiece(chess_board, playerInput, piece_to_move, round) == false) {
-			fprintf(stderr, "Illegal move\n");
+			p_err = 3;
 			goto LOOP;
 		}
 		if (!(logfile = fopen(fn, "a"))) {
-			fprintf(stderr, "Log file could not be created\n");
+			printError(3);
 		} else {
 			write_to_log(round, logfile, playerInput, piece_to_move);
 		}
 		fclose(logfile);
-		clear_screen();
 		roundcount++;
-		printf("\n\n\n\n\n");
-		printBoard(chess_board);
+		p_err = 0;
 	}
 	playerInput = NULL;
 	return 0;
