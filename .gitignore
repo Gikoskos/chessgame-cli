@@ -1,3 +1,4 @@
 .kateproject*
 chessgame*.*
 *.txt
+build/
