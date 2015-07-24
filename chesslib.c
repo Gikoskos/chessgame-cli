@@ -465,7 +465,7 @@ char *getPlayerInput(void)
 		return str_in;
 	while ((c = getchar()) != '\n') {
 		str_in[len++] = c;
-		if (len == max && len <= 4){
+		if (len == max && len <= 5){
 			str_temp = realloc(str_in, max*sizeof(*str_in));
 			if (!str_temp){ 
 				return str_in;
