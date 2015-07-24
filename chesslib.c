@@ -80,11 +80,9 @@ void printBoard(ch_template chb[][8])
 
 bool validInput(const char *input, int *errPtr)
 {
-	if (strcmp(input, "help") == 0) {
-		printInstructions();
+	if (!strcmp(input, "help")) {
 		return false;
-	}
-	if (input[0] != 'R' && input[0] != 'N' && input[0] != 'B' && input[0] != 'Q' && input[0] != 'K' && input[0] != 'P') {
+	} else if (input[0] != 'R' && input[0] != 'N' && input[0] != 'B' && input[0] != 'Q' && input[0] != 'K' && input[0] != 'P') {
 		*errPtr = 5;
 		return false;
 	} else if (input[1] < 'a' || input[1] > 'h') {

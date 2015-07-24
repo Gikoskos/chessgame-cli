@@ -64,14 +64,18 @@ int main(int argc, char *argv[])
 			if (loop_count > 1) {
 				clear_screen();
 				printf("\n\n\n\n\n\n");
-			}
-			printBoard(chess_board);
+				if (!strcmp(playerInput, "help"))
+					printInstructions();
+				printBoard(chess_board);
+			} else 
+				printBoard(chess_board);
 			printError(p_err);
 			if (round == BLACK) 
 				printf("It\'s black\'s turn: ");
 			else 
 				printf("It\'s white\'s turn: ");
 			playerInput = getPlayerInput();
+			
 			if (!playerInput)
 				continue;
 			if (strlen(playerInput) > 4 || playerInput[0] == '\n') {
