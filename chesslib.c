@@ -56,7 +56,7 @@ void initChessboard(ch_template chb[][8], unsigned k, char col)	//k is row, col 
 
 void printBoard(ch_template chb[][8])
 {
-#ifdef _WIN32
+#if defined _WIN32 || defined __WIN32__ || defined _MINGW32_
 	HANDLE cmdhandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO cmdinfo;
 	WORD sv_att;

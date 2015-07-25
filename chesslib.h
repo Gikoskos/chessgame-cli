@@ -7,11 +7,11 @@
 #include <time.h>
 #include <unistd.h>
 
-#ifndef _WIN32
+#if defined _WIN32 || defined __WIN32__ || defined _MINGW32_
+#include <windows.h>
+#else
 #include <termcap.h>
 #include <alloca.h>
-#else
-#include <windows.h>
 #endif
 
 #define KRED  "\x1B[31m"
