@@ -347,15 +347,19 @@ extern void printInstructions(void)
 
 extern void clear_screen(void)
 {
+#ifndef _WIN32
 	char buf[1024];
 	char *str;
 	
 	tgetent(buf, getenv("TERM"));
 	str = tgetstr("cl", NULL);
 	fputs(str, stdout);
+#else
 	/*puts( "\033[2J" ); */
 	/*clear screen using ASCII; doesn't work as well, only use it if you can't install libncurses
 	 *don't forget to delete or comment lines 324-331*/
+	system("cls");
+#endif
 } 
 
 bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)

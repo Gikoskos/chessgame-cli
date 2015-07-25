@@ -4,10 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <termcap.h>
 #include <time.h>
-#include <alloca.h>
 #include <unistd.h>
+
+#ifndef _WIN32
+#include <termcap.h>
+#include <alloca.h>
+#endif
 
 #define KRED  "\x1B[31m"
 #define KYEL  "\x1B[33m"
