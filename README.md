@@ -12,9 +12,9 @@ A log file that records all the moves that took place, is created during the gam
 
 Needs libncurses to compile.
 
-Also colors only work on linux. (I think?)
+Also colors probably only work on linux. (I think?)
 
-Would recommend to compile through the Makefile if you're on Linux, only after you've installed gcc and libncurses though.
+Would recommend to compile through the Makefile if you're on a linux distro, only after you've installed build-essential(or a similar package for your distro) and libncurses though.
 
 ## TODO
 
@@ -22,7 +22,7 @@ fix stupid bugs like this (FIXED)
 
 ![Alt text](http://i.imgur.com/u7DMUjg.png)
 
-implement that dreaded piecesOverlap function
+implement that dreaded piecesOverlap function (WIP)
 
 add the functionality for the game to end when a king is unable to make a move without being threatened by another piece
 
