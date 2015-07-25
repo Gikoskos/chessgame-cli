@@ -56,6 +56,36 @@ void initChessboard(ch_template chb[][8], unsigned k, char col)	//k is row, col 
 
 void printBoard(ch_template chb[][8])
 {
+#ifdef _WIN32
+	HANDLE cmdhandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO cmdinfo;
+	WORD sv_att;
+	int i, j;
+	
+	GetConsoleSreenBufferInfo(cmdhandle, &cmdinfo);
+	sv_att = cmdinfo.wAttributes;
+	
+	printf("    a   b   c   d   e   f   g   h  \n");
+	for (i = 0; i < 8; i++) {
+		printf("%d | ", i + 1);
+		for (j = 0; j < 8; j++) {
+			if (chb[i][j].occ == false) {
+				printf("  | ");
+			} else {
+				if (chb[i][j].c == BLACK)
+					SetConsoleTextAttribute(cmdhandle, FOREGROUND_RED); 
+				else 
+					SetConsoleTextAttribute(cmdhandle, FOREGROUND_GREEN);
+				printf(" %c | ", chb[i][j].current);
+				SetConsoleTextAttribute(cmdhandle, sv_att);
+			}
+		}
+		printf("%d", i + 1);
+		printf("\n");
+	}
+	printf("    a   b   c   d   e   f   g   h  \n");
+	printf("\n\n");
+#else
 	int i, j;
 
 	printf("    a   b   c   d   e   f   g   h  \n");
@@ -76,6 +106,7 @@ void printBoard(ch_template chb[][8])
 	}
 	printf("    a   b   c   d   e   f   g   h  \n");
 	printf("\n\n");
+#endif
 }
 
 bool validInput(const char *input, int *errPtr)

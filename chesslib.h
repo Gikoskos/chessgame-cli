@@ -10,6 +10,8 @@
 #ifndef _WIN32
 #include <termcap.h>
 #include <alloca.h>
+#else
+#include <windows.h>
 #endif
 
 #define KRED  "\x1B[31m"
@@ -19,7 +21,7 @@
 #define BLACK 1
 #define EMPTY 0
 #define BANNER_SPEED 100 - R_SPEED
-#define R_SPEED 50	//speed of the animated banner, bigger value bigger speed; maximum value is 99
+#define R_SPEED 90	//speed of the animated banner, bigger value bigger speed; maximum value is 99
 #define s_l 26	//length of the filename string
 
 struct ch_template {
