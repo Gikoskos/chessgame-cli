@@ -1,4 +1,6 @@
 .kateproject*
 chessgame*.*
 *.txt
+*.exe
+*.o
 build/
