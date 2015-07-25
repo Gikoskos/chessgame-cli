@@ -12,7 +12,7 @@ A log file that records all the moves that took place, is created during the gam
 
 Needs libncurses to compile.
 
-Also colors probably only work on linux. (I think?)
+Also colors probably only work on linux.
 
 Would recommend to compile through the Makefile if you're on a linux distro, only after you've installed build-essential(or a similar package for your distro) and libncurses though.
 
