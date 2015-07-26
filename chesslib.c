@@ -76,8 +76,9 @@ void printBoard(ch_template chb[][8])
 					SetConsoleTextAttribute(cmdhandle, FOREGROUND_RED); 
 				else 
 					SetConsoleTextAttribute(cmdhandle, FOREGROUND_GREEN);
-				printf(" %c | ", chb[i][j].current);
+				printf("%c", chb[i][j].current);
 				SetConsoleTextAttribute(cmdhandle, sv_att);
+				printf("| ");
 			}
 		}
 		printf("%d", i + 1);
