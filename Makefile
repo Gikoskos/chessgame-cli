@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -Wall -std=c99 -fgnu89-inline -D_POSIX_C_SOURCE=199309L
+CFLAGS = -g -Wall -std=gnu99 -fgnu89-inline
 LINKER = -lncurses
 ELF = chessgame
 INC_W_LEVEL = -Wextra -pedantic
