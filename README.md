@@ -10,7 +10,9 @@ A log file that records all the moves that took place, is created during the gam
 
 ## Prerequisites
 
-Needs libncurses to compile.
+Needs libncurses to compile. (on Linux)
+
+If you're compiling on windows, try using Mingw-w64. It's the only compiler for Windows I've tested it on.
 
 Would recommend to compile through the Makefile if you're on a linux distro, only after you've installed build-essential(or a similar package for your distro) and libncurses though.
 
