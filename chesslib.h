@@ -10,13 +10,13 @@
 #ifndef __unix__
 #include <windows.h>
 #else
+#define KRED  "\x1B[31m"
+#define KYEL  "\x1B[33m"
+#define RESET "\033[0m"
 #include <termcap.h>
 #include <alloca.h>
 #endif
 
-#define KRED  "\x1B[31m"
-#define KYEL  "\x1B[33m"
-#define RESET "\033[0m"
 #define WHITE 2
 #define BLACK 1
 #define EMPTY 0
