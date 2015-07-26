@@ -62,7 +62,7 @@ void printBoard(ch_template chb[][8])
 	WORD sv_att;
 	int i, j;
 	
-	GetConsoleSreenBufferInfo(cmdhandle, &cmdinfo);
+	GetConsoleScreenBufferInfo(cmdhandle, &cmdinfo);
 	sv_att = cmdinfo.wAttributes;
 	
 	printf("    a   b   c   d   e   f   g   h  \n");
