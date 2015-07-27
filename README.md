@@ -7,6 +7,9 @@ No AI implemented. You type the uppercase letter of the piece you want to move a
 
 A log file that records all the moves that took place, is created during the game.
 
+The thought process behind this project was for me to implement a chess engine for the first time, without seeing code from other projects. So the only source of help I got from online was the chess definition in Wikipedia for the rules and such.
+
+There might be tons of other implementations that are probably way smarter than mine but even so, I just did this to have fun :D
 
 ## Prerequisites
 
@@ -23,6 +26,8 @@ fix stupid bugs like this (FIXED)
 ![Alt text](http://i.imgur.com/u7DMUjg.png)
 
 implement that dreaded piecesOverlap function (WIP)
+
+fix bug on Windows that rejects input other than the first character after some time (weird that I can't recreate this bug on Linux)
 
 add the functionality for the game to end when a king is unable to make a move without being threatened by another piece
 
