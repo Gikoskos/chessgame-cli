@@ -7,14 +7,16 @@
 #include <time.h>
 #include <unistd.h>
 
-#ifndef __unix__
+#if defined(__MINGW32__)
 #include <windows.h>
-#else
+#elif defined(__unix__) || defined(__gnu_linux__)
 #define KRED  "\x1B[31m"
 #define KYEL  "\x1B[33m"
 #define RESET "\033[0m"
 #include <termcap.h>
 #include <alloca.h>
+#else
+#error Non-compatible OS or compiler found.
 #endif
 
 #define WHITE 2
