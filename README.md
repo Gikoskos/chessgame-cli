@@ -35,7 +35,7 @@ add the functionality for the game to end when a king is unable to make a move w
 
 ![WTFPL logo](http://www.wtfpl.net/wp-content/uploads/2012/12/logo-220x1601.png)
 
-Copyright © 2015 G.K. <Gikoskos@users.noreply.github.com>
+Copyright © 2015 G.K. <cyberchiller@gmail.com>
 
 This work is free. You can redistribute it and/or modify it under the
 terms of the Do What The Fuck You Want To Public License, Version 2,
