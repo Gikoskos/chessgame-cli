@@ -3,11 +3,15 @@
 
 The game itself is self-explanatory, but basically it's a very simple chess game for two players.
 
-No AI implemented. You type the uppercase letter of the piece you want to move as you see it on the board and the coordinates of the square you want to move to (for example if you want to move Pawn to square A3 you type Pa3), and the game will find the piece you want to move and move it by itself.
+No AI implemented. You type the uppercase letter of the piece you want 
+to move as you see it on the board and the coordinates of the square you want to move to 
+(for example if you want to move Pawn to square A3 you type Pa3), and the game will find the piece you want to move
+and move it by itself.
 
 A log file that records all the moves that took place, is created during the game.
 
-The thought process behind this project was for me to implement a chess engine for the first time, without seeing code from other projects. So the only source of help I got from online was the chess definition in Wikipedia for the rules and such.
+The thought process behind this project was for me to implement a chess engine for the first time, without seeing
+code from other projects.
 
 There might be tons of other implementations that are probably way smarter than mine but even so, I just did this to have fun :D
 
@@ -15,13 +19,14 @@ There might be tons of other implementations that are probably way smarter than 
 
 Needs libncurses to compile. (on Linux)
 
-If you're compiling on windows, try using Mingw-w64. It's the only compiler for Windows I've tested it on.
+If you're compiling on windows, try using Mingw-w64 to install gcc. It's the only compiler for Windows I've tested it on.
 
-Would recommend to compile through the Makefile if you're on a linux distro, only after you've installed build-essential(or a similar package for your distro) and libncurses though.
+Would recommend to compile through the Makefile, if you're on a linux distro, only after you've installed
+gcc, make and libncurses though.
 
 ## TODO
 
-fix stupid bugs like this (FIXED)
+fix stupid bugs like this (DONE)
 
 ![Alt text](http://i.imgur.com/u7DMUjg.png)
 
