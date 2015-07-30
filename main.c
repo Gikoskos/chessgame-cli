@@ -17,7 +17,7 @@
 #include "chesslib.h"
 
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[], char *environ[])
 {
 	ch_template chess_board[8][8];
 	char *playerInput = NULL, piece_to_move[2], fn[s_l], attack_guard[5];
