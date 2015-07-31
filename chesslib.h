@@ -7,7 +7,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#if defined(__MINGW32__)
+#if defined(__MINGW32__) || defined(_WIN32)
 #include <windows.h>
 #elif defined(__unix__) || defined(__gnu_linux__)
 #define KRED  "\x1B[31m"
@@ -16,7 +16,7 @@
 #include <termcap.h>
 #include <alloca.h>
 #else
-#error Non-compatible OS or compiler found.
+#error Non-compatible OS or compiler found
 #endif
 
 #define WHITE 2
@@ -37,18 +37,18 @@ typedef struct ch_template ch_template;
 
 
 /*prototypes*/
-void initChessboard(ch_template[][8], unsigned, char);	//add pieces on the chess board recursively 
-void printBoard(ch_template[][8]);	//function to print the board at any given point in the game
-char *findPiece(ch_template[][8], const char*, int);	//find the piece that is capable to perform the move entered by the player
-bool movePiece(ch_template[][8], char*, char[2], int);	//move the piece if no other piece is in the way
-bool piecesOverlap(ch_template[][8], const int, const int, const int , const int, char);
-bool validInput(const char*, int*);	//check for validity of input
-void date_filename(char*, int);	//create a string with the current date to be used as the log date_filename
-void write_to_log(int, FILE*, char*, char[]);	//write each player's moves to a log file
-void printError(int);
-char *getPlayerInput(void);	//copy the input buffer to a string
-char *pawnConflict(const char*);
-inline void clear_screen(void);
-inline void clear_buffer(void);
-inline void printInstructions(void);
-inline void printBanner(const char*);
+void initChessboard (ch_template[][8], unsigned, char);	//add pieces on the chess board recursively 
+void printBoard (ch_template[][8]);	//function to print the board at any given point in the game
+char *findPiece (ch_template[][8], const char*, int);	//find the piece that is capable to perform the move entered by the player
+bool movePiece (ch_template[][8], char*, char[2], int);	//move the piece if no other piece is in the way
+bool piecesOverlap (ch_template[][8], const int, const int, const int , const int, char);
+bool validInput (const char*, int*);	//check for validity of input
+void date_filename (char*, int);	//create a string with the current date to be used as the log date_filename
+void write_to_log (int, FILE*, char*, char[]);	//write each player's moves to a log file
+void printError (int);
+char *getPlayerInput (void);	//copy the input buffer to a string
+char *pawnConflict (const char*);
+inline void clear_screen (void);
+inline void clear_buffer (void);
+inline void printInstructions (void);
+inline void printBanner (const char*);
