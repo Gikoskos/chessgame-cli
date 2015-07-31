@@ -1,4 +1,7 @@
-#pragma once
+#ifndef __SUNPRO_C 
+#	pragma once
+#endif
+
 #ifndef CHESSLIB_H
 #	define CHESSLIB_H
 #	include <stdio.h>
@@ -28,15 +31,12 @@
 #	define R_SPEED 75	//speed of the animated banner, bigger value bigger speed; maximum value is 99
 #	define s_l 26	//length of the filename string
 
-struct ch_template {
+typedef struct ch_template {
 	char current ;	//current piece letter, e for empty square
 	char square[2];	//current square on the board eg.A1,H4
 	bool occ;	//flag to check if square is occupied
 	int c;	//piece color, 0 if there is no piece, 1 for black, 2 for white
-};
-
-typedef struct ch_template ch_template;
-
+}ch_template;
 
 /*prototypes*/
 void initChessboard (ch_template[][8], unsigned, char);	//add pieces on the chess board recursively 
