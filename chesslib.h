@@ -3,8 +3,6 @@
 #else
 #ifndef CHESSLIB_H
 #define CHESSLIB_H
-#endif
-#endif
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -58,3 +56,6 @@ inline void clear_screen (void);
 inline void clear_buffer (void);
 inline void printInstructions (void);
 inline void printBanner (const char*);
+
+#endif
+#endif
