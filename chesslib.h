@@ -1,4 +1,10 @@
+#ifdef _MSC_VER
 #pragma once
+#else
+#ifndef CHESSLIB_H
+#define CHESSLIB_H
+#endif
+#endif
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
