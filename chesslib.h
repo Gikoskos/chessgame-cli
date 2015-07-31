@@ -1,34 +1,31 @@
-#ifdef _MSC_VER
-#pragma once
-#else
 #ifndef CHESSLIB_H
-#define CHESSLIB_H
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <time.h>
-#include <unistd.h>
+#	define CHESSLIB_H
+#	include <stdio.h>
+#	include <stdbool.h>
+#	include <stdlib.h>
+#	include <string.h>
+#	include <ctype.h>
+#	include <time.h>
+#	include <unistd.h>
 
-#if defined(__MINGW32__) || defined(_WIN32)
-#include <windows.h>
-#elif defined(__unix__) || defined(__gnu_linux__)
-#define KRED  "\x1B[31m"
-#define KYEL  "\x1B[33m"
-#define RESET "\033[0m"
-#include <termcap.h>
-#include <alloca.h>
-#else
-#error Non-compatible OS or compiler found
-#endif
+#	if defined(__MINGW32__) || defined(_WIN32)
+#		include <windows.h>
+#	elif defined(__unix__) || defined(__gnu_linux__)
+#		define KRED  "\x1B[31m"
+#		define KYEL  "\x1B[33m"
+#		define RESET "\033[0m"
+#		include <termcap.h>
+#		include <alloca.h>
+#	else
+#		error Non-compatible OS or compiler found
+#	endif
 
-#define WHITE 2
-#define BLACK 1
-#define EMPTY 0
-#define BANNER_SPEED 100 - R_SPEED
-#define R_SPEED 75	//speed of the animated banner, bigger value bigger speed; maximum value is 99
-#define s_l 26	//length of the filename string
+#	define WHITE 2
+#	define BLACK 1
+#	define EMPTY 0
+#	define BANNER_SPEED 100 - R_SPEED
+#	define R_SPEED 75	//speed of the animated banner, bigger value bigger speed; maximum value is 99
+#	define s_l 26	//length of the filename string
 
 struct ch_template {
 	char current ;	//current piece letter, e for empty square
@@ -57,5 +54,4 @@ inline void clear_buffer (void);
 inline void printInstructions (void);
 inline void printBanner (const char*);
 
-#endif
 #endif
