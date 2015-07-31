@@ -1,3 +1,4 @@
+#pragma once
 #ifndef CHESSLIB_H
 #	define CHESSLIB_H
 #	include <stdio.h>
