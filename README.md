@@ -30,7 +30,7 @@ fix stupid bugs like this (DONE)
 
 ![Alt text](http://i.imgur.com/u7DMUjg.png)
 
-implement that dreaded piecesOverlap function (WIP)
+implement that dreaded piecesOverlap function (DONE)
 
 fix bug on Windows that rejects input other than the first character after some time (weird that I can't recreate this bug on Linux)
 
