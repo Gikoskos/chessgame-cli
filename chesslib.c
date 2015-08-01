@@ -56,7 +56,7 @@ void initChessboard(ch_template chb[][8], unsigned k, char col)	//k is row, col 
 
 void printBoard(ch_template chb[][8])
 {
-#ifndef __unix__
+#ifdef _WIN32
 	HANDLE cmdhandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO cmdinfo;
 	WORD sv_att;
@@ -362,7 +362,7 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 					} 
 					k = i + 1;
 					l = j - 1;
-					while ((k <= 7 && k >= 0) && (l >= 0 && l <= 0)) {
+					while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
 							return retvalue;
 						}
@@ -446,7 +446,8 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 	return false;
 }
 
-bool piecesOverlap(ch_template chb[][8], const int sx, const int sy, const int ex, const int ey, char piece)
+bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
+			    const int ex, const int ey, const char piece)
 {
 	int tempx = sx, tempy = sy;
 	
@@ -478,6 +479,39 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy, const int e
 					if (chb[tempx][sy].occ)
 						return false;
 				}
+			}
+		}
+	}
+	if (piece == 'B' || piece == 'Q') {
+		tempx = ex;
+		tempy = ey;
+		if (ex>sx && ey>sy) {
+			tempx--;
+			tempy--;
+			while (tempx > sx && tempy > sy) {
+				if (chb[tempx--][tempy--].occ)
+					return false;
+			}
+		} else if (ex<sx && ey>sy) {
+			tempx++;
+			tempy--;
+			while (tempx < sx && tempy > sy) {
+				if (chb[tempx++][tempy--].occ)
+					return false;
+			}
+		} else if (ex>sx && ey<sy) {
+			tempx--;
+			tempy++;
+			while (tempx > sx && tempy < sy) {
+				if (chb[tempx--][tempy++].occ)
+					return false;
+			}
+		} else {
+			tempx++;
+			tempy++;
+			while (tempx < sx && tempy < sy) {
+				if (chb[tempx++][tempy++].occ)
+					return false;
 			}
 		}
 	}
