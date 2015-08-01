@@ -1,7 +1,7 @@
 # Sample chess library
 ## Overview
 
-The game itself is self-explanatory, but basically it's a very simple chess game for two players.
+The game is self-explanatory, but basically it's a very simple chess game for two players.
 
 No AI implemented. You type the uppercase letter of the piece you want 
 to move as you see it on the board and the coordinates of the square you want to move to 
