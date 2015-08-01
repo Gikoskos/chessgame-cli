@@ -87,26 +87,55 @@ void printBoard(ch_template chb[][8])
 	printf("    a   b   c   d   e   f   g   h  \n");
 	printf("\n\n");
 #else
-	int i, j;
+	int i, j, max, y = 0, x = 0;
 
 	printf("    a   b   c   d   e   f   g   h  \n");
-	for (i = 0; i < 8; i++) {
-		printf("%d | ", i + 1);
-		for (j = 0; j < 8; j++) {
-			if (chb[i][j].occ == false) {
-				printf("  | ");
-			} else {
-				if (chb[i][j].c == BLACK)
-					printf("%s%c%s | ", KRED, chb[i][j].current, RESET);
-				else
-					printf("%s%c%s | ", KYEL, chb[i][j].current, RESET);
+	for (i = 0; i < (max = (MOS%2)?MOS:(MOS-1)); i++) {
+		if(i%2 == true) printf("%d ", y + 1);
+		else printf("  ");
+		for (j = 0; j < max; j++) {
+			if (!i) { 
+				if(!j) printf("\u250F");
+				else if(j == (max-1)) printf("\u2513");
+				else if(j%2) printf("\u2501\u2501\u2501");
+				else if(!(j%2)) printf("\u2533");
+			} else if (i == max-1) {
+				if(!j)printf("\u2517");
+				else if(j == (max-1)) printf("\u251B");
+				else if(j%2) printf("\u2501\u2501\u2501");
+				else if(!(j%2)) printf("\u253B");
+			} else if (i%2) {
+				if(!(j%2)) printf("\u2503");
+				else {
+					usleep(3000);
+					fflush(stdout);
+					if (chb[y][x].occ == false)
+						printf("   ");
+					else {
+						if (chb[y][x].c == BLACK)
+							printf(" %s%c%s ", KRED, chb[y][x].current, RESET);
+						else
+							printf(" %s%c%s ", KYEL, chb[y][x].current, RESET);
+					}
+					x++;
+				}
+			} else if (!(i%2)) {
+				if(!j) printf("\u2523");
+				else if(j == (max-1)) printf("\u252B");
+				else if(j%2) printf("\u2501\u2501\u2501");
+				else if(!(j%2)) printf("\u254B");
 			}
 		}
-		printf("%d", i + 1);
+		x = 0;
+		if(i%2 == true) {
+			printf(" %d", y + 1);
+			y++;
+		} else
+			printf("  ");
 		printf("\n");
 	}
 	printf("    a   b   c   d   e   f   g   h  \n");
-	printf("\n\n");
+	printf("\n");
 #endif
 }
 
@@ -368,13 +397,15 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 
 extern void printInstructions(void)
 {
-	printf("%s%s\n%s\n%s\n%s\n%s\n\t%s\n\n\n",
+	printf("%s%s\n%s\n%s\n%s\n%s\n%s %s\n%s\n",
 	"Please enter your move in the following format: ", "\'xyz\'", 
-	"where x is the piece you want to move,",
-	"y is the letter of the column and z is the number of the row",
-	"acceptable values for x are: R for Rook, N for Knight, B for Bishop, Q for Queen, K for King and P for Pawn",
-	"acceptable values for y are lowercase letters from \'a\' to \'h\' and for z numbers from 1 to 8",
-	"for example to move Bishop to e2 type Be2 or Pawn to a4 type Pa4");
+	"x is the piece you want to move,",
+	"y is the letter of the column and",
+	"z is the number of the row.",
+	"Acceptable values for x are: R for Rook, N for Knight, B for Bishop, Q for Queen, K for King and P for Pawn.",
+	"Acceptable values for y are lowercase letters",
+	"from \'a\' to \'h\' and for z numbers from 1 to 8.",
+	"For example to move Bishop to e2 type Be2 or Pawn to a4 type Pa4.");
 }
 
 extern void clear_screen(void)
