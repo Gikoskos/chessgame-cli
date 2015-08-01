@@ -7,15 +7,13 @@
           
 /********************************************************************/
 /*                                                                  */
-/* standard chess engine no AI or complicated rules implemented yet */
+/*       small game implementing the chesslib.c chess engine        */
 /*                                                                  */
 /*                   by cyberchiller@gmail.com                      */
 /*                                                                  */
 /********************************************************************/
 
-
 #include "chesslib.h"
-
 
 int main(int argc, char *argv[], char *environ[])
 {
