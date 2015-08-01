@@ -64,9 +64,9 @@ int main(int argc, char *argv[], char *environ[])
 			if (loop_count > 1) {
 				clear_screen();
 				printf("\n\n\n\n\n\n");
+				printBoard(chess_board);
 				if (!strcmp(playerInput, "help"))
 					printInstructions();
-				printBoard(chess_board);
 			} else 
 				printBoard(chess_board);
 			printError(p_err);
