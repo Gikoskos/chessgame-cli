@@ -1,6 +1,4 @@
-#ifndef __SUNPRO_C 
-# pragma once
-#endif
+#pragma once
 
 #ifndef CHESSLIB_H
 # define CHESSLIB_H
