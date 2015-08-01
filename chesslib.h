@@ -1,35 +1,42 @@
 #ifndef __SUNPRO_C 
-#	pragma once
+# pragma once
 #endif
 
 #ifndef CHESSLIB_H
-#	define CHESSLIB_H
-#	include <stdio.h>
-#	include <stdbool.h>
-#	include <stdlib.h>
-#	include <string.h>
-#	include <ctype.h>
-#	include <time.h>
-#	include <unistd.h>
+# define CHESSLIB_H
+# include <stdio.h>
+# include <stdbool.h>
+# include <stdlib.h>
+# include <string.h>
+# include <ctype.h>
+# include <time.h>
+# include <unistd.h>
 
-#	if defined(__MINGW32__) || defined(_WIN32)
-#		include <windows.h>
-#	elif defined(__unix__) || defined(__gnu_linux__)
-#		define KRED  "\x1B[31m"
-#		define KYEL  "\x1B[33m"
-#		define RESET "\033[0m"
-#		include <termcap.h>
-#		include <alloca.h>
-#	else
-#		error Non-compatible OS or compiler found
-#	endif
+# if defined(__MINGW32__) || defined(_WIN32)
+#  ifndef UNICODE
+#   define UNICODE
+#  endif
+#  ifndef _UNICODE
+#   define _UNICODE
+#  endif
+#  include <windows.h>
+# elif defined(__unix__) || defined(__gnu_linux__)
+#  define KRED  "\x1B[31m"
+#  define KYEL  "\x1B[33m"
+#  define RESET "\033[0m"
+#  include <termcap.h>
+#  include <alloca.h>
+# else
+#  error Non-compatible OS or compiler found
+# endif
 
-#	define WHITE 2
-#	define BLACK 1
-#	define EMPTY 0
-#	define BANNER_SPEED 100 - R_SPEED
-#	define R_SPEED 75	//speed of the animated banner, bigger value bigger speed; maximum value is 99
-#	define s_l 26	//length of the filename string
+# define MOS 17	//this one controls the chess board size, don't mess with it
+# define WHITE 2
+# define BLACK 1
+# define EMPTY 0
+# define BANNER_SPEED 100 - R_SPEED
+# define R_SPEED 75	//speed of the animated banner, bigger value bigger speed; maximum value is 99
+# define s_l 26	//length of the filename string
 
 typedef struct ch_template {
 	char current ;	//current piece letter, e for empty square
@@ -39,20 +46,20 @@ typedef struct ch_template {
 }ch_template;
 
 /*prototypes*/
-void initChessboard (ch_template[][8], unsigned, char);	//add pieces on the chess board recursively 
-void printBoard (ch_template[][8]);	//function to print the board at any given point in the game
-char *findPiece (ch_template[][8], const char*, int);	//find the piece that is capable to perform the move entered by the player
-bool movePiece (ch_template[][8], char*, char[2], int);	//move the piece if no other piece is in the way
-bool piecesOverlap (ch_template[][8], const int, const int, const int , const int, char);
-bool validInput (const char*, int*);	//check for validity of input
-void date_filename (char*, int);	//create a string with the current date to be used as the log date_filename
-void write_to_log (int, FILE*, char*, char[]);	//write each player's moves to a log file
-void printError (int);
-char *getPlayerInput (void);	//copy the input buffer to a string
-char *pawnConflict (const char*);
-inline void clear_screen (void);
-inline void clear_buffer (void);
-inline void printInstructions (void);
-inline void printBanner (const char*);
+void initChessboard(ch_template[][8], unsigned, char);	//add pieces on the chess board recursively 
+void printBoard(ch_template[][8]);	//function to print the board at any given point in the game
+char *findPiece(ch_template[][8], const char*, int);	//find the piece that is capable to perform the move entered by the player
+bool movePiece(ch_template[][8], char*, char[2], int);	//move the piece if no other piece is in the way
+bool piecesOverlap(ch_template[][8], const int, const int, const int , const int, char);
+bool validInput(const char*, int*);	//check for validity of input
+void date_filename(char*, int);	//create a string with the current date to be used as the log date_filename
+void write_to_log(int, FILE*, char*, char[]);	//write each player's moves to a log file
+void printError(int);
+char *getPlayerInput(void);	//copy the input buffer to a string
+char *pawnConflict(const char*);
+inline void clear_screen(void);
+inline void clear_buffer(void);
+inline void printInstructions(void);
+inline void printBanner(const char*);
 
 #endif
