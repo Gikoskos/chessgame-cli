@@ -433,7 +433,7 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 	endy = plInput[1] - 65;
 	startx = piece[1] - '1';
 	starty = piece[0] - 65;
-	if (piecesOverlap(chb, startx, starty, endx, endy, plInput[0]) == false) {
+	if (piecesOverlap(chb, startx, starty, endx, endy, plInput[0])) {
 		if (chb[endx][endy].c != color) {
 			chb[startx][starty].occ = false;
 			chb[startx][starty].c = EMPTY;
@@ -448,42 +448,40 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 
 bool piecesOverlap(ch_template chb[][8], const int sx, const int sy, const int ex, const int ey, char piece)
 {
-	/*int tempx = sx, tempy = sy;
-	unsigned p_distance;
+	int tempx = sx, tempy = sy;
 	
 	if (piece == 'R' || piece == 'Q') {
-		p_distance = (sx == ex)? abs(sy-ey):abs(sx-ex);
-		if ((sx-ex)) {
+		if (!(sx-ex)) {
 			if (sy > ey) {
-				printf("t\n");
-				for (; tempy > ey; --tempy)
-					printf("startx %d starty %d endx %d endy %d \n", tempx, tempy, ex, ey);
+				tempy--;
+				for (; tempy > ey; tempy--) {
 					if (chb[sx][tempy].occ)
-						return true;
+						return false;
+				}
 			} else {
-				printf("t2\n");
-				for (; tempy < ey; ++tempy)
-					printf("startx %d starty %d endx %d endy %d \n", tempx, tempy, ex, ey);
+				tempy++;
+				for (; tempy < ey; tempy++) {
 					if (chb[sx][tempy].occ)
-						return true;
+						return false;
+				}
 			}
 		} else {
 			if (sx > ex) {
-				printf("t3\n");
-				for (; tempx > ex; --tempx)
-					printf("startx %d starty %d endx %d endy %d \n", tempx, tempy, ex, ey);
+				tempx--;
+				for (; tempx > ex; tempx--) {
 					if (chb[tempx][sy].occ)
-						return true;
+						return false;
+				}
 			} else {
-				printf("t4\n");
-				for (; tempx < ex; ++tempx)
-					printf("startx %d starty %d endx %d endy %d \n", tempx, tempy, ex, ey);
+				tempx++;
+				for (; tempx < ex; tempx++) {
 					if (chb[tempx][sy].occ)
-						return true;
+						return false;
+				}
 			}
 		}
-	}*/
-	return false;
+	}
+	return true;
 }
 
 void date_filename(char *buf, int ln)
