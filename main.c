@@ -6,10 +6,10 @@
 	
           
 /********************************************************************/
-/*                                                                  */
+/*                             main.c                               */
 /*       small game implementing the chesslib.c chess engine        */
 /*                                                                  */
-/*                   by cyberchiller@gmail.com                      */
+/*                    by cyberchiller@gmail.com                     */
 /*                                                                  */
 /********************************************************************/
 
