@@ -36,6 +36,10 @@ fix bug on Windows that rejects input other than the first character after some 
 
 add the functionality for the game to end when a king is unable to make a move without being threatened by another piece (WIP)
 
+fix this bug that only happens with black Pawns (WIP)
+
+<img src="http://i.imgur.com/cVGe6Sd.png" alt="step1" width = "257" height = "341"/> <img src="http://i.imgur.com/mkwlxOY.png" alt="step1" width = "257" height = "341"/>
+
 ### License stuff
 
 ![WTFPL logo](http://www.wtfpl.net/wp-content/uploads/2012/12/logo-220x1601.png)
