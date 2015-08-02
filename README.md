@@ -1,4 +1,4 @@
-# Sample chess library
+# Yet another chess game
 ## Overview
 
 The game is self-explanatory, but basically it's a very simple chess game for two players.
@@ -32,9 +32,9 @@ fix stupid bugs like this (DONE)
 
 implement that dreaded piecesOverlap function (DONE)
 
-fix bug on Windows that rejects input other than the first character after some time (weird that I can't recreate this bug on Linux)
+fix bug on Windows that rejects input other than the first character after some time (DONE)
 
-add the functionality for the game to end when a king is unable to make a move without being threatened by another piece
+add the functionality for the game to end when a king is unable to make a move without being threatened by another piece (WIP)
 
 ### License stuff
 
