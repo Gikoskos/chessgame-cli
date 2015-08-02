@@ -89,10 +89,7 @@ int main(int argc, char *argv[], char *environ[])
 			goto LOOP;
 		}
 		strcpy(attack_guard,findPiece(chess_board, playerInput, round));
-		if(memcmp(attack_guard, "q", 1) == 0) {
-			printBoard(chess_board);
-			continue;
-		} else if (strlen(attack_guard) < 3) {
+		if (strlen(attack_guard) < 3) {
 			memcpy(piece_to_move, attack_guard, 2);
 		} else {
 			memcpy(piece_to_move, pawnConflict(attack_guard), 2);
