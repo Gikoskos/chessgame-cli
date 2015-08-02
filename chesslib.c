@@ -562,22 +562,14 @@ void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
 
 char *getPlayerInput(void)
 {
-	size_t len = 0, max = 1;
-	char c, count = 0, *str_in = calloc(max, sizeof(*str_in)), *str_temp = str_in;
+	size_t len = 0, max = 4;
+	char c, count = 0, *str_in = calloc(max, sizeof(*str_in));
 	
 	if (!str_in)
 		return str_in;
 	while ((c = getchar()) != '\n') {
 		str_in[len++] = c;
-		if (len == max && len <= 5){
-			str_temp = realloc(str_in, max*sizeof(*str_in));
-			if (!str_temp){ 
-				return str_in;
-			} else {
-				str_in = str_temp;
-			}
-			max+=1;
-		} else {
+		if (len == max){
 			clear_buffer();
 			break;
 		}
@@ -614,12 +606,14 @@ char *pawnConflict(const char *pawn_pos)
 
 extern void printBanner(const char *banner)
 {
+	int i, j, c = 0, len = (int)strlen(banner);
+#if !defined (__MINGW32__) || !defined(_WIN32)
 	struct timespec *start_t = malloc(sizeof(struct timespec));
 	struct timespec *end_t = malloc(sizeof(struct timespec));
-	int i, j, c = 0, len = (int)strlen(banner);
 	
 	*start_t = (struct timespec){0, (BANNER_SPEED)*1000000};
 	*end_t = (struct timespec){0, (BANNER_SPEED)*1000000};
+#endif
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 2*len; j++) {
 			if (!j || !i || i == 2 || j == (2*len - 1))
@@ -629,10 +623,16 @@ extern void printBanner(const char *banner)
 			else
 				printf(" ");
 			fflush(stdout);
+#if !defined(__MINGW32__) || !defined(_WIN32)
 			nanosleep(start_t, end_t);
+#else
+			Sleep(BANNER_SPEED);
+#endif
 		}
 		printf("\n");
 	}
+#if !defined (__MINGW32__) || !defined(_WIN32)
 	free(start_t);
 	free(end_t);
+#endif
 }
