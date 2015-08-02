@@ -1,4 +1,6 @@
-#pragma once
+#if !defined(__GNUC__) && !defined(__SUNPRO_C)
+# pragma once
+#endif
 
 #ifndef CHESSLIB_H
 # define CHESSLIB_H
