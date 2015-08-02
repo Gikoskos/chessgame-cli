@@ -14,7 +14,7 @@ extern void clear_buffer(void)
 	while ((clbuf=getchar()) != '\n');
 }
 
-void initChessboard(ch_template chb[][8], unsigned k, char col)	//k is row, col is column
+void initChessboard(ch_template chb[][8], unsigned k, char col)	/*k is row, col is column*/
 { 
 	if (k == 0 || k == 7) {
 		if (col == 'A' || col == 'H')
@@ -28,7 +28,7 @@ void initChessboard(ch_template chb[][8], unsigned k, char col)	//k is row, col 
 		else
 			chb[k][col - 65].current = 'K';
 		if (k == 0)
-			chb[k][col - 65].c = WHITE;	//colorize the pieces 
+			chb[k][col - 65].c = WHITE;	/*colorize the pieces*/
 		else
 			chb[k][col - 65].c = BLACK;
 		chb[k][col - 65].occ = true;
@@ -81,7 +81,7 @@ void printBoard(ch_template chb[][8])
 			} else {
 				if (chb[i][j].c == BLACK)
 					SetConsoleTextAttribute(cmdhandle, FOREGROUND_RED); 
-				else 
+				else
 					SetConsoleTextAttribute(cmdhandle, FOREGROUND_GREEN);
 				printf("%c", chb[i][j].current);
 				SetConsoleTextAttribute(cmdhandle, sv_att);
@@ -114,8 +114,8 @@ void printBoard(ch_template chb[][8])
 			} else if (i%2) {
 				if(!(j%2)) printf("\u2503");
 				else {
-					usleep(3000);
-					fflush(stdout);
+					//usleep(3000);
+					//fflush(stdout);
 					if (chb[y][x].occ == false)
 						printf("   ");
 					else {
@@ -193,7 +193,7 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 {
 	int i, j, k, l, count, double_attack = 3;	/*double_attack: int to check for two pieces attacking the same piece*/
 	char *retvalue = calloc(3, sizeof(*retvalue));
-	char temp[2];
+	char *temp = calloc(3, sizeof(*temp));
 	
 	if (!retvalue)
 		exit(0);
@@ -208,28 +208,15 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 					k = input[1] - 65;
 					if (color == BLACK) { 
 						if ((i == 6) && (l == i - 2) && (j == k) && (chb[l][k].occ == false)) 
-							return retvalue;	//check for castling
-						if ((i-1 == 0) && (chb[i-1][j].square[0] == input[1]) && (chb[i-1][j].square[1] == input[2]) && (chb[i-1][j].occ == false)) {
-							chb[i-1][j].current = 'Q';
-							chb[i-1][j].occ = true;
-							chb[i][j].current = 'e';
-							chb[i][j].occ = false;
-							free(retvalue);
-							return "qn";
+							return retvalue;	/*check for castling*/
+						if ((i-1) == 0 && chb[i-1][j].square[0] == input[1] && chb[i-1][j].square[1] == input[2] && chb[i-1][j].occ == false) {
+							return retvalue;
 						}
-						if ((i-1 == 0) && (chb[i-1][j+1].square[0] == input[1] && chb[i-1][j+1].square[1] == input[2]) && (chb[i-1][j+1].occ == true) && (chb[i-1][j+1].c != color)) {
-							chb[i-1][j+1].current = 'Q';
-							chb[i][j].current = 'e';
-							chb[i][j].occ = false;
-							free(retvalue);
-							return "qn";
+						if ((i-1) == 0 && chb[i-1][j+1].square[0] == input[1] && chb[i-1][j+1].square[1] == input[2] && chb[i-1][j+1].occ == true && chb[i-1][j+1].c != color) {
+							return retvalue;
 						}
-						if ((i-1 == 0) && (chb[i-1][j-1].square[0] == input[1] && chb[i-1][j-1].square[1] == input[2]) && (chb[i-1][j-1].occ == true) && (chb[i-1][j-1].c != color)) {
-							chb[i-1][j-1].current = 'Q';
-							chb[i][j].current = 'e';
-							chb[i][j].occ = false;
-							free(retvalue);
-							return "qn";
+						if ((i-1) == 0 && chb[i-1][j-1].square[0] == input[1] && chb[i-1][j-1].square[1] == input[2] && chb[i-1][j-1].occ == true && chb[i-1][j-1].c != color) {
+							return retvalue;
 						}
 						if (chb[i-1][j].occ == false) {
 							if (chb[i-1][j].square[0] == input[1] && chb[i-1][j].square[1] == input[2]) {
@@ -243,8 +230,7 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 									goto EXIT_LOOP;
 								}
 								double_attack = false;
-								temp[0] = retvalue[0];
-								temp[1] = retvalue[1];
+								memcpy(temp,retvalue,3);
 							}
 						} 
 						if (chb[i-1][j-1].occ == true) {
@@ -254,34 +240,20 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 									goto EXIT_LOOP;
 								}
 								double_attack = false;
-								temp[0] = retvalue[0];
-								temp[1] = retvalue[1];
+								memcpy(temp,retvalue,3);
 							}
 						}
 					} else {
 						if ((i == 1) && (l == i + 2) && (j == k) && (chb[l][k].occ == false))
-							return retvalue;	//check for castling
+							return retvalue;	/*check for castling*/
 						if ((i+1) == 0 && chb[i+1][j].square[0] == input[1] && chb[i+1][j].square[1] == input[2] && chb[i+1][j].occ == false) {
-							chb[i+1][j].current = 'Q';
-							chb[i-1][j].occ = true;
-							chb[i][j].current = 'e';
-							chb[i][j].occ = false;
-							free(retvalue);
-							return "qn";
+							return retvalue;
 						}
 						if ((i+1) == 0 && chb[i+1][j+1].square[0] == input[1] && chb[i+1][j+1].square[1] == input[2] && chb[i+1][j+1].occ == true && chb[i+1][j+1].c != color) {
-							chb[i+1][j+1].current = 'Q';
-							chb[i][j].current = 'e';
-							chb[i][j].occ = false;
-							free(retvalue);
-							return "qn";
+							return retvalue;
 						}
 						if ((i+1) == 0 && chb[i+1][j-1].square[0] == input[1] && chb[i+1][j-1].square[1] == input[2] && chb[i+1][j-1].occ == true && chb[i-1][j-1].c != color) {
-							chb[i+1][j-1].current = 'Q';
-							chb[i][j].current = 'e';
-							chb[i][j].occ = false;
-							free(retvalue);
-							return "qn";
+							return retvalue;
 						}
 						if (chb[i+1][j].occ == false){
 							if (chb[i+1][j].square[0] == input[1] && chb[i+1][j].square[1] == input[2]) {
@@ -295,8 +267,7 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 									goto EXIT_LOOP;
 								}
 								double_attack = false;
-								temp[0] = retvalue[0];
-								temp[1] = retvalue[1];
+								memcpy(temp,retvalue,3);
 							}
 						}
 						if (chb[i+1][j-1].occ == true){
@@ -306,8 +277,7 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 									goto EXIT_LOOP;
 								}
 								double_attack = false;
-								temp[0] = retvalue[0];
-								temp[1] = retvalue[1];
+								memcpy(temp,retvalue,3);
 							}
 						}
 					}
@@ -348,7 +318,7 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 						}
 					}
 				}
-				if (input[0] == 'B' || input[0] == 'Q') {	//different if, to check for queen's diagonal moves
+				if (input[0] == 'B' || input[0] == 'Q') {	/*different if, to check for queen's diagonal moves*/
 					k = i - 1; 
 					l = j - 1;
 					while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
@@ -397,7 +367,7 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 		retvalue[4] = '\0';
 		return retvalue;
 	} else if(double_attack == false) {
-		return retvalue;
+		return temp;
 	}
 	return NULL;
 }
@@ -434,14 +404,14 @@ extern void clear_screen(void)
 
 bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 {
-	int startx, starty, endx, endy; //cords for the current tile and for the tile to move the piece to
+	int startx, starty, endx, endy; /*cords for the current tile and for the tile to move the piece to*/
 	
 	endx = plInput[2] - '1';
 	endy = plInput[1] - 65;
 	startx = piece[1] - '1';
 	starty = piece[0] - 65;
 	if (piecesOverlap(chb, startx, starty, endx, endy, plInput[0])) {
-		if (chb[endx][endy].c != color) {
+		if (chb[endx][endy].c != color) {	/*checks whether it's a piece of the same color or not*/
 			chb[startx][starty].occ = false;
 			chb[startx][starty].c = EMPTY;
 			chb[endx][endy].occ = true;
