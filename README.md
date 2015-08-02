@@ -26,21 +26,21 @@ gcc, make and libncurses though.
 
 ## TODO
 
-fix stupid bugs like this (DONE)
+* fix stupid bugs like this (DONE)
 
-![Alt text](http://i.imgur.com/u7DMUjg.png)
+ ![Alt text](http://i.imgur.com/u7DMUjg.png)
 
-implement that dreaded piecesOverlap function (DONE)
+* implement that dreaded piecesOverlap function (DONE)
 
-fix bug on Windows that rejects input other than the first character after some time (DONE)
+* fix bug on Windows that rejects input other than the first character after some time (DONE)
 
-add the functionality for the game to end when a king is unable to make a move without being threatened by another piece (WIP)
+* add the functionality for the game to end when a king is unable to make a move without being threatened by another piece (WIP)
 
-fix this bug that only happens with black Pawns (DONE)
+* fix this bug that only happens with black Pawns (DONE)
 
-<img src="http://i.imgur.com/cVGe6Sd.png" alt="step1" width = "257" height = "341"/> <img src="http://i.imgur.com/mkwlxOY.png" alt="step1" width = "257" height = "341"/>
+  <img src="http://i.imgur.com/cVGe6Sd.png" alt="step1" width = "257" height = "341"/> <img src="http://i.imgur.com/mkwlxOY.png" alt="step1" width = "257" height = "341"/>
 
-port the main engine to C++, C#, Java and Python
+* port the main engine to C++, C#, Java and Python
 
 ### License stuff
 
