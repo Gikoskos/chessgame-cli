@@ -1,3 +1,11 @@
+/********************************************************************/
+/*                            chesslib.h                            */
+/*              declarations for the chesslib.c engine              */
+/*                                                                  */
+/*                    by cyberchiller@gmail.com                     */
+/*                                                                  */
+/********************************************************************/
+
 #if !defined(__GNUC__) && !defined(__SUNPRO_C)
 # pragma once
 #endif
