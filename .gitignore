@@ -1,6 +1,5 @@
-.kateproject*
-chessgame*.*
-*.txt
-*.exe
-*.o
-build/
+!chesslib.c
+!chesslib.h
+!main.c
+!Makefile
+!README.md
