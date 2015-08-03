@@ -14,6 +14,10 @@ chessgameWall: main.c chesslib.c chesslib.h
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
 	&& $(CC) $(CFLAGS) $(INC_W_LEVEL) $< $(CHESSLIB) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
+chesslib: chesslib.c
+	$(CC) -c $(CFLAGS) $<; \
+	ar -cvq chesslib.a chesslib.o; \
+	rm chesslib.o
 run:
 	exec ./$(BLDFOLDER)/$(ELF)
 
@@ -22,7 +26,9 @@ runW:
 
 .PHONY: clean
 clean:
-	rm -rf build
+	rm -rf build \
+	rm -rf *.o
 
 cleantxt:
-	rm -rf build/*.txt
+	rm -rf build/*.txt \
+	rm -rf *.txt
