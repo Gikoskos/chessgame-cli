@@ -191,7 +191,7 @@ void printError(int i)
 
 char *findPiece(ch_template chb[][8], const char *input, int color)
 {
-	int i, j, k, l, count, double_attack = 3;	/*double_attack: int to check for two pieces attacking the same piece*/
+	int i, j, k, l, count, conflict = 3;	/*conflict: int to check for two pieces attacking the same piece*/
 	char *retvalue = calloc(3, sizeof(*retvalue));
 	char *temp = calloc(3, sizeof(*temp));
 	
@@ -226,20 +226,20 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 						if (chb[i-1][j+1].occ == true) {
 							if (chb[i-1][j+1].square[0] == input[1] && chb[i-1][j+1].square[1] == input[2]) {
 								if (temp[0] != retvalue[0] && temp[1] == retvalue[1]) {
-									double_attack = true;
+									conflict = true;
 									goto EXIT_LOOP;
 								}
-								double_attack = false;
+								conflict = false;
 								memcpy(temp,retvalue,3);
 							}
 						} 
 						if (chb[i-1][j-1].occ == true) {
 							if (chb[i-1][j-1].square[0] == input[1] && chb[i-1][j-1].square[1] == input[2]) {
 								if (temp[0] != retvalue[0] && temp[1] == retvalue[1]) {
-									double_attack = true;
+									conflict = true;
 									goto EXIT_LOOP;
 								}
-								double_attack = false;
+								conflict = false;
 								memcpy(temp,retvalue,3);
 							}
 						}
@@ -263,20 +263,20 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 						if (chb[i+1][j+1].occ == true){
 							if (chb[i+1][j+1].square[0] == input[1] && chb[i+1][j+1].square[1] == input[2]) {
 								if (temp[0] != retvalue[0] && temp[1] == retvalue[1]) {
-									double_attack = true;
+									conflict = true;
 									goto EXIT_LOOP;
 								}
-								double_attack = false;
+								conflict = false;
 								memcpy(temp,retvalue,3);
 							}
 						}
 						if (chb[i+1][j-1].occ == true){
 							if (chb[i+1][j-1].square[0] == input[1] && chb[i+1][j-1].square[1] == input[2]) {
 								if (temp[0] != retvalue[0] && temp[1] == retvalue[1]) {
-									double_attack = true;
+									conflict = true;
 									goto EXIT_LOOP;
 								}
-								double_attack = false;
+								conflict = false;
 								memcpy(temp,retvalue,3);
 							}
 						}
@@ -297,16 +297,30 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 					k = input[1] - 65;
 					for (count = 0; count < 8; count++) {
 						if (knightrow[count] == l && knightcol[count] == k) {
-							return retvalue;
+							if (conflict == false) {
+								conflict = true;
+								goto EXIT_LOOP;
+							}
+							conflict = false;
+							memcpy(temp,retvalue,3);
 						}
 					}
 				} else if (input[0] == 'R' || input[0] == 'Q') {
 					k = i;
 					for (l=0; l < 8; l++) {
-						if (l == j) 
-							continue;	//to skip the piece itself
+						if (l == j)	/*to skip the piece itself*/ 
+							continue;
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
-							return retvalue;
+							if (input[0] == 'R') {
+								if (conflict == false) {
+									conflict = true;
+									goto EXIT_LOOP;
+								}
+								conflict = false;
+								memcpy(temp,retvalue,3);
+							} else {
+								return retvalue;
+							}
 						}
 					}
 					l = j;
@@ -314,7 +328,16 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 						if (k == i)
 							continue;
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
-							return retvalue;
+							if (input[0] == 'R') {
+								if (conflict == false) {
+									conflict = true;
+									goto EXIT_LOOP;
+								}
+								conflict = false;
+								memcpy(temp,retvalue,3);
+							} else {
+								return retvalue;
+							}
 						}
 					}
 				}
@@ -323,7 +346,16 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 					l = j - 1;
 					while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
-							return retvalue;
+							if (input[0] == 'B') {
+								if (conflict == false) {
+									conflict = true;
+									goto EXIT_LOOP;
+								}
+								conflict = false;
+								memcpy(temp,retvalue,3);
+							} else {
+								return retvalue;
+							}
 						}
 						k--;
 						l--;
@@ -332,7 +364,16 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 					l = j + 1;
 					while ((k >= 0 && k <= 7) && (l <= 7 && l >= 0)) {
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
-							return retvalue;
+							if (input[0] == 'B') {
+								if (conflict == false) {
+									conflict = true;
+									goto EXIT_LOOP;
+								}
+								conflict = false;
+								memcpy(temp,retvalue,3);
+							} else {
+								return retvalue;
+							}
 						}
 						k--;
 						l++;
@@ -341,7 +382,16 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 					l = j - 1;
 					while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
-							return retvalue;
+							if (input[0] == 'B') {
+								if (conflict == false) {
+									conflict = true;
+									goto EXIT_LOOP;
+								}
+								conflict = false;
+								memcpy(temp,retvalue,3);
+							} else {
+								return retvalue;
+							}
 						}
 						k++;
 						l--;
@@ -350,7 +400,16 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 					l = j + 1;
 					while ((k <= 7 && k >= 0) && (l <= 7 && l >= 0)) {
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
-							return retvalue;
+							if (input[0] == 'B') {
+								if (conflict == false) {
+									conflict = true;
+									goto EXIT_LOOP;
+								}
+								conflict = false;
+								memcpy(temp,retvalue,3);
+							} else {
+								return retvalue;
+							}
 						}
 						k++;
 						l++;
@@ -360,13 +419,14 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 		}
 	}
 	EXIT_LOOP:
-	if (double_attack == true) {
+	if (conflict == true) {
 		retvalue = realloc(retvalue, 5);
 		retvalue[2] = temp[0];
 		retvalue[3] = temp[1];
 		retvalue[4] = '\0';
+		free(temp);
 		return retvalue;
-	} else if(double_attack == false) {
+	} else if(conflict == false) {
 		return temp;
 	}
 	return NULL;
@@ -532,14 +592,28 @@ void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
 
 char *getPlayerInput(void)
 {
-	size_t len = 0, max = 4;
-	char c, count = 0, *str_in = calloc(max, sizeof(*str_in));
-	
-	if (!str_in)
+	size_t len = 0;
+	size_t max = 1;
+
+	char c = 0;
+	int count = 0;
+	char* str_in = calloc(max, 1);
+	char* str_temp = str_in;
+
+
+	if(!str_in)
 		return str_in;
 	while ((c = getchar()) != '\n') {
 		str_in[len++] = c;
-		if (len == max){
+		if (len == max) {
+			max++;
+			str_temp = realloc(str_in, max);
+			if (!str_temp) {
+				return str_in;
+			} else {
+				str_in = str_temp;
+			}
+		} else {
 			clear_buffer();
 			break;
 		}
@@ -549,29 +623,41 @@ char *getPlayerInput(void)
 		str_in[1] = '\0';
 		fflush(stdin);
 		return str_in;
-	} else {
+	} else
 		str_in[len] = '\0';
-	}
-	return realloc(str_in, len*sizeof(*str_in));
+	return realloc(str_in, len);
 }
 
-char *pawnConflict(const char *pawn_pos)
+
+char *pieceConflict(const char *piece_pos, const char p)
 {
-	static char *temp, fpawn[3];
+	static char *temp, fpiece[3], name[7];
 	
-	printf("%s\n%s", "Did you mean to move the left Pawn or the right Pawn?",
-				  "Please specify with either 'left' or 'right': ");
+	switch (p) {
+		case 'P':
+			strcpy(name, "Pawn");
+			break;
+		case 'B':
+			strcpy(name, "Bishop");
+			break;
+		case 'R':
+			strcpy(name, "Rook");
+			break;
+	}
+	printf("%s %s %s %s\n%s", "Did you mean to move the left",  
+			 name, "or the right", name,
+			"Please specify with either 'left' or 'right': ");
 	do {
 		temp = getPlayerInput();
 	} while (strcmp(temp, "left") != 0 && strcmp(temp, "right") != 0);
-	if (strcmp(temp, "right") == 0) {
-		memcpy(fpawn, pawn_pos, 2);
+	if ((strcmp(temp, "right") == 0 && piece_pos[0] < piece_pos[2]) || (strcmp(temp, "left") == 0 && piece_pos[0] > piece_pos[2])) {
+		fpiece[0] = piece_pos[2];
+		fpiece[1] = piece_pos[3];
 	} else {
-		fpawn[0] = pawn_pos[2];
-		fpawn[1] = pawn_pos[3];
+		memcpy(fpiece, piece_pos, 2);
 	}
-	fpawn[2] = '\0';
-	return fpawn;
+	fpiece[2] = '\0';
+	return fpiece;
 }
 
 extern void printBanner(const char *banner)

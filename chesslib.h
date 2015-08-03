@@ -64,7 +64,7 @@ void date_filename(char*, int);	//create a string with the current date to be us
 void write_to_log(int, FILE*, char*, char[]);	//write each player's moves to a log file
 void printError(int);
 char *getPlayerInput(void);	//copy the input buffer to a string
-char *pawnConflict(const char*);
+char *pieceConflict(const char*, const char);
 inline void clear_screen(void);
 inline void clear_buffer(void);
 inline void printInstructions(void);

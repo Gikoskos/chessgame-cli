@@ -15,14 +15,15 @@
 
 #include "chesslib.h"
 
-int main(int argc, char *argv[], char *environ[])
+int main(int argc, char *argv[])
 {
 	ch_template chess_board[8][8];
-	char *playerInput = NULL, piece_to_move[2], fn[s_l], attack_guard[5];
+	char *playerInput = NULL, piece_to_move[2], fn[s_l], attack_guard[5], temp_cpiece;
 		/*playerInput: input from stdin
 		 *piece_to_move: the final piece to move
 		 *fn: file name string with s_l length
-		 *attack_guard: double pawn attack guard and temporary storage for the return of findPiece*/
+		 *attack_guard: double pawn attack guard and temporary storage for the return of findPiece
+		 *temp_cpiece: value to store the current piece name in use with the pieceConflict function*/
 	int round = 0, roundcount = 1, p_err = 0, loop_count = 1;
 		/*round: for each player's round, 1 for black, 2 for white
 		 *roundcount: total number of rounds
@@ -92,7 +93,8 @@ int main(int argc, char *argv[], char *environ[])
 		if (strlen(attack_guard) < 3) {
 			memcpy(piece_to_move, attack_guard, 2);
 		} else {
-			memcpy(piece_to_move, pawnConflict(attack_guard), 2);
+			temp_cpiece = playerInput[0];
+			memcpy(piece_to_move, pieceConflict(attack_guard, temp_cpiece), 2);
 		}
 		
 		if (movePiece(chess_board, playerInput, piece_to_move, round) == false) {
@@ -105,8 +107,10 @@ int main(int argc, char *argv[], char *environ[])
 			write_to_log(round, logfile, playerInput, piece_to_move);
 		}
 		fclose(logfile);
+		free(playerInput);
 		roundcount++;
 		p_err = 0;
+		loop_count = 2;
 	}
 	playerInput = NULL;
 	return 0;
