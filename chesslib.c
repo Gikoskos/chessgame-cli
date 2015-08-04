@@ -575,6 +575,37 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 	return false;
 }
 
+bool check(ch_template chb[][8])	/*very early stage at the moment*/
+{
+	int i, j;
+	bool wk = false, bk = false;	/*booleans for white King and black King respectively*/
+	
+	for (i = 0; i < 8; i++) {
+		for (j = 0; j < 8; j++) {
+			if (chb[i][j].current == 'K') {
+				if (chb[i][j].c == BLACK)
+					bk = true;
+				else
+					wk = true;
+			}
+		}
+	}
+	if (wk && bk)
+		return false;
+	else {
+		if (!wk)
+			printf("Black player wins!\n");
+		else
+			printf("White player wins!\n");
+#if !defined(__MINGW32__) || !defined(_WIN32)
+			sleep(4);
+#else
+			Sleep(4);
+#endif		
+		return true;
+	}
+}
+
 void date_filename(char *buf, int ln)
 {
 	time_t t_epc = time(NULL);

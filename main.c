@@ -116,6 +116,7 @@ int main(int argc, char *argv[])
 		roundcount++;
 		p_err = 0;
 		loop_count = 2;
+		gameover = check(chess_board);
 	}
 	playerInput = NULL;
 	return 0;

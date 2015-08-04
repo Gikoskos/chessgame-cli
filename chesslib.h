@@ -69,5 +69,6 @@ inline void clear_screen(void);
 inline void clear_buffer(void);
 inline void printInstructions(void);
 inline void printBanner(const char*);
+bool check(ch_template[][8]);
 
 #endif
