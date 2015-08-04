@@ -207,8 +207,8 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 					l = input[2] - '1';
 					k = input[1] - 65;
 					if (color == BLACK) { 
-						if ((i == 6) && (l == i - 2) && (j == k) && (chb[l][k].occ == false)) 
-							return retvalue;	/*check for castling*/
+						if ((i == 6) && (l == i - 2) && (j == k) && (chb[l][k].occ == false) && (chb[i-1][j].occ == false)) 
+							return retvalue;	/*check for pawn's double first move*/
 						if ((i-1) == 0 && chb[i-1][j].square[0] == input[1] && chb[i-1][j].square[1] == input[2] && chb[i-1][j].occ == false) {
 							return retvalue;
 						}
@@ -244,8 +244,8 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 							}
 						}
 					} else {
-						if ((i == 1) && (l == i + 2) && (j == k) && (chb[l][k].occ == false))
-							return retvalue;	/*check for castling*/
+						if ((i == 1) && (l == i + 2) && (j == k) && (chb[l][k].occ == false) && (chb[i+1][j].occ == false))
+							return retvalue;	/*check for pawn's double first move*/
 						if ((i+1) == 0 && chb[i+1][j].square[0] == input[1] && chb[i+1][j].square[1] == input[2] && chb[i+1][j].occ == false) {
 							return retvalue;
 						}
@@ -488,7 +488,7 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 {
 	int tempx = sx, tempy = sy;
 	
-	if (piece == 'R' || piece == 'Q') {
+	if (piece == 'R' || (piece == 'Q' && ((sx-ex) == 0 || (sy-ey) == 0))) {
 		if (!(sx-ex)) {
 			if (sy > ey) {
 				tempy--;
@@ -518,8 +518,7 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 				}
 			}
 		}
-	}
-	if (piece == 'B' || piece == 'Q') {
+	} else if (piece == 'B' || piece == 'Q') {
 		tempx = ex;
 		tempy = ey;
 		if (ex>sx && ey>sy) {
