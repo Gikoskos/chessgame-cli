@@ -594,12 +594,10 @@ char *getPlayerInput(void)
 {
 	size_t len = 0;
 	size_t max = 1;
-
 	char c = 0;
 	int count = 0;
 	char* str_in = calloc(max, 1);
 	char* str_temp = str_in;
-
 
 	if(!str_in)
 		return str_in;
