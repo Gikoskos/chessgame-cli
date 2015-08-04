@@ -64,8 +64,10 @@ int main(int argc, char *argv[])
 				clear_screen();
 				printf("\n\n\n\n\n\n");
 				printBoard(chess_board);
-				if (!strcmp(playerInput, "help"))
+				if (!strcmp(playerInput, "help")) {
 					printInstructions();
+					p_err = 0;
+				}
 			} else 
 				printBoard(chess_board);
 			printError(p_err);
