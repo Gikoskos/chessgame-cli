@@ -477,6 +477,27 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 			chb[endx][endy].occ = true;
 			chb[endx][endy].current = chb[startx][starty].current;
 			chb[endx][endy].c = color;
+			if (plInput[0] == 'P' && ((startx == 1 && endx == 0) || (startx == 6 && endx == 7))) {
+				/*options for the promotion of the pawn*/
+				char *promote_selection;
+				printf("What piece do you want to promote your Pawn into? ");
+				RETRY:promote_selection = getPlayerInput();
+				if (!strcmp(promote_selection, "queen") || !strcmp(promote_selection, "Q") ||
+					!strcmp(promote_selection, "Queen") || !strcmp(promote_selection, "q")) {
+					chb[endx][endy].current = 'Q';
+				} else if (!strcmp(promote_selection, "bishop") || !strcmp(promote_selection, "B") ||
+					!strcmp(promote_selection, "Bishop") || !strcmp(promote_selection, "b")) {
+					chb[endx][endy].current = 'B';
+				} else if (!strcmp(promote_selection, "Knight") || !strcmp(promote_selection, "N") ||
+					!strcmp(promote_selection, "knight") || !strcmp(promote_selection, "n")) {
+					chb[endx][endy].current = 'N';
+				} else {
+					free(promote_selection);
+					printf("Bad input, please enter a valid piece: ");
+					goto RETRY;
+				} 
+				free(promote_selection);
+			}
 			return true;
 		}
 	}
