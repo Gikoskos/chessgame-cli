@@ -470,7 +470,7 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 	endy = plInput[1] - 65;
 	startx = piece[1] - '1';
 	starty = piece[0] - 65;
-	if (piecesOverlap(chb, startx, starty, endx, endy, plInput[0])) {
+	if (!piecesOverlap(chb, startx, starty, endx, endy, plInput[0])) {
 		if (chb[endx][endy].c != color) {	/*checks whether it's a piece of the same color or not*/
 			chb[startx][starty].occ = false;
 			chb[startx][starty].c = EMPTY;
@@ -494,13 +494,13 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 				tempy--;
 				for (; tempy > ey; tempy--) {
 					if (chb[sx][tempy].occ)
-						return false;
+						return true;
 				}
 			} else {
 				tempy++;
 				for (; tempy < ey; tempy++) {
 					if (chb[sx][tempy].occ)
-						return false;
+						return true;
 				}
 			}
 		} else {
@@ -508,13 +508,13 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 				tempx--;
 				for (; tempx > ex; tempx--) {
 					if (chb[tempx][sy].occ)
-						return false;
+						return true;
 				}
 			} else {
 				tempx++;
 				for (; tempx < ex; tempx++) {
 					if (chb[tempx][sy].occ)
-						return false;
+						return true;
 				}
 			}
 		}
@@ -527,32 +527,32 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 			tempy--;
 			while (tempx > sx && tempy > sy) {
 				if (chb[tempx--][tempy--].occ)
-					return false;
+					return true;
 			}
 		} else if (ex<sx && ey>sy) {
 			tempx++;
 			tempy--;
 			while (tempx < sx && tempy > sy) {
 				if (chb[tempx++][tempy--].occ)
-					return false;
+					return true;
 			}
 		} else if (ex>sx && ey<sy) {
 			tempx--;
 			tempy++;
 			while (tempx > sx && tempy < sy) {
 				if (chb[tempx--][tempy++].occ)
-					return false;
+					return true;
 			}
 		} else {
 			tempx++;
 			tempy++;
 			while (tempx < sx && tempy < sy) {
 				if (chb[tempx++][tempy++].occ)
-					return false;
+					return true;
 			}
 		}
 	}
-	return true;
+	return false;
 }
 
 void date_filename(char *buf, int ln)
@@ -566,7 +566,7 @@ void date_filename(char *buf, int ln)
 
 void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
 {
-	static unsigned c = 1;
+	static unsigned short c = 1;
 
 	if (round == WHITE) {
 		fprintf(logf, "Round  #%d:\tWhite moves ", c);
@@ -644,7 +644,7 @@ char *pieceConflict(const char *piece_pos, const char p)
 			strcpy(name, "Rook");
 			break;
 	}
-	printf("%s %s %s %s\n%s", "Did you mean to move the left",  
+	printf("%s %s %s %s?\n%s", "Did you mean to move the left",  
 			 name, "or the right", name,
 			"Please specify with either 'left' or 'right': ");
 	do {
