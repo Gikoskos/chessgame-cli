@@ -75,11 +75,11 @@ int main(int argc, char *argv[])
 				printf("It\'s white\'s turn: ");
 			playerInput = getPlayerInput();
 			
-			if (!playerInput) {
+			if (!playerInput) {	/*avoid segfaulting for strlen(NULL) later*/
 				loop_count++;
 				continue;
 			}
-			if (strlen(playerInput) > 4 || playerInput[0] == '\n') {
+			if (strlen(playerInput) > 4 || playerInput[0] == '\n') {	/*change error code for bad input*/
 				p_err = 2;
 				loop_count++;
 				continue;
