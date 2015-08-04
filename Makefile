@@ -5,6 +5,7 @@ ELF = chessgame
 INC_W_LEVEL = -Wextra -pedantic
 BLDFOLDER = build
 CHESSLIB = chesslib.c
+prefix = /usr/local
 
 chessgame: main.c chesslib.c chesslib.h
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
@@ -24,7 +25,7 @@ run:
 runW:
 	exec ./$(BLDFOLDER)/$(ELF)Wall
 
-.PHONY: clean
+.PHONY: clean install cleantxt
 clean:
 	rm -rf build \
 	rm -rf *.o
@@ -32,3 +33,6 @@ clean:
 cleantxt:
 	rm -rf build/*.txt \
 	rm -rf *.txt
+
+install: $(BLDFOLDER)/chessgame
+	install -m 0755 $< $(prefix)/bin
