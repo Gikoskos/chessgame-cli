@@ -9,13 +9,13 @@
 #include "chesslib.h"
 
 /*static short WKingLife[3][3][3] = {{0, 0, 0},	//life energy of white King
-							{0, 1, 0},	//when all 0s are 1s the game is over
-							{0, 0, 0}};
+					{0, 1, 0},	//when all 0s are 1s the game is over
+					{0, 0, 0}};
 
 static short BKingLife[3][3][3] = {{0, 0, 0},	//life energy of black King
-							{0, 1, 0},	//when all 0s are 1s the game is over
-							{0, 0, 0}};
-*/
+					{0, 1, 0},	//when all 0s are 1s the game is over
+					{0, 0, 0}};*/
+
 extern void clear_buffer(void)
 {
 	char clbuf;
@@ -712,12 +712,11 @@ void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
 
 char *getPlayerInput(void)
 {
-	size_t len = 0;
-	size_t max = 1;
-	char c = 0;
+	size_t len = 0, max = 1;
 	int count = 0;
-	char* str_in = calloc(max, 1);
-	char* str_temp = str_in;
+	char c = 0;
+	char *str_in = calloc(max, 1);
+	char *str_temp = str_in;
 
 	if(!str_in)
 		return str_in;
