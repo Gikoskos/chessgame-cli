@@ -87,6 +87,9 @@ int main(int argc, char *argv[])
 				loop_count++;
 				continue;
 			}
+			if (!strcmp(playerInput, "quit") || !strcmp(playerInput, "exit")) {
+				goto ENDGAME;
+			}
 			if (strlen(playerInput) > 4 || playerInput[0] == '\n') {	/*change error code for bad input*/
 				p_err = 2;
 				loop_count++;
@@ -125,6 +128,7 @@ int main(int argc, char *argv[])
 		gameover = check(chess_board);
 		/*tempK = findKState(chess_board);*/
 	}
+	ENDGAME:
 	playerInput = NULL;
 	return 0;
 }
