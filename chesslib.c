@@ -575,36 +575,56 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 	return false;
 }
 
-bool check(ch_template chb[][8])	/*very early stage at the moment*/
+/*KingState findKState(ch_template chb[][8])	//extremely early stage right now
 {
-	int i, j;
-	bool wk = false, bk = false;	/*booleans for white King and black King respectively*/
+	int i, j, WKx, WKy, BKx, BKy;
+	KingState KingS = safe;	//enums for white King and black King respectively
 	
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
 			if (chb[i][j].current == 'K') {
-				if (chb[i][j].c == BLACK)
-					bk = true;
-				else
-					wk = true;
+				if (chb[i][j].c == WHITE) {
+					WKx = i;
+					WKy = j;
+				} else {
+					BKx = i;
+					BKy = j;
+				}
 			}
 		}
 	}
-	if (wk && bk)
-		return false;
-	else {
-		if (!wk)
-			printf("Black player wins!\n");
-		else
-			printf("White player wins!\n");
-#if !defined(__MINGW32__) || !defined(_WIN32)
-			sleep(4);
-#else
-			Sleep(4);
-#endif		
-		return true;
+	
+	for (i = 0; i < 8; i++) {
+		for (j = 0; j < 8; j++) {
+			if (chb[i][j].current == 'P') {	//check if a Pawn threatens a King
+				if (chb[i][j].c == BLACK) {
+					if (((j+1) == WKy && (i-1) == WKx) || ((j-1) == WKy && (i-1) == WKx)) {
+						KingS = checkW;
+						continue;
+					}
+				} else {
+					if (((j+1) == BKy && (i+1) == BKx) || ((j-1) == BKy && (i+1) == BKx)) {
+						KingS = checkB;
+						continue;
+					}
+				}
+			} else if (chb[i][j].current == 'B' || chb[i][j].current == 'R') {
+				if (chb[i][j].c == BLACK) {
+					if (piecesOverlap(chb, i, j, WKx, WKy, chb[i][j].current) == false) {
+						KingS = checkW;
+						continue;
+					}
+				} else {
+					if (piecesOverlap(chb, i, j, BKx, BKy, chb[i][j].current) == false) {
+						KingS = checkB;
+						continue;
+					}
+				}
+			}
+		}
 	}
-}
+	return KingS;
+}*/
 
 void date_filename(char *buf, int ln)
 {
@@ -691,6 +711,12 @@ char *pieceConflict(const char *piece_pos, const char p)
 			break;
 		case 'R':
 			strcpy(name, "Rook");
+			break;
+		case 'N':
+			strcpy(name, "Knight");
+			break;
+		default:
+			strcpy(name, " ");
 			break;
 	}
 	printf("%s %s %s %s?\n%s", "Did you mean to move the left",  
