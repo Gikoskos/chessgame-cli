@@ -61,6 +61,7 @@ typedef enum KingState {
 	safe	/*King is safe*/
 }KingState;
 
+
 /*prototypes*/
 void initChessboard(ch_template[][8], unsigned, char);	//add pieces on the chess board recursively 
 void printBoard(ch_template[][8]);	//function to print the board at any given point in the game
@@ -78,6 +79,6 @@ inline void clear_buffer(void);
 inline void printInstructions(void);
 inline void printBanner(const char*);
 bool check(ch_template[][8]);
-/*KingState findKState(ch_template[][8]);*/
+KingState findKState(ch_template[][8]);
 
 #endif

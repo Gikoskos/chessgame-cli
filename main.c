@@ -7,7 +7,7 @@
           
 /********************************************************************/
 /*                             main.c                               */
-/*       small game implementing the chesslib.c chess engine        */
+/*       small game making use of the chesslib.c chess engine       */
 /*                                                                  */
 /*                    by cyberchiller@gmail.com                     */
 /*                                                                  */
@@ -122,6 +122,7 @@ int main(int argc, char *argv[])
 		roundcount++;
 		p_err = 0;
 		loop_count = 2;
+		gameover = check(chess_board);
 		/*tempK = findKState(chess_board);*/
 	}
 	playerInput = NULL;
