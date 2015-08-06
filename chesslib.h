@@ -53,6 +53,14 @@ typedef struct ch_template {
 	int c;	//piece color, 0 if there is no piece, 1 for black, 2 for white
 }ch_template;
 
+typedef enum KingState {
+	checkB,	/*check for Black King*/
+	checkmateB, /*checkmate for Black King*/
+	checkW,	/*check for White King*/
+	checkmateW,	/*checkmate for White King*/
+	safe	/*King is safe*/
+}KingState;
+
 
 /*prototypes*/
 void initChessboard(ch_template[][8], unsigned, char);	//add pieces on the chess board recursively 
@@ -71,5 +79,7 @@ inline void clear_buffer(void);
 inline void printInstructions(void);
 inline void printBanner(const char*);
 bool check(ch_template[][8]);
+KingState findKState(ch_template[][8]);
+KingState is_king_threatened(ch_template[][8], const int, const char);
 
 #endif

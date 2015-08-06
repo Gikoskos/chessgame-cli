@@ -8,6 +8,13 @@
 
 #include "chesslib.h"
 
+static short WKingLife[][3] = {{0, 0, 0},	//life energy of white King
+					{0, 1, 0},	//when all 0s are 1s the game is over
+					{0, 0, 0}};
+
+static short BKingLife[][3] = {{0, 0, 0},	//life energy of black King
+					{0, 1, 0},	//when all 0s are 1s the game is over
+					{0, 0, 0}};
 
 extern void clear_buffer(void)
 {
@@ -576,7 +583,100 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 	return false;
 }
 
-bool check(ch_template chb[][8])	//very early stage at the moment
+KingState findKState(ch_template chb[][8])	//extremely early stage right now
+{
+	int i, j, WKx, WKy, BKx, BKy;
+	KingState KingS = safe;	//represents the final state of the King as it's calculated during this function
+
+	for (i = 0; i < 8; i++) {
+		for (j = 0; j < 8; j++) {
+			if (chb[i][j].current == 'K') {
+				if (chb[i][j].c == WHITE) {
+					WKx = i;
+					WKy = j;
+				} else {
+					BKx = i;
+					BKy = j;
+				}
+			}
+		}
+	}
+
+
+	for (i = 0; i < 8; i++) {
+		for (j = 0; j < 8; j++) {
+			if (chb[i][j].current == 'P') {	//check if a Pawn threatens a King
+				if (chb[i][j].c == BLACK) {
+					if ((j+1) == (WKy+1) && (i-1) == (WKx+1)) {
+						WKingLife[2][2] = 1;
+					} else if ((j-1) == (WKy-1) && (i-1) == (WKx+1)) {
+						WKingLife[2][0] = 1;
+					} else if (((j+1) == WKy && (i-1) == WKx) || ((j-1) == WKy && (i-1) == WKx)) {
+						KingS = checkW;
+				} else {
+					if ((j+1) == (BKy+1) && (i+1) == (BKx-1)) {
+						BKingLife[0][2] = 1;
+					} else if ((j-1) == (BKy-1) && (i+1) == (BKx-1)) {
+						BKingLife[0][0] = 1;
+					} else if (((j+1) == BKy && (i+1) == BKx) || ((j-1) == BKy && (i+1) == BKx)) {
+						KingS = checkB;
+					}
+				}
+			} else if (chb[i][j].current == 'R'){
+				if (chb[i][j].c == BLACK) {
+					if ((WKx == i) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
+						KingS = checkW;
+					} else if ((WKy == j) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
+						KingS = checkW;
+					} else {
+						is_king_threatened(chb, (WKx*10000+WKy*1000+i*100+j*10), 'R');
+					}
+				} else {
+					
+				}
+			}
+		}
+	}
+	KingS = check_mate();
+	return KingS;
+}
+
+KingState is_king_threatened(ch_template chb[][8], const int d_comp, const char c)
+{
+	int Kx, Ky, tempx, tempy;
+	
+	Kx = d_comp/10000;
+	Ky = d_comp/1000;
+	tempx = d_comp/100;
+	tempy = d_comp/10;
+	
+	if (c == 'R') {
+		
+	}
+}
+
+KingState check_mate()
+{
+	int i, j, z, Wcounter = 0, Bcounter = 0;
+	
+	for (i = 0; i < 3; i++) {
+		for (j = 0; j < 3; j++) {
+			for (z = 0; z < 3; z++) {
+				if (WKingLife[i][j][z])
+					Wcounter++;
+				if (BKingLife[i][j][z])
+					Bcounter++;
+			}
+		}
+	}
+	if (Wcounter == 9)
+		return checkmateW;
+	if (Bcounter == 9)
+		return checkmateB;
+	return safe;
+}
+
+/*bool check(ch_template chb[][8])	//very early stage at the moment
 {
 	int i, j;
 	bool wk = false, bk = false;	//booleans for white King and black King respectively
@@ -595,10 +695,9 @@ bool check(ch_template chb[][8])	//very early stage at the moment
 		return false;
 	else {
 		if (!wk)
-			printf("\t\tBlack player wins.\n");
+			printf("Black player wins!\n");
 		else
-			printf("\tWhite player wins.\n");
-		printf("\tThanks for playing! Bye!\n");
+			printf("White player wins!\n");
 #if !defined(__MINGW32__) || !defined(_WIN32)
 			sleep(4);
 #else
@@ -606,7 +705,7 @@ bool check(ch_template chb[][8])	//very early stage at the moment
 #endif		
 		return true;
 	}
-}
+}*/
 
 void date_filename(char *buf, int ln)
 {
