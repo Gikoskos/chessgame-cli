@@ -29,8 +29,6 @@ int main(int argc, char *argv[])
 		 *roundcount: total number of rounds
 		 *p_err: holds the position of the error_out array
 		 *loop_count: counter for LOOP*/
-	bool gameover = false;
-		/*flag to control the game loop, becomes true when the King has no moves*/
 	KingState tempK = safe;
 	FILE *logfile;
 
@@ -125,7 +123,6 @@ int main(int argc, char *argv[])
 		roundcount++;
 		p_err = 0;
 		loop_count = 2;
-		//gameover = check(chess_board);
 		tempK = findKState(chess_board);
 	}
 	ENDGAME:
