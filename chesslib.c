@@ -700,17 +700,32 @@ char *pieceConflict(const char *piece_pos, const char p)
 			strcpy(name, " ");
 			break;
 	}
-	printf("%s %s %s %s?\n%s", "Did you mean to move the left",  
-			 name, "or the right", name,
-			"Please specify with either 'left' or 'right': ");
-	do {
-		temp = getPlayerInput();
-	} while (strcmp(temp, "left") != 0 && strcmp(temp, "right") != 0);
-	if ((strcmp(temp, "right") == 0 && piece_pos[0] < piece_pos[2]) || (strcmp(temp, "left") == 0 && piece_pos[0] > piece_pos[2])) {
-		fpiece[0] = piece_pos[2];
-		fpiece[1] = piece_pos[3];
+	if (piece_pos[0] != piece_pos[2]) {
+		printf("%s %s %s %s?\n%s", "Did you mean to move the left",  
+				name, "or the right", name,
+				"Please specify with either 'left' or 'right': ");
+		do {
+			temp = getPlayerInput();
+		} while (strcmp(temp, "left") != 0 && strcmp(temp, "right") != 0);
+		if ((strcmp(temp, "right") == 0 && piece_pos[0] < piece_pos[2]) || (strcmp(temp, "left") == 0 && piece_pos[0] > piece_pos[2])) {
+			fpiece[0] = piece_pos[2];
+			fpiece[1] = piece_pos[3];
+		} else {
+			memcpy(fpiece, piece_pos, 2);
+		}
 	} else {
-		memcpy(fpiece, piece_pos, 2);
+		printf("%s %s %s %s %s\n%s", "Did you mean to move the",  
+				name, "above or the", name, "below?",
+				"Please specify with either 'up' or 'down': ");
+		do {
+			temp = getPlayerInput();
+		} while (strcmp(temp, "up") != 0 && strcmp(temp, "down") != 0);
+		if ((strcmp(temp, "up") == 0 && piece_pos[1] > piece_pos[3]) || (strcmp(temp, "down") == 0 && piece_pos[1] < piece_pos[3])) {
+			fpiece[0] = piece_pos[2];
+			fpiece[1] = piece_pos[3];
+		} else {
+			memcpy(fpiece, piece_pos, 2);
+		}
 	}
 	fpiece[2] = '\0';
 	return fpiece;
