@@ -655,8 +655,8 @@ KingState is_king_threatened(ch_template chb[][8], const int d_comp, const char 
 	tempy = d_comp/10;
 	
 	KingDomain KD[3][3] = {{{Kx-1, Ky-1},{Kx-1, Ky},{Kx-1, Ky+1}},
-					{{Kx, Ky-1},{Kx, Ky},{Kx, Ky+1}},
-					{{Kx+1, Ky-1},{Kx+1, Ky},{Kx+1, Ky+1}}};
+				{{Kx, Ky-1},{Kx, Ky},{Kx, Ky+1}},
+				{{Kx+1, Ky-1},{Kx+1, Ky},{Kx+1, Ky+1}}};
 	
 	
 
