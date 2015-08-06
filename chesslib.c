@@ -8,13 +8,6 @@
 
 #include "chesslib.h"
 
-/*static short WKingLife[3][3][3] = {{0, 0, 0},	//life energy of white King
-					{0, 1, 0},	//when all 0s are 1s the game is over
-					{0, 0, 0}};
-
-static short BKingLife[3][3][3] = {{0, 0, 0},	//life energy of black King
-					{0, 1, 0},	//when all 0s are 1s the game is over
-					{0, 0, 0}};*/
 
 extern void clear_buffer(void)
 {
@@ -583,71 +576,10 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 	return false;
 }
 
-/*KingState findKState(ch_template chb[][8])	//extremely early stage right now
-{
-	int i, j, WKx, WKy, BKx, BKy;
-	KingState KingS = safe;	//enums for white King and black King respectively
-	
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
-			if (chb[i][j].current == 'K') {
-				if (chb[i][j].c == WHITE) {
-					WKx = i;
-					WKy = j;
-				} else {
-					BKx = i;
-					BKy = j;
-				}
-			}
-		}
-	}
-	
-	
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
-			if (chb[i][j].current == 'P') {	//check if a Pawn threatens a King
-				if (chb[i][j].c == BLACK) {
-					if (((j+1) == WKy && (i-1) == WKx) || ((j-1) == WKy && (i-1) == WKx))
-						KingS = checkW;
-				} else {
-					if (((j+1) == BKy && (i+1) == BKx) || ((j-1) == BKy && (i+1) == BKx))
-						KingS = checkB;
-				}
-			} else {
-				if (chb[i][j].c == BLACK) {
-					if (piecesOverlap(chb, i, j, WKx, WKy+1, chb[i][j].current) == false)
-						KingS = checkW;
-				} else {
-					if (piecesOverlap(chb, i, j, BKx, BKy+1, chb[i][j].current) == false)
-						KingS = checkB;
-				}
-			}
-		}
-	}
-	return KingS;
-}
-
-bool is_king_threatened(ch_template chb[][8], int Ex, int Ey, int Kx, int Ky, char piece)
-{
-	
-}
-
-bool check_mate()
-{
-	int i, j, z, c = 0;
-	for (i = 0; i < 3; i++) {
-		for (j = 0; j < 3; j++) {
-			for (z = 0; z < 3; z++) {
-				if ()
-			}
-		}
-	}
-}*/
-
-bool check(ch_template chb[][8])	/*very early stage at the moment*/
+bool check(ch_template chb[][8])	//very early stage at the moment
 {
 	int i, j;
-	bool wk = false, bk = false;	/*booleans for white King and black King respectively*/
+	bool wk = false, bk = false;	//booleans for white King and black King respectively
 	
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -663,9 +595,10 @@ bool check(ch_template chb[][8])	/*very early stage at the moment*/
 		return false;
 	else {
 		if (!wk)
-			printf("Black player wins!\n");
+			printf("\t\tBlack player wins.\n");
 		else
-			printf("White player wins!\n");
+			printf("\tWhite player wins.\n");
+		printf("\tThanks for playing! Bye!\n");
 #if !defined(__MINGW32__) || !defined(_WIN32)
 			sleep(4);
 #else
