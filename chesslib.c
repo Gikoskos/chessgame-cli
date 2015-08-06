@@ -9,12 +9,17 @@
 #include "chesslib.h"
 
 static short WKingLife[][3] = {{0, 0, 0},	//life energy of white King
-					{0, 1, 0},	//when all 0s are 1s the game is over
-					{0, 0, 0}};
+				{0, 1, 0},	//when all 0s are 1s the game is over
+				{0, 0, 0}};
 
 static short BKingLife[][3] = {{0, 0, 0},	//life energy of black King
-					{0, 1, 0},	//when all 0s are 1s the game is over
-					{0, 0, 0}};
+				{0, 1, 0},	//when all 0s are 1s the game is over
+				{0, 0, 0}};
+
+typedef struct KingDomain {
+	int x;
+	int y;
+};
 
 extern void clear_buffer(void)
 {
@@ -602,7 +607,6 @@ KingState findKState(ch_template chb[][8])	//extremely early stage right now
 		}
 	}
 
-
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
 			if (chb[i][j].current == 'P') {	//check if a Pawn threatens a King
@@ -643,16 +647,19 @@ KingState findKState(ch_template chb[][8])	//extremely early stage right now
 
 KingState is_king_threatened(ch_template chb[][8], const int d_comp, const char c)
 {
-	int Kx, Ky, tempx, tempy;
+	int i, Kx, Ky, tempx, tempy;
 	
 	Kx = d_comp/10000;
 	Ky = d_comp/1000;
 	tempx = d_comp/100;
 	tempy = d_comp/10;
 	
-	if (c == 'R') {
-		
-	}
+	KingDomain KD[3][3] = {{{Kx-1, Ky-1},{Kx-1, Ky},{Kx-1, Ky+1}},
+					{{Kx, Ky-1},{Kx, Ky},{Kx, Ky+1}},
+					{{Kx+1, Ky-1},{Kx+1, Ky},{Kx+1, Ky+1}}};
+	
+	
+
 }
 
 KingState check_mate()
