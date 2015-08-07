@@ -9,23 +9,26 @@
 #include "chesslib.h"
 
 static short WKingLife[][3] = {{0, 0, 0},	//life energy of white King
-				{0, 1, 0},	//when all 0s are 1s the game is over
+				{0, 0, 0},	//when all 0s are 1s the game is over
 				{0, 0, 0}};
 
 static short BKingLife[][3] = {{0, 0, 0},	//life energy of black King
-				{0, 1, 0},	//when all 0s are 1s the game is over
+				{0, 0, 0},	//when all 0s are 1s the game is over
 				{0, 0, 0}};
 
 typedef struct KingDomain {
 	int x;
 	int y;
-};
+}KingDomain;
 
 extern void clear_buffer(void)
 {
 	char clbuf;
 	while ((clbuf=getchar()) != '\n');
 }
+
+KingState is_king_threatened(ch_template[][8], const int, const char, const char);
+bool k_domain_ctrl(int, int, int, int, const char);
 
 void initChessboard(ch_template chb[][8], unsigned k, char col)	/*k is row, col is column*/
 { 
@@ -617,6 +620,7 @@ KingState findKState(ch_template chb[][8])	//extremely early stage right now
 						WKingLife[2][0] = 1;
 					} else if (((j+1) == WKy && (i-1) == WKx) || ((j-1) == WKy && (i-1) == WKx)) {
 						KingS = checkW;
+					}
 				} else {
 					if ((j+1) == (BKy+1) && (i+1) == (BKx-1)) {
 						BKingLife[0][2] = 1;
@@ -630,50 +634,106 @@ KingState findKState(ch_template chb[][8])	//extremely early stage right now
 				if (chb[i][j].c == BLACK) {
 					if ((WKx == i) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
 						KingS = checkW;
+						WKingLife[2][2] = 1;
+						printf("King is threatened by ROOK1\n");
 					} else if ((WKy == j) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
 						KingS = checkW;
+						WKingLife[2][2] = 1;
+						printf("King is threatened by ROOK2\n");
 					} else {
-						is_king_threatened(chb, (WKx*10000+WKy*1000+i*100+j*10), 'R');
+						KingS = is_king_threatened(chb, (WKx*10000+WKy*1000+i*100+j*10), 'R', 'W');
+						/*if (KingS == safeCheck) {
+							printf("King can't move to certain places");
+							sleep(2);
+						}*/
 					}
 				} else {
-					
+					if ((BKx == i) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
+						KingS = checkB;
+						BKingLife[2][2] = 1;
+						printf("King is threatened by ROOK3\n");
+					} else if ((BKy == j) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
+						KingS = checkB;
+						BKingLife[2][2] = 1;
+						printf("King is threatened by ROOK4\n");
+					} else {
+						KingS = is_king_threatened(chb, (BKx*10000+BKy*1000+i*100+j*10), 'R', 'B');
+						/*if (KingS == safeCheck) {
+							printf("King can't move to certain places");
+							sleep(2);
+						}*/
+					}
 				}
 			}
 		}
 	}
-	KingS = check_mate();
 	return KingS;
 }
 
-KingState is_king_threatened(ch_template chb[][8], const int d_comp, const char c)
+KingState is_king_threatened(ch_template chb[][8], const int d_comp, const char c, const char K)
 {
-	int i, Kx, Ky, tempx, tempy;
-	
+	int i, j, Kx, Ky, xpiece, ypiece;
+	KingState it; 
+
 	Kx = d_comp/10000;
 	Ky = d_comp/1000;
-	tempx = d_comp/100;
-	tempy = d_comp/10;
-	
-	KingDomain KD[3][3] = {{{Kx-1, Ky-1},{Kx-1, Ky},{Kx-1, Ky+1}},
-				{{Kx, Ky-1},{Kx, Ky},{Kx, Ky+1}},
-				{{Kx+1, Ky-1},{Kx+1, Ky},{Kx+1, Ky+1}}};
-	
-	
+	xpiece = d_comp/100;
+	ypiece = d_comp/10;
 
+	if (c == 'R') {
+		i = xpiece;
+		for (j = 0; j < 8; j++) {
+			if (j == ypiece)
+				continue;
+			if (!k_domain_ctrl(i,j,Kx,Ky,K)) {
+				it = safeCheck;
+			}
+		}
+		j = ypiece;
+		for (i = 0; i < 8; i++) {
+			if (i == xpiece)
+				continue;
+			if (!k_domain_ctrl(i,j,Kx,Ky,K)) {
+				it = safeCheck;
+			}
+		}
+	}
+	return it;
+}
+
+bool k_domain_ctrl(int x_p, int y_p, int Kx, int Ky, const char Kcolor)
+{
+	KingDomain KD[3][3] = {{{Kx-1, Ky-1},{Kx-1, Ky},{Kx-1, Ky+1}},
+			{{Kx, Ky-1},{Kx, Ky},{Kx, Ky+1}},
+			{{Kx+1, Ky-1},{Kx+1, Ky},{Kx+1, Ky+1}}};
+	int k, l;
+	bool retvalue = false;
+
+	for (k = 0; k < 3; k++) {
+		for (l = 0; l < 3; l++) {
+			if (KD[k][l].x == x_p && KD[k][l].y == y_p) {
+				if (Kcolor == 'W') {
+					WKingLife[k][l] = 1;
+				} else {
+					BKingLife[k][l] = 1;
+				}
+				retvalue = true;
+			}
+		}
+	}
+	return retvalue;
 }
 
 KingState check_mate()
 {
-	int i, j, z, Wcounter = 0, Bcounter = 0;
+	int i, j, Wcounter = 0, Bcounter = 0;
 	
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 3; j++) {
-			for (z = 0; z < 3; z++) {
-				if (WKingLife[i][j][z])
-					Wcounter++;
-				if (BKingLife[i][j][z])
-					Bcounter++;
-			}
+			if (WKingLife[i][j])
+				Wcounter++;
+			if (BKingLife[i][j])
+				Bcounter++;
 		}
 	}
 	if (Wcounter == 9)

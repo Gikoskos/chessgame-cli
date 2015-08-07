@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	date_filename(fn, s_l);
 	clear_screen();
 
-	while (gameover == false) {
+	while (1) {
 		if (roundcount == 1) {
 			printf("\n");
 			printBanner("Welcome to my Chess game!");

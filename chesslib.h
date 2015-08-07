@@ -58,7 +58,8 @@ typedef enum KingState {
 	checkmateB, /*checkmate for Black King*/
 	checkW,	/*check for White King*/
 	checkmateW,	/*checkmate for White King*/
-	safe	/*King is safe*/
+	safe,	/*King is safe*/
+	safeCheck	/*King is not allowed to move to certain squares*/
 }KingState;
 
 
@@ -79,6 +80,5 @@ inline void clear_buffer(void);
 inline void printInstructions(void);
 inline void printBanner(const char*);
 KingState findKState(ch_template[][8]);
-KingState is_king_threatened(ch_template[][8], const int, const char);
 
 #endif
