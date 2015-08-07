@@ -31,7 +31,7 @@
 # include <termcap.h>
 # include <alloca.h>
 #else
-# error Non-compatible OS or compiler found
+# error Non-compatible OS or compiler
 #endif
 
 #define MOS 17	//this one controls the chess board size, don't mess with it
@@ -51,7 +51,7 @@ typedef struct ch_template {
 
 typedef enum KingState {
 	check,
-	checkmate
+	checkmate,
 	safe,	/*King is safe*/
 	safe_check	/*King is not allowed to move to certain squares*/
 } KingState;

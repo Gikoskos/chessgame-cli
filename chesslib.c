@@ -19,7 +19,8 @@ static short BKingLife[][3] = {{0, 0, 0},	//life energy of black King
 typedef struct KingDomain {
 	int x;
 	int y;
-}KingDomain;
+} KingDomain;
+
 
 extern void clear_buffer(void)
 {
@@ -27,8 +28,9 @@ extern void clear_buffer(void)
 	while ((clbuf=getchar()) != '\n');
 }
 
-KingState is_king_threatened(ch_template[][8], const int, const char, const char);
-bool k_domain_ctrl(int, int, int, int, const char);
+bool king_is_threatened(int, int, int, int, char);
+bool k_domain_ctrl(int, int, int, int);
+KingState check_mate(char);
 
 void initChessboard(ch_template chb[][8], unsigned k, char col)	/*k is row, col is column*/
 { 
@@ -614,89 +616,126 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 			if (chb[i][j].current == 'P') {	//check if a Pawn threatens a King
 				if (chb[i][j].c == BLACK) {
 					if ((j+1) == (WKy+1) && (i-1) == (WKx+1)) {
+						printf("1\n");
 						WKingLife[2][2] = 1;
+						*WK = safe_check;
 					} else if ((j-1) == (WKy-1) && (i-1) == (WKx+1)) {
 						WKingLife[2][0] = 1;
+						*WK = safe_check;
+						printf("2\n");
 					} else if (((j+1) == WKy && (i-1) == WKx) || ((j-1) == WKy && (i-1) == WKx)) {
+						WKingLife[1][1] = 1;
 						*WK = check;
+						printf("3\n");
 					}
-				} else {
+				} else if (chb[i][j].c == WHITE) {
 					if ((j+1) == (BKy+1) && (i+1) == (BKx-1)) {
 						BKingLife[0][2] = 1;
+						*BK = safe_check;
+						printf("4\n");
 					} else if ((j-1) == (BKy-1) && (i+1) == (BKx-1)) {
 						BKingLife[0][0] = 1;
+						*BK = safe_check;
+						printf("5\n");
 					} else if (((j+1) == BKy && (i+1) == BKx) || ((j-1) == BKy && (i+1) == BKx)) {
+						BKingLife[1][1] = 1;
 						*BK = check;
+						printf("6\n");
 					}
 				}
-			} else if (chb[i][j].current == 'R'){
+			} else if (chb[i][j].current == 'R') {
 				if (chb[i][j].c == BLACK) {
 					if ((WKx == i) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
 						*WK = check;
 						WKingLife[2][2] = 1;
-						printf("King is threatened by ROOK1\n");
 					} else if ((WKy == j) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
 						*WK = check;
 						WKingLife[2][2] = 1;
-						printf("King is threatened by ROOK2\n");
-					} else {
-						KingS = is_king_threatened(chb, (WKx*10000+WKy*1000+i*100+j*10), 'R', 'W');
 					}
-				} else {
+				}  else if (chb[i][j].c == WHITE) {
 					if ((BKx == i) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
-						KingS = checkB;
+						*BK = check;
 						BKingLife[2][2] = 1;
-						printf("King is threatened by ROOK3\n");
 					} else if ((BKy == j) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
-						KingS = checkB;
+						*BK = check;
 						BKingLife[2][2] = 1;
-						printf("King is threatened by ROOK4\n");
-					} else {
-						KingS = is_king_threatened(chb, (BKx*10000+BKy*1000+i*100+j*10), 'R', 'B');
-						/*if (KingS == safeCheck) {
-							printf("King can't move to certain places");
-							sleep(2);
-						}*/
+					}
+				}
+			} else if (chb[i][j].current == 'B') {
+				if (chb[i][j].c == BLACK) {
+					if (king_is_threatened(WKx, WKy, i, j, 'B') == true) {
+						if (piecesOverlap(chb, i, j, WKx, WKy, 'B')) {
+							*WK = check;
+							WKingLife[2][2] = 1;
+						}
+					}
+				}  else if (chb[i][j].c == WHITE) {
+					if (king_is_threatened(BKx, BKy, i, j, 'B') == true) {
+						if (piecesOverlap(chb, i, j, BKx, BKy, 'B')) {
+							*BK = check;
+							BKingLife[2][2] = 1;
+						}
 					}
 				}
 			}
 		}
 	}
-	return KingS;
 }
 
-KingState is_black_king_threatened(ch_template chb[][8], const int d_comp, const char c, KingState *KS)
+bool king_is_threatened(int Kx, int Ky, int xpiece, int ypiece, char c)
 {
-	int i, j, Kx, Ky, xpiece, ypiece;
-	KingState it; 
+	int k, l;
 
-	Kx = d_comp/10000;
-	Ky = d_comp/1000;
-	xpiece = d_comp/100;
-	ypiece = d_comp/10;
-
-	if (c == 'R') {
-		i = xpiece;
-		for (j = 0; j < 8; j++) {
-			if (j == ypiece)
-				continue;
-			if (!k_domain_ctrl(i,j,Kx,Ky,K)) {
-				it = safeCheck;
-			}
+	if (c == 'B') {
+		if (Kx == xpiece || Ky == ypiece) {
+			return false;
 		}
-		j = ypiece;
-		for (i = 0; i < 8; i++) {
-			if (i == xpiece)
-				continue;
-			if (!k_domain_ctrl(i,j,Kx,Ky,K)) {
-				it = safeCheck;
+		if (Kx > xpiece && Ky > ypiece) {
+			k = xpiece + 1;
+			l = ypiece + 1;
+			while ((k <= 7 && k >= 0) && (l <= 7 && l >= 0)) {
+				if (k == Kx && l == Ky) {
+					return true;
+				}
+				k++;
+				l++;
+			}
+		} else if (Kx < xpiece && Ky > ypiece) {
+			k = xpiece - 1;
+			l = ypiece + 1;
+			while ((k >= 0 && k <= 7) && (l <= 7 && l >= 0)) {
+				if (k == Kx && l == Ky) {
+					return true;
+				}
+				k--;
+				l++;
+			} 
+		} else if (Kx > xpiece && Ky < ypiece) {
+			k = xpiece + 1;
+			l = ypiece - 1;
+			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
+				if (k == Kx && l == Ky) {
+					return true;
+				}
+				k++;
+				l--;
+			}
+		} else {
+			k = xpiece - 1; 
+			l = ypiece - 1;
+			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
+				if (k == Kx && l == Ky) {
+					return true;
+				}
+				k--;
+				l--;
 			}
 		}
 	}
-	return it;
+	return false;
 }
 
-bool k_domain_ctrl(int x_p, int y_p, int Kx, int Ky, const char Kcolor)
+bool k_domain_ctrl(int x_p, int y_p, int Kx, int Ky)
 {
 	KingDomain KD[3][3] = {{{Kx-1, Ky-1},{Kx-1, Ky},{Kx-1, Ky+1}},
 			{{Kx, Ky-1},{Kx, Ky},{Kx, Ky+1}},
@@ -707,11 +746,6 @@ bool k_domain_ctrl(int x_p, int y_p, int Kx, int Ky, const char Kcolor)
 	for (k = 0; k < 3; k++) {
 		for (l = 0; l < 3; l++) {
 			if (KD[k][l].x == x_p && KD[k][l].y == y_p) {
-				if (Kcolor == 'W') {
-					WKingLife[k][l] = 1;
-				} else {
-					BKingLife[k][l] = 1;
-				}
 				retvalue = true;
 			}
 		}
@@ -719,7 +753,7 @@ bool k_domain_ctrl(int x_p, int y_p, int Kx, int Ky, const char Kcolor)
 	return retvalue;
 }
 
-KingState check_mate()
+KingState check_mate(char Kcolor)
 {
 	int i, j, Wcounter = 0, Bcounter = 0;
 	
@@ -731,10 +765,10 @@ KingState check_mate()
 				Bcounter++;
 		}
 	}
-	if (Wcounter == 9)
-		return checkmateW;
-	if (Bcounter == 9)
-		return checkmateB;
+	if (Wcounter == 9 && Kcolor == 'W')
+		return checkmate;
+	if (Bcounter == 9 && Kcolor == 'B')
+		return checkmate;
 	return safe;
 }
 

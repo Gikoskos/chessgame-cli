@@ -70,6 +70,10 @@ int main(int argc, char *argv[])
 			} else 
 				printBoard(chess_board);
 			printError(p_err);
+			if (white_king == check)
+				printf("White king is in danger!\n");
+			if (black_king == check)
+				printf("Black king is in danger!\n");
 			if (round == BLACK) 
 				printf("It\'s black\'s turn: ");
 			else 
