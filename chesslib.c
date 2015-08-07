@@ -8,6 +8,7 @@
 
 #include "chesslib.h"
 
+/*prototypes for functions used only in here*/
 bool king_is_threatened(int, int, int, int, char);
 bool k_domain_ctrl(int, int, int, int);
 KingState check_mate(char);
@@ -617,31 +618,25 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 			if (chb[i][j].current == 'P') {	//check if a Pawn threatens a King
 				if (chb[i][j].c == BLACK) {
 					if ((j+1) == (WKy+1) && (i-1) == (WKx+1)) {
-						printf("1\n");
 						WKingLife[2][2] = 1;
 						*WK = safe_check;
 					} else if ((j-1) == (WKy-1) && (i-1) == (WKx+1)) {
 						WKingLife[2][0] = 1;
 						*WK = safe_check;
-						printf("2\n");
 					} else if (((j+1) == WKy && (i-1) == WKx) || ((j-1) == WKy && (i-1) == WKx)) {
 						WKingLife[1][1] = 1;
 						*WK = check;
-						printf("3\n");
 					}
 				} else if (chb[i][j].c == WHITE) {
 					if ((j+1) == (BKy+1) && (i+1) == (BKx-1)) {
 						BKingLife[0][2] = 1;
 						*BK = safe_check;
-						printf("4\n");
 					} else if ((j-1) == (BKy-1) && (i+1) == (BKx-1)) {
 						BKingLife[0][0] = 1;
 						*BK = safe_check;
-						printf("5\n");
 					} else if (((j+1) == BKy && (i+1) == BKx) || ((j-1) == BKy && (i+1) == BKx)) {
 						BKingLife[1][1] = 1;
 						*BK = check;
-						printf("6\n");
 					}
 				}
 			} else if (chb[i][j].current == 'R') {
@@ -653,7 +648,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 						*WK = check;
 						WKingLife[2][2] = 1;
 					}
-				}  else if (chb[i][j].c == WHITE) {
+				} else if (chb[i][j].c == WHITE) {
 					if ((BKx == i) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
 						*BK = check;
 						BKingLife[2][2] = 1;
@@ -670,7 +665,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 							WKingLife[2][2] = 1;
 						}
 					}
-				}  else if (chb[i][j].c == WHITE) {
+				} else if (chb[i][j].c == WHITE) {
 					if (king_is_threatened(BKx, BKy, i, j, 'B') == true) {
 						if (piecesOverlap(chb, i, j, BKx, BKy, 'B')) {
 							*BK = check;
@@ -751,6 +746,7 @@ bool k_domain_ctrl(int x_p, int y_p, int Kx, int Ky)
 			}
 		}
 	}
+	
 	return retvalue;
 }
 
