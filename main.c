@@ -29,8 +29,7 @@ int main(int argc, char *argv[])
 		 *roundcount: total number of rounds
 		 *p_err: holds the position of the error_out array
 		 *loop_count: counter for LOOP*/
-	bool gameover = false;
-		/*flag to control the game loop, becomes true when the King is dead*/
+	KingState white_king = safe, black_king = safe;
 	FILE *logfile;
 
 	initChessboard(chess_board, 0, 'A');
@@ -68,14 +67,13 @@ int main(int argc, char *argv[])
 					printInstructions();
 					p_err = 0;
 				}
-			} else {
+			} else 
 				printBoard(chess_board);
-			}
-			gameover = check(chess_board);
-			if (gameover) {
-				goto ENDGAME;
-			}
 			printError(p_err);
+			if (white_king == check)
+				printf("White king is in danger!\n");
+			if (black_king == check)
+				printf("Black king is in danger!\n");
 			if (round == BLACK) 
 				printf("It\'s black\'s turn: ");
 			else 
@@ -124,6 +122,7 @@ int main(int argc, char *argv[])
 		roundcount++;
 		p_err = 0;
 		loop_count = 2;
+		findKState(chess_board, &white_king, &black_king);
 	}
 	ENDGAME:
 	playerInput = NULL;
