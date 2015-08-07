@@ -8,12 +8,29 @@
 
 #include "chesslib.h"
 
+static short WKingLife[][3] = {{0, 0, 0},	//life energy of white King
+				{0, 0, 0},	//when all 0s are 1s the game is over
+				{0, 0, 0}};
+
+static short BKingLife[][3] = {{0, 0, 0},	//life energy of black King
+				{0, 0, 0},	//when all 0s are 1s the game is over
+				{0, 0, 0}};
+
+typedef struct KingDomain {
+	int x;
+	int y;
+} KingDomain;
+
 
 extern void clear_buffer(void)
 {
 	char clbuf;
 	while ((clbuf=getchar()) != '\n');
 }
+
+bool king_is_threatened(int, int, int, int, char);
+bool k_domain_ctrl(int, int, int, int);
+KingState check_mate(char);
 
 void initChessboard(ch_template chb[][8], unsigned k, char col)	/*k is row, col is column*/
 { 
@@ -576,36 +593,183 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 	return false;
 }
 
-bool check(ch_template chb[][8])	//very early stage at the moment
+void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 {
-	int i, j;
-	bool wk = false, bk = false;	//booleans for white King and black King respectively
-	
+	int i, j, WKx, WKy, BKx, BKy;
+
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
 			if (chb[i][j].current == 'K') {
-				if (chb[i][j].c == BLACK)
-					bk = true;
-				else
-					wk = true;
+				if (chb[i][j].c == WHITE) {
+					WKx = i;
+					WKy = j;
+				} else {
+					BKx = i;
+					BKy = j;
+				}
 			}
 		}
 	}
-	if (wk && bk)
-		return false;
-	else {
-		if (!wk)
-			printf("\t\tBlack player wins.\n");
-		else
-			printf("\tWhite player wins.\n");
-		printf("\tThanks for playing! Bye!\n");
-#if !defined(__MINGW32__) || !defined(_WIN32)
-			sleep(4);
-#else
-			Sleep(4);
-#endif		
-		return true;
+
+	for (i = 0; i < 8; i++) {
+		for (j = 0; j < 8; j++) {
+			if (chb[i][j].current == 'P') {	//check if a Pawn threatens a King
+				if (chb[i][j].c == BLACK) {
+					if ((j+1) == (WKy+1) && (i-1) == (WKx+1)) {
+						printf("1\n");
+						WKingLife[2][2] = 1;
+						*WK = safe_check;
+					} else if ((j-1) == (WKy-1) && (i-1) == (WKx+1)) {
+						WKingLife[2][0] = 1;
+						*WK = safe_check;
+						printf("2\n");
+					} else if (((j+1) == WKy && (i-1) == WKx) || ((j-1) == WKy && (i-1) == WKx)) {
+						WKingLife[1][1] = 1;
+						*WK = check;
+						printf("3\n");
+					}
+				} else if (chb[i][j].c == WHITE) {
+					if ((j+1) == (BKy+1) && (i+1) == (BKx-1)) {
+						BKingLife[0][2] = 1;
+						*BK = safe_check;
+						printf("4\n");
+					} else if ((j-1) == (BKy-1) && (i+1) == (BKx-1)) {
+						BKingLife[0][0] = 1;
+						*BK = safe_check;
+						printf("5\n");
+					} else if (((j+1) == BKy && (i+1) == BKx) || ((j-1) == BKy && (i+1) == BKx)) {
+						BKingLife[1][1] = 1;
+						*BK = check;
+						printf("6\n");
+					}
+				}
+			} else if (chb[i][j].current == 'R') {
+				if (chb[i][j].c == BLACK) {
+					if ((WKx == i) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
+						*WK = check;
+						WKingLife[2][2] = 1;
+					} else if ((WKy == j) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
+						*WK = check;
+						WKingLife[2][2] = 1;
+					}
+				}  else if (chb[i][j].c == WHITE) {
+					if ((BKx == i) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
+						*BK = check;
+						BKingLife[2][2] = 1;
+					} else if ((BKy == j) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
+						*BK = check;
+						BKingLife[2][2] = 1;
+					}
+				}
+			} else if (chb[i][j].current == 'B') {
+				if (chb[i][j].c == BLACK) {
+					if (king_is_threatened(WKx, WKy, i, j, 'B') == true) {
+						if (piecesOverlap(chb, i, j, WKx, WKy, 'B')) {
+							*WK = check;
+							WKingLife[2][2] = 1;
+						}
+					}
+				}  else if (chb[i][j].c == WHITE) {
+					if (king_is_threatened(BKx, BKy, i, j, 'B') == true) {
+						if (piecesOverlap(chb, i, j, BKx, BKy, 'B')) {
+							*BK = check;
+							BKingLife[2][2] = 1;
+						}
+					}
+				}
+			}
+		}
 	}
+}
+
+bool king_is_threatened(int Kx, int Ky, int xpiece, int ypiece, char c)
+{
+	int k, l;
+
+	if (c == 'B') {
+		if (Kx == xpiece || Ky == ypiece) {
+			return false;
+		}
+		if (Kx > xpiece && Ky > ypiece) {
+			k = xpiece + 1;
+			l = ypiece + 1;
+			while ((k <= 7 && k >= 0) && (l <= 7 && l >= 0)) {
+				if (k == Kx && l == Ky) {
+					return true;
+				}
+				k++;
+				l++;
+			}
+		} else if (Kx < xpiece && Ky > ypiece) {
+			k = xpiece - 1;
+			l = ypiece + 1;
+			while ((k >= 0 && k <= 7) && (l <= 7 && l >= 0)) {
+				if (k == Kx && l == Ky) {
+					return true;
+				}
+				k--;
+				l++;
+			} 
+		} else if (Kx > xpiece && Ky < ypiece) {
+			k = xpiece + 1;
+			l = ypiece - 1;
+			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
+				if (k == Kx && l == Ky) {
+					return true;
+				}
+				k++;
+				l--;
+			}
+		} else {
+			k = xpiece - 1; 
+			l = ypiece - 1;
+			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
+				if (k == Kx && l == Ky) {
+					return true;
+				}
+				k--;
+				l--;
+			}
+		}
+	}
+	return false;
+}
+
+bool k_domain_ctrl(int x_p, int y_p, int Kx, int Ky)
+{
+	KingDomain KD[3][3] = {{{Kx-1, Ky-1},{Kx-1, Ky},{Kx-1, Ky+1}},
+			{{Kx, Ky-1},{Kx, Ky},{Kx, Ky+1}},
+			{{Kx+1, Ky-1},{Kx+1, Ky},{Kx+1, Ky+1}}};
+	int k, l;
+	bool retvalue = false;
+
+	for (k = 0; k < 3; k++) {
+		for (l = 0; l < 3; l++) {
+			if (KD[k][l].x == x_p && KD[k][l].y == y_p) {
+				retvalue = true;
+			}
+		}
+	}
+	return retvalue;
+}
+
+KingState check_mate(char Kcolor)
+{
+	int i, j, Wcounter = 0, Bcounter = 0;
+	
+	for (i = 0; i < 3; i++) {
+		for (j = 0; j < 3; j++) {
+			if (WKingLife[i][j])
+				Wcounter++;
+			if (BKingLife[i][j])
+				Bcounter++;
+		}
+	}
+	if (Wcounter == 9 && Kcolor == 'W')
+		return checkmate;
+	if (Bcounter == 9 && Kcolor == 'B')
+		return checkmate;
+	return safe;
 }
 
 void date_filename(char *buf, int ln)
