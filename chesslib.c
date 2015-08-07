@@ -591,10 +591,9 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 	return false;
 }
 
-KingState findKState(ch_template chb[][8])	//extremely early stage right now
+void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 {
 	int i, j, WKx, WKy, BKx, BKy;
-	KingState KingS = safe;	//represents the final state of the King as it's calculated during this function
 
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -619,7 +618,7 @@ KingState findKState(ch_template chb[][8])	//extremely early stage right now
 					} else if ((j-1) == (WKy-1) && (i-1) == (WKx+1)) {
 						WKingLife[2][0] = 1;
 					} else if (((j+1) == WKy && (i-1) == WKx) || ((j-1) == WKy && (i-1) == WKx)) {
-						KingS = checkW;
+						*WK = check;
 					}
 				} else {
 					if ((j+1) == (BKy+1) && (i+1) == (BKx-1)) {
@@ -627,25 +626,21 @@ KingState findKState(ch_template chb[][8])	//extremely early stage right now
 					} else if ((j-1) == (BKy-1) && (i+1) == (BKx-1)) {
 						BKingLife[0][0] = 1;
 					} else if (((j+1) == BKy && (i+1) == BKx) || ((j-1) == BKy && (i+1) == BKx)) {
-						KingS = checkB;
+						*BK = check;
 					}
 				}
 			} else if (chb[i][j].current == 'R'){
 				if (chb[i][j].c == BLACK) {
 					if ((WKx == i) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
-						KingS = checkW;
+						*WK = check;
 						WKingLife[2][2] = 1;
 						printf("King is threatened by ROOK1\n");
 					} else if ((WKy == j) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
-						KingS = checkW;
+						*WK = check;
 						WKingLife[2][2] = 1;
 						printf("King is threatened by ROOK2\n");
 					} else {
 						KingS = is_king_threatened(chb, (WKx*10000+WKy*1000+i*100+j*10), 'R', 'W');
-						/*if (KingS == safeCheck) {
-							printf("King can't move to certain places");
-							sleep(2);
-						}*/
 					}
 				} else {
 					if ((BKx == i) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
@@ -670,7 +665,7 @@ KingState findKState(ch_template chb[][8])	//extremely early stage right now
 	return KingS;
 }
 
-KingState is_king_threatened(ch_template chb[][8], const int d_comp, const char c, const char K)
+KingState is_black_king_threatened(ch_template chb[][8], const int d_comp, const char c, KingState *KS)
 {
 	int i, j, Kx, Ky, xpiece, ypiece;
 	KingState it; 

@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 		 *roundcount: total number of rounds
 		 *p_err: holds the position of the error_out array
 		 *loop_count: counter for LOOP*/
-	KingState tempK = safe;
+	KingState white_king = safe, black_king = safe;
 	FILE *logfile;
 
 	initChessboard(chess_board, 0, 'A');
@@ -70,11 +70,6 @@ int main(int argc, char *argv[])
 			} else 
 				printBoard(chess_board);
 			printError(p_err);
-			if (tempK == checkW) {
-				printf("White King is in danger!\n");
-			} else if (tempK == checkB) {
-				printf("Black King is in danger!\n");
-			}
 			if (round == BLACK) 
 				printf("It\'s black\'s turn: ");
 			else 
@@ -123,7 +118,7 @@ int main(int argc, char *argv[])
 		roundcount++;
 		p_err = 0;
 		loop_count = 2;
-		tempK = findKState(chess_board);
+		findKState(chess_board, &white_king, &black_king);
 	}
 	ENDGAME:
 	playerInput = NULL;
