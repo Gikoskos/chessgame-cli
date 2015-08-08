@@ -103,6 +103,13 @@ int main(int argc, char *argv[])
 		strcpy(attack_guard,findPiece(chess_board, playerInput, round));
 		if (strlen(attack_guard) < 3) {
 			memcpy(piece_to_move, attack_guard, 2);
+		} else if (piecesOverlap(chess_board, (attack_guard[1]-'1'), (attack_guard[0]-65),
+				(playerInput[2] - '1'), (playerInput[1] - 65), playerInput[0]) == true) {
+			piece_to_move[0] = attack_guard[2];
+			piece_to_move[1] = attack_guard[3];
+		} else if (piecesOverlap(chess_board, (attack_guard[3]-'1'), (attack_guard[2]-65),
+				(playerInput[2] - '1'), (playerInput[1] - 65), playerInput[0]) == true) {
+			memcpy(piece_to_move, attack_guard, 2);
 		} else {
 			temp_cpiece = playerInput[0];
 			memcpy(piece_to_move, pieceConflict(attack_guard, temp_cpiece), 2);

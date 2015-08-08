@@ -531,7 +531,7 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 {
 	int tempx = sx, tempy = sy;
 
-	if (piece == 'R' || (piece == 'Q' && ((sx-ex) == 0 || (sy-ey) == 0))) {
+	if (piece == 'R' || (piece == 'Q' && (sx == ex || sy == ey))) {
 		if (!(sx-ex)) {
 			if (sy > ey) {
 				tempy--;
@@ -640,7 +640,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 						B_check_count++;
 					}
 				}
-			} else if (chb[i][j].current == 'R') {
+			} else if (chb[i][j].current == 'R' || chb[i][j].current == 'Q') {
 				if (chb[i][j].c == BLACK) {
 					if ((WKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,'R') == false)) {
 						W_check_count++;
@@ -654,7 +654,8 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 						B_check_count++;
 					}
 				}
-			} else if (chb[i][j].current == 'B') {
+			} 
+			if (chb[i][j].current == 'B') {
 				if (chb[i][j].c == BLACK) {
 					if (king_is_threatened(WKx, WKy, i, j, 'B') == true) {
 						if (piecesOverlap(chb, i, j, WKx, WKy, 'B') == false) {
@@ -691,7 +692,7 @@ bool king_is_threatened(int Kx, int Ky, int xpiece, int ypiece, char c)
 {
 	int k, l;
 
-	if (c == 'B') {
+	if (c == 'B' || c == 'Q') {
 		if (Kx == xpiece || Ky == ypiece) {
 			return false;
 		}
