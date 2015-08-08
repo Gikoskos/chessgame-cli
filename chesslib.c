@@ -22,6 +22,7 @@ static short BKingLife[][3] = {{0, 0, 0},	//life energy of black King
 				{0, 0, 0},	//when all 0s are 1s the game is over
 				{0, 0, 0}};
 
+
 typedef struct KingDomain {
 	int x;
 	int y;
@@ -492,11 +493,12 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 	starty = piece[0] - 65;
 	if (!piecesOverlap(chb, startx, starty, endx, endy, plInput[0])) {
 		if (chb[endx][endy].c != color) {	/*checks whether it's a piece of the same color or not*/
-			chb[startx][starty].occ = false;
-			chb[startx][starty].c = EMPTY;
 			chb[endx][endy].occ = true;
 			chb[endx][endy].current = chb[startx][starty].current;
 			chb[endx][endy].c = color;
+			chb[startx][starty].occ = false;
+			chb[startx][starty].c = EMPTY;
+			chb[startx][starty].current = 'e';
 			if (plInput[0] == 'P' && ((startx == 1 && endx == 0) || (startx == 6 && endx == 7))) {
 				/*options for the promotion of the pawn*/
 				char *promote_selection;
@@ -598,6 +600,7 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 {
 	int i, j, WKx, WKy, BKx, BKy;
+	int B_check_count = 0, W_check_count = 0;
 
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
@@ -624,8 +627,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 						WKingLife[2][0] = 1;
 						*WK = safe_check;
 					} else if (((j+1) == WKy && (i-1) == WKx) || ((j-1) == WKy && (i-1) == WKx)) {
-						WKingLife[1][1] = 1;
-						*WK = check;
+						W_check_count++;
 					}
 				} else if (chb[i][j].c == WHITE) {
 					if ((j+1) == (BKy+1) && (i+1) == (BKx-1)) {
@@ -635,46 +637,53 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 						BKingLife[0][0] = 1;
 						*BK = safe_check;
 					} else if (((j+1) == BKy && (i+1) == BKx) || ((j-1) == BKy && (i+1) == BKx)) {
-						BKingLife[1][1] = 1;
-						*BK = check;
+						B_check_count++;
 					}
 				}
 			} else if (chb[i][j].current == 'R') {
 				if (chb[i][j].c == BLACK) {
-					if ((WKx == i) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
-						*WK = check;
-						WKingLife[2][2] = 1;
-					} else if ((WKy == j) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
-						*WK = check;
-						WKingLife[2][2] = 1;
+					if ((WKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,'R') == false)) {
+						W_check_count++;
+					} else if ((WKy == j) && (piecesOverlap(chb,i,j,WKx,WKy,'R') == false)) {
+						W_check_count++;
 					}
 				} else if (chb[i][j].c == WHITE) {
-					if ((BKx == i) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
-						*BK = check;
-						BKingLife[2][2] = 1;
-					} else if ((BKy == j) && !piecesOverlap(chb,i,j,WKx,WKy,'R')) {
-						*BK = check;
-						BKingLife[2][2] = 1;
+					if ((BKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,'R') == false)) {
+						B_check_count++;
+					} else if ((BKy == j) && (piecesOverlap(chb,i,j,WKx,WKy,'R') == false)) {
+						B_check_count++;
 					}
 				}
 			} else if (chb[i][j].current == 'B') {
 				if (chb[i][j].c == BLACK) {
 					if (king_is_threatened(WKx, WKy, i, j, 'B') == true) {
-						if (piecesOverlap(chb, i, j, WKx, WKy, 'B')) {
-							*WK = check;
-							WKingLife[2][2] = 1;
+						if (piecesOverlap(chb, i, j, WKx, WKy, 'B') == false) {
+							W_check_count++;
 						}
 					}
 				} else if (chb[i][j].c == WHITE) {
 					if (king_is_threatened(BKx, BKy, i, j, 'B') == true) {
-						if (piecesOverlap(chb, i, j, BKx, BKy, 'B')) {
-							*BK = check;
-							BKingLife[2][2] = 1;
+						if (piecesOverlap(chb, i, j, BKx, BKy, 'B') == false) {
+							B_check_count++;
 						}
 					}
 				}
 			}
 		}
+	}
+	if (W_check_count > 0) {
+		*WK = check;
+		WKingLife[1][1] = 1;
+	} else if (!W_check_count) {
+		*WK = safe;
+		WKingLife[1][1] = 0;
+	}
+	if (B_check_count > 0) {
+		*BK = check;
+		BKingLife[1][1] = 1;
+	} else if (!B_check_count) {
+		*BK = safe;
+		BKingLife[1][1] = 0;
 	}
 }
 
