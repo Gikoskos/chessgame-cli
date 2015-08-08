@@ -10,7 +10,7 @@
 
 /*prototypes for functions used only in here*/
 bool king_is_threatened(int, int, int, int, char);
-bool k_domain_ctrl(int, int, int, int);
+void k_domain_ctrl(int, int, int, int, char);
 KingState check_mate(char);
 
 
@@ -89,10 +89,10 @@ void printBoard(ch_template chb[][8])
 	CONSOLE_SCREEN_BUFFER_INFO cmdinfo;
 	WORD sv_att;
 	int i, j;
-	
+
 	GetConsoleScreenBufferInfo(cmdhandle, &cmdinfo);
 	sv_att = cmdinfo.wAttributes;
-	
+
 	printf("    a   b   c   d   e   f   g   h  \n");
 	for (i = 0; i < 8; i++) {
 		printf("%d | ", i + 1);
@@ -135,8 +135,8 @@ void printBoard(ch_template chb[][8])
 			} else if (i%2) {
 				if(!(j%2)) printf("\u2503");
 				else {
-					//usleep(3000);
-					//fflush(stdout);
+					/*usleep(3000);
+					fflush(stdout);*/
 					if (chb[y][x].occ == false)
 						printf("   ");
 					else {
@@ -189,7 +189,7 @@ void printError(int i)
 	char *error_out[] = { "\n",
 	"Command line argument not recognized.\n", "Bad input.\n",
 	"Illegal move.\n", "Log file could not be created.\n"};
-	
+
 	if (i < 5)
 		fprintf(stderr, "%s", error_out[i]);
 	else {
@@ -215,7 +215,7 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 	int i, j, k, l, count, conflict = 3;	/*conflict: int to check for two pieces attacking the same piece*/
 	char *retvalue = calloc(3, sizeof(*retvalue));
 	char *temp = calloc(3, sizeof(*temp));
-	
+
 	if (!retvalue)
 		exit(0);
 	retvalue[2] = '\0';
@@ -471,7 +471,7 @@ extern void clear_screen(void)
 #ifndef _WIN32
 	char buf[1024];
 	char *str;
-	
+
 	tgetent(buf, getenv("TERM"));
 	str = tgetstr("cl", NULL);
 	fputs(str, stdout);
@@ -486,7 +486,7 @@ extern void clear_screen(void)
 bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 {
 	int startx, starty, endx, endy; /*cords for the current tile and for the tile to move the piece to*/
-	
+
 	endx = plInput[2] - '1';
 	endy = plInput[1] - 65;
 	startx = piece[1] - '1';
@@ -530,7 +530,7 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 			    const int ex, const int ey, const char piece)
 {
 	int tempx = sx, tempy = sy;
-	
+
 	if (piece == 'R' || (piece == 'Q' && ((sx-ex) == 0 || (sy-ey) == 0))) {
 		if (!(sx-ex)) {
 			if (sy > ey) {
@@ -618,7 +618,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
-			if (chb[i][j].current == 'P') {	//check if a Pawn threatens a King
+			if (chb[i][j].current == 'P') {
 				if (chb[i][j].c == BLACK) {
 					if ((j+1) == (WKy+1) && (i-1) == (WKx+1)) {
 						WKingLife[2][2] = 1;
@@ -650,7 +650,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 				} else if (chb[i][j].c == WHITE) {
 					if ((BKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,'R') == false)) {
 						B_check_count++;
-					} else if ((BKy == j) && (piecesOverlap(chb,i,j,WKx,WKy,'R') == false)) {
+					} else if ((BKy == j) && (piecesOverlap(chb,i,j,BKx,BKy,'R') == false)) {
 						B_check_count++;
 					}
 				}
@@ -740,29 +740,31 @@ bool king_is_threatened(int Kx, int Ky, int xpiece, int ypiece, char c)
 	return false;
 }
 
-bool k_domain_ctrl(int x_p, int y_p, int Kx, int Ky)
+void k_domain_ctrl(int x_p, int y_p, int Kx, int Ky, char color)
 {
 	KingDomain KD[3][3] = {{{Kx-1, Ky-1},{Kx-1, Ky},{Kx-1, Ky+1}},
 			{{Kx, Ky-1},{Kx, Ky},{Kx, Ky+1}},
 			{{Kx+1, Ky-1},{Kx+1, Ky},{Kx+1, Ky+1}}};
 	int k, l;
-	bool retvalue = false;
 
 	for (k = 0; k < 3; k++) {
 		for (l = 0; l < 3; l++) {
+			if (k == l) continue;
 			if (KD[k][l].x == x_p && KD[k][l].y == y_p) {
-				retvalue = true;
+				if (color == 'B') {
+				BKingLife[k][l] = 1;
+				} else {
+				WKingLife[k][l] = 1;
+				}
 			}
 		}
 	}
-	
-	return retvalue;
 }
 
 KingState check_mate(char Kcolor)
 {
 	int i, j, Wcounter = 0, Bcounter = 0;
-	
+
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 3; j++) {
 			if (WKingLife[i][j])
@@ -851,7 +853,7 @@ char *getPlayerInput(void)
 char *pieceConflict(const char *piece_pos, const char p)
 {
 	static char *temp, fpiece[3], name[7];
-	
+
 	switch (p) {
 		case 'P':
 			strcpy(name, "Pawn");
@@ -906,7 +908,7 @@ extern void printBanner(const char *banner)
 #if !defined (__MINGW32__) || !defined(_WIN32)
 	struct timespec *start_t = malloc(sizeof(struct timespec));
 	struct timespec *end_t = malloc(sizeof(struct timespec));
-	
+
 	*start_t = (struct timespec){0, (BANNER_SPEED)*1000000};
 	*end_t = (struct timespec){0, (BANNER_SPEED)*1000000};
 #endif
