@@ -8,9 +8,12 @@ to move as you see it on the board and the coordinates of the square you want to
 (for example if you want to move Pawn to square A3 you type Pa3), and the game will find the piece you want to move
 and move it by itself.
 
+The game ends if the king has no moves to make, but it won't prevent you from moving the King to a square that will threaten him,
+so it can end after the other player directly kills the King.
+
 A log file that records all the moves that took place, is created during the game.
 
-The thought process behind this project was for me to implement a chess game for the first time, without seeing
+The thought process behind this project was for me to implement a chess engine for the first time, without seeing
 code from other projects.
 
 There might be tons of other implementations that are probably way smarter than mine but even so, I just did this to have fun :D
@@ -19,10 +22,11 @@ There might be tons of other implementations that are probably way smarter than 
 
 Needs libncurses to compile. (on Linux)
 
-If you're compiling on windows, try using Mingw-w64 to install gcc. It's the only compiler for Windows I've tested it on.
+If you're compiling on Windows, try using Mingw-w64 to install gcc. I don't think it will compile as well with MSVC.
 
 Would recommend to compile through the Makefile, if you're on a linux distro, only after you've installed
-gcc, make and libncurses though.
+gcc, make and libncurses though. The Makefile works with Mingw-w64's make as well, but you will have to manually
+remove the -lncurses linking.
 
 ## TODO
 
@@ -30,15 +34,17 @@ gcc, make and libncurses though.
 
  ![Alt text](http://i.imgur.com/u7DMUjg.png)
 
-* implement that dreaded piecesOverlap function (DONE)
+* implement that horrible piecesOverlap function (DONE)
 
 * fix bug on Windows that rejects input other than the first character after some time (DONE)
 
-* add the functionality for the game to end when a king is unable to make a move without being threatened by another piece (WIP)
+* add the functionality for the game to end when a King is unable to make a move without being threatened by another piece/checkmate (DONE!!!)
 
 * fix this bug that only happens with black Pawns (DONE)
 
   <img src="http://i.imgur.com/cVGe6Sd.png" alt="step1" width = "257" height = "341"/> <img src="http://i.imgur.com/mkwlxOY.png" alt="step1" width = "257" height = "341"/>
+
+* prevent the King from moving to a square that might threaten him
 
 * port the main engine to other languages
 
