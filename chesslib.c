@@ -1,10 +1,10 @@
-/********************************************************************/
-/*                           chesslib.c                             */
-/* standard chess engine no AI or complicated rules implemented yet */
-/*                                                                  */
-/*                    by <cyberchiller@gmail.com>                   */
-/*              see COPYING for copyright information               */
-/********************************************************************/
+/*********************************************************************/
+/*                            chesslib.c                             */
+/* standard chess library no AI or complicated rules implemented yet */
+/*                                                                   */
+/*                     by <cyberchiller@gmail.com>                   */
+/*                see COPYING for copyright information              */
+/*********************************************************************/
 
 #include "chesslib.h"
 
@@ -233,10 +233,12 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 						if ((i-1) == 0 && chb[i-1][j].square[0] == input[1] && chb[i-1][j].square[1] == input[2] && chb[i-1][j].occ == false) {
 							return retvalue;
 						}
-						if ((i-1) == 0 && chb[i-1][j+1].square[0] == input[1] && chb[i-1][j+1].square[1] == input[2] && chb[i-1][j+1].occ == true && chb[i-1][j+1].c != color) {
+						if ((i-1) == 0 && chb[i-1][j+1].square[0] == input[1] && chb[i-1][j+1].square[1] == input[2] && 
+							chb[i-1][j+1].occ == true && chb[i-1][j+1].c != color) {
 							return retvalue;
 						}
-						if ((i-1) == 0 && chb[i-1][j-1].square[0] == input[1] && chb[i-1][j-1].square[1] == input[2] && chb[i-1][j-1].occ == true && chb[i-1][j-1].c != color) {
+						if ((i-1) == 0 && chb[i-1][j-1].square[0] == input[1] && chb[i-1][j-1].square[1] == input[2] &&
+							chb[i-1][j-1].occ == true && chb[i-1][j-1].c != color) {
 							return retvalue;
 						}
 						if (chb[i-1][j].occ == false) {
@@ -270,10 +272,12 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 						if ((i+1) == 0 && chb[i+1][j].square[0] == input[1] && chb[i+1][j].square[1] == input[2] && chb[i+1][j].occ == false) {
 							return retvalue;
 						}
-						if ((i+1) == 0 && chb[i+1][j+1].square[0] == input[1] && chb[i+1][j+1].square[1] == input[2] && chb[i+1][j+1].occ == true && chb[i+1][j+1].c != color) {
+						if ((i+1) == 0 && chb[i+1][j+1].square[0] == input[1] && chb[i+1][j+1].square[1] == input[2] && 
+							chb[i+1][j+1].occ == true && chb[i+1][j+1].c != color) {
 							return retvalue;
 						}
-						if ((i+1) == 0 && chb[i+1][j-1].square[0] == input[1] && chb[i+1][j-1].square[1] == input[2] && chb[i+1][j-1].occ == true && chb[i-1][j-1].c != color) {
+						if ((i+1) == 0 && chb[i+1][j-1].square[0] == input[1] && chb[i+1][j-1].square[1] == input[2] &&
+							chb[i+1][j-1].occ == true && chb[i-1][j-1].c != color) {
 							return retvalue;
 						}
 						if (chb[i+1][j].occ == false){
@@ -502,8 +506,9 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 			if (plInput[0] == 'P' && ((startx == 1 && endx == 0) || (startx == 6 && endx == 7))) {
 				/*options for the promotion of the pawn*/
 				char *promote_selection;
+				RETRY:
 				printf("What piece do you want to promote your Pawn into? ");
-				RETRY:promote_selection = getPlayerInput();
+				promote_selection = getPlayerInput();
 				if (!strcmp(promote_selection, "queen") || !strcmp(promote_selection, "Q") ||
 					!strcmp(promote_selection, "Queen") || !strcmp(promote_selection, "q")) {
 					chb[endx][endy].current = 'Q';
@@ -515,7 +520,7 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 					chb[endx][endy].current = 'N';
 				} else {
 					free(promote_selection);
-					printf("Bad input, please enter a valid piece: ");
+					printError(2);
 					goto RETRY;
 				} 
 				free(promote_selection);
@@ -599,7 +604,7 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 
 void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 {
-	int i, j, WKx, WKy, BKx, BKy;
+	int i, j, WKx = -1, WKy = -1, BKx = -1, BKy = -1;
 	int B_check_count = 0, W_check_count = 0;
 
 	for (i = 0; i < 8; i++) {
@@ -614,6 +619,14 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 				}
 			}
 		}
+	}
+	
+	if (WKx == -1 && WKy == -1) {	/*temporary way to end the game*/
+		*WK = checkmate;
+		return;
+	} else if (BKx == -1 && BKy == -1) {
+		*BK = checkmate;
+		return;
 	}
 
 	for (i = 0; i < 8; i++) {
@@ -642,29 +655,39 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 				}
 			} else if (chb[i][j].current == 'R' || chb[i][j].current == 'Q') {
 				if (chb[i][j].c == BLACK) {
-					if ((WKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,'R') == false)) {
+					if ((WKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
 						W_check_count++;
-					} else if ((WKy == j) && (piecesOverlap(chb,i,j,WKx,WKy,'R') == false)) {
+					} else if ((WKy == j) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
 						W_check_count++;
 					}
 				} else if (chb[i][j].c == WHITE) {
-					if ((BKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,'R') == false)) {
+					if ((BKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
 						B_check_count++;
-					} else if ((BKy == j) && (piecesOverlap(chb,i,j,BKx,BKy,'R') == false)) {
+					} else if ((BKy == j) && (piecesOverlap(chb,i,j,BKx,BKy,chb[i][j].current) == false)) {
 						B_check_count++;
 					}
 				}
-			} 
-			if (chb[i][j].current == 'B') {
+			} else if (chb[i][j].current == 'N') {
 				if (chb[i][j].c == BLACK) {
-					if (king_is_threatened(WKx, WKy, i, j, 'B') == true) {
-						if (piecesOverlap(chb, i, j, WKx, WKy, 'B') == false) {
+					if (king_is_threatened(WKx, WKy, i, j, chb[i][j].current) == true) {
+						W_check_count++;
+					}
+				} else if (chb[i][j].c == WHITE) {
+					if (king_is_threatened(BKx, BKy, i, j, chb[i][j].current) == true) {
+						B_check_count++;
+					}
+				}
+			}
+			if (chb[i][j].current == 'B' || chb[i][j].current == 'Q') {
+				if (chb[i][j].c == BLACK) {
+					if (king_is_threatened(WKx, WKy, i, j, chb[i][j].current) == true) {
+						if (piecesOverlap(chb, i, j, WKx, WKy, chb[i][j].current) == false) {
 							W_check_count++;
 						}
 					}
 				} else if (chb[i][j].c == WHITE) {
-					if (king_is_threatened(BKx, BKy, i, j, 'B') == true) {
-						if (piecesOverlap(chb, i, j, BKx, BKy, 'B') == false) {
+					if (king_is_threatened(BKx, BKy, i, j, chb[i][j].current) == true) {
+						if (piecesOverlap(chb, i, j, BKx, BKy, chb[i][j].current) == false) {
 							B_check_count++;
 						}
 					}
@@ -735,6 +758,16 @@ bool king_is_threatened(int Kx, int Ky, int xpiece, int ypiece, char c)
 				}
 				k--;
 				l--;
+			}
+		}
+	} else if (c == 'N') {
+		int knightrow[] = {xpiece-2,xpiece-2,xpiece-1,xpiece-1,
+			xpiece+1,xpiece+1,xpiece+2,xpiece+2};
+		int knightcol[] = {ypiece-1,ypiece+1,ypiece-2,ypiece+2,
+			ypiece-2,ypiece+2,ypiece-1,ypiece+1};
+		for (k = 0; k < 8; k++) {
+			if (knightrow[k] == Kx && knightcol[k] == Ky) {
+				return true;
 			}
 		}
 	}
@@ -879,7 +912,8 @@ char *pieceConflict(const char *piece_pos, const char p)
 		do {
 			temp = getPlayerInput();
 		} while (strcmp(temp, "left") != 0 && strcmp(temp, "right") != 0);
-		if ((strcmp(temp, "right") == 0 && piece_pos[0] < piece_pos[2]) || (strcmp(temp, "left") == 0 && piece_pos[0] > piece_pos[2])) {
+		if ((strcmp(temp, "right") == 0 && piece_pos[0] < piece_pos[2]) || 
+			(strcmp(temp, "left") == 0 && piece_pos[0] > piece_pos[2])) {
 			fpiece[0] = piece_pos[2];
 			fpiece[1] = piece_pos[3];
 		} else {
@@ -892,7 +926,8 @@ char *pieceConflict(const char *piece_pos, const char p)
 		do {
 			temp = getPlayerInput();
 		} while (strcmp(temp, "up") != 0 && strcmp(temp, "down") != 0);
-		if ((strcmp(temp, "up") == 0 && piece_pos[1] > piece_pos[3]) || (strcmp(temp, "down") == 0 && piece_pos[1] < piece_pos[3])) {
+		if ((strcmp(temp, "up") == 0 && piece_pos[1] > piece_pos[3]) || 
+			(strcmp(temp, "down") == 0 && piece_pos[1] < piece_pos[3])) {
 			fpiece[0] = piece_pos[2];
 			fpiece[1] = piece_pos[3];
 		} else {
