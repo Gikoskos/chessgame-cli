@@ -2,8 +2,8 @@
 /*                            chesslib.h                            */
 /*              declarations for the chesslib.c engine              */
 /*                                                                  */
-/*                    by cyberchiller@gmail.com                     */
-/*                                                                  */
+/*                    by <cyberchiller@gmail.com>                   */
+/*              see COPYING for copyright information               */
 /********************************************************************/
 
 #pragma once

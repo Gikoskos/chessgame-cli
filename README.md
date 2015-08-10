@@ -40,14 +40,12 @@ gcc, make and libncurses though.
 
   <img src="http://i.imgur.com/cVGe6Sd.png" alt="step1" width = "257" height = "341"/> <img src="http://i.imgur.com/mkwlxOY.png" alt="step1" width = "257" height = "341"/>
 
-* port the main engine to C++, C#, Java and Python
+* port the main engine to other languages
 
 ### License stuff
 
-![WTFPL logo](http://www.wtfpl.net/wp-content/uploads/2012/12/logo-220x1601.png)
+![GPLv3 logo](http://www.gnu.org/graphics/gplv3-127x51.png)
+
+See COPYING for more information.
 
 Copyright © 2015 G.K. <cyberchiller@gmail.com>
-
-This work is free. You can redistribute it and/or modify it under the
-terms of the Do What The Fuck You Want To Public License, Version 2,
-as published by Sam Hocevar. See http://www.wtfpl.net for more details.

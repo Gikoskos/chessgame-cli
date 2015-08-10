@@ -2,8 +2,8 @@
 /*                           chesslib.c                             */
 /* standard chess engine no AI or complicated rules implemented yet */
 /*                                                                  */
-/*                    by cyberchiller@gmail.com                     */
-/*                                                                  */
+/*                    by <cyberchiller@gmail.com>                   */
+/*              see COPYING for copyright information               */
 /********************************************************************/
 
 #include "chesslib.h"
