@@ -13,7 +13,7 @@
 
 /********************************************************************/
 /*                             main.c                               */
-/*       small game making use of the chesslib.c chess engine       */
+/*       small game making use of the chesslib.c chess library      */
 /*                                                                  */
 /*                    by <cyberchiller@gmail.com>                   */
 /*              see COPYING for copyright information               */
@@ -64,7 +64,8 @@ int main(int argc, char *argv[])
 
 		printf("Type 'help' and ENTER to view the instructions any time.\n");
 
-		LOOP:do {
+		LOOP:
+		do {
 			if (loop_count > 1) {
 				clear_screen();
 				printf("\n\n\n\n\n\n");
@@ -76,6 +77,13 @@ int main(int argc, char *argv[])
 			} else 
 				printBoard(chess_board);
 			printError(p_err);
+			if (white_king == checkmate) {
+				printf("Black player wins! Thanks for playing!\n");
+				goto ENDGAME;
+			} else if (black_king == checkmate) {
+				printf("White player wins! Thanks for playing!\n");
+				goto ENDGAME;
+			}
 			if (white_king == check)
 				printf("White king is in danger!\n");
 			if (black_king == check)
@@ -110,11 +118,11 @@ int main(int argc, char *argv[])
 		if (strlen(attack_guard) < 3) {
 			memcpy(piece_to_move, attack_guard, 2);
 		} else if (piecesOverlap(chess_board, (attack_guard[1]-'1'), (attack_guard[0]-65),
-				(playerInput[2] - '1'), (playerInput[1] - 65), playerInput[0]) == true) {
+				(playerInput[2] - '1'), (playerInput[1] - 65), playerInput[0]) == true && playerInput[0] != 'N') {
 			piece_to_move[0] = attack_guard[2];
 			piece_to_move[1] = attack_guard[3];
 		} else if (piecesOverlap(chess_board, (attack_guard[3]-'1'), (attack_guard[2]-65),
-				(playerInput[2] - '1'), (playerInput[1] - 65), playerInput[0]) == true) {
+				(playerInput[2] - '1'), (playerInput[1] - 65), playerInput[0]) == true && playerInput[0] != 'N') {
 			memcpy(piece_to_move, attack_guard, 2);
 		} else {
 			temp_cpiece = playerInput[0];
@@ -138,6 +146,11 @@ int main(int argc, char *argv[])
 		findKState(chess_board, &white_king, &black_king);
 	}
 	ENDGAME:
+#if !defined(__MINGW32__) || !defined(_WIN32)
+	sleep(4);
+#else
+	Sleep(4);
+#endif
 	playerInput = NULL;
 	return 0;
 }
