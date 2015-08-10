@@ -25,8 +25,8 @@ Needs libncurses to compile. (on Linux)
 If you're compiling on Windows, try using Mingw-w64 to install gcc. I don't think it will compile as well with MSVC.
 
 Would recommend to compile through the Makefile, if you're on a linux distro, only after you've installed
-gcc, make and libncurses though. The Makefile works with Mingw-w64's make as well, but you will have to manually
-remove the -lncurses linking.
+gcc, make and libncurses though. The Makefile works with Mingw-w64's make as well, but you will have to remove 
+manually the -lncurses linking option.
 
 ## TODO
 
