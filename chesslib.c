@@ -369,7 +369,8 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 						}
 					}
 				}
-				if (input[0] == 'B' || input[0] == 'Q') {	/*different if, to check for queen's diagonal moves*/
+				/*different if, to check for queen's diagonal moves*/
+				if (input[0] == 'B' || input[0] == 'Q') {
 					k = i - 1; 
 					l = j - 1;
 					while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
