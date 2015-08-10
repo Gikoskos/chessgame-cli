@@ -78,10 +78,10 @@ int main(int argc, char *argv[])
 				printBoard(chess_board);
 			printError(p_err);
 			if (white_king == checkmate) {
-				printf("Black player wins! Thanks for playing!\n");
+				printf("Black player wins! Thanks for playing!\n\t\t");
 				goto ENDGAME;
 			} else if (black_king == checkmate) {
-				printf("White player wins! Thanks for playing!\n");
+				printf("White player wins! Thanks for playing!\n\t\t");
 				goto ENDGAME;
 			}
 			if (white_king == check)
@@ -146,11 +146,13 @@ int main(int argc, char *argv[])
 		findKState(chess_board, &white_king, &black_king);
 	}
 	ENDGAME:
+	if (white_king == checkmate || black_king == checkmate) {
 #if !defined(__MINGW32__) || !defined(_WIN32)
 	sleep(4);
 #else
 	Sleep(4);
 #endif
+	}
 	playerInput = NULL;
 	return 0;
 }
