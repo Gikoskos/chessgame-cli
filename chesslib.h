@@ -57,8 +57,8 @@ typedef enum KingState {
 } KingState;
 
 
-/*prototypes*/
-/*#1 add pieces on the chess board recursively*/
+/*prototypes for the main library*/
+/*add pieces on the chess board recursively*/
 void initChessboard(ch_template[][8], unsigned, char);
 
 /*function to print the board at any given point in the game*/
