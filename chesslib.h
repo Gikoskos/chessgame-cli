@@ -1,6 +1,6 @@
 /********************************************************************/
 /*                            chesslib.h                            */
-/*              declarations for the chesslib.c engine              */
+/*              declarations for the chesslib.c library             */
 /*                                                                  */
 /*                    by <cyberchiller@gmail.com>                   */
 /*              see COPYING for copyright information               */
@@ -64,7 +64,8 @@ void initChessboard(ch_template[][8], unsigned, char);
 /*function to print the board at any given point in the game*/
 void printBoard(ch_template[][8]);
 
-/*find the piece that is capable to perform the move entered by the player*/
+/*traverses the chessboard, finds and returns the piece that is capable to perform the move entered by the player
+ *if more than one piece are capable of moving to the square entered by the player it finds and returns them both */
 char *findPiece(ch_template[][8], const char*, int);
 
 /*move the piece if no other piece is in the way; also checks for pawn promotion*/
@@ -82,13 +83,13 @@ void date_filename(char*, int);
 /*write each player's moves to a log file*/
 void write_to_log(int, FILE*, char*, char[]);
 
-/*basic error printing function*/
+/*basic error printing function; writes output to stderr*/
 void printError(int);
 
 /*copies the input buffer to a string and return that string*/
 char *getPlayerInput(void);
 
-/*prevents move conflict: whether two pieces of the same kind and color are able to move in the same square at the same round*/
+/*handles move conflict: whether two pieces of the same kind and color are able to move in the same square at the same round*/
 char *pieceConflict(const char*, const char);
 
 /*finds and saves the state of each King for the current round; see the KingState enum for all the states a King can have*/
