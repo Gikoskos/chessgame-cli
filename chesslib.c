@@ -14,12 +14,15 @@ void k_domain_ctrl(int, int, int, int, char);
 KingState check_mate(char);
 
 
-static short WKingLife[][3] = {{0, 0, 0},	//life energy of white King
-				{0, 0, 0},	//when all 0s are 1s the game is over
+/*the energy/life of each King is measured in his free domain
+ * 0 if the King can move to that square
+ * 1 if the square is imminent to an attack*/
+static short WKingLife[][3] = {{0, 0, 0},	/*energy of white King*/
+				{0, 0, 0},
 				{0, 0, 0}};
 
-static short BKingLife[][3] = {{0, 0, 0},	//life energy of black King
-				{0, 0, 0},	//when all 0s are 1s the game is over
+static short BKingLife[][3] = {{0, 0, 0},	/*energy of black King*/
+				{0, 0, 0},
 				{0, 0, 0}};
 
 
