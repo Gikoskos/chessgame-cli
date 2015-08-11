@@ -9,8 +9,8 @@
 #include "chesslib.h"
 
 /*prototypes for functions used only in here*/
-/*checks if the king is threatened by Queen, Rook or Knight*/
-bool king_is_threatened(const int, const int, const int, const int, const char, const int);
+/*checks if the king is threatened by an enemy piece, returns true if he is*/
+bool king_is_threatened(const int, const int, const int, const int, const char, const int, ch_template[][8]);
 
 /*remove king's life if a piece can move to the domain surrounding him*/
 void k_domain_ctrl(const int, const int, const int, const int, const int, const char);
@@ -539,7 +539,7 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 }
 
 bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
-			    const int ex, const int ey, const char piece)
+		const int ex, const int ey, const char piece)
 {
 	int tempx = sx, tempy = sy;
 
@@ -573,7 +573,8 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 				}
 			}
 		}
-	} else if (piece == 'B' || piece == 'Q') {
+	}
+	if (piece == 'B' || piece == 'Q') {
 		tempx = ex;
 		tempy = ey;
 		if (ex>sx && ey>sy) {
@@ -639,15 +640,8 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
-			if (chb[i][j].occ == true) {
-				if (chb[i][j].c == BLACK) {
-					k_domain_ctrl(i, j, BKx, BKy, chb[i][j].c, 'f');
-				} else {
-					k_domain_ctrl(i, j, WKx, WKy, chb[i][j].c, 'f');
-				}
-			}
-			if (chb[i][j].current == 'P') {
-				if (chb[i][j].c == BLACK) {
+			if (chb[i][j].c == BLACK) {
+				if (chb[i][j].current == 'P') {
 					if ((j+1) == (WKy+1) && (i-1) == (WKx+1)) {
 						WKingLife[2][2] = 1;
 						*WK = safe_check;
@@ -657,7 +651,27 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 					} else if (((j+1) == WKy && (i-1) == WKx) || ((j-1) == WKy && (i-1) == WKx)) {
 						W_check_count++;
 					}
-				} else if (chb[i][j].c == WHITE) {
+				}
+				if (chb[i][j].current == 'R' || chb[i][j].current == 'Q') {
+					if ((WKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
+						W_check_count++;
+					} else if ((WKy == j) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
+						W_check_count++;
+					}
+					king_is_threatened(WKx, WKy, i, j, chb[i][j].current, WHITE, chb);
+				}
+				if (chb[i][j].current == 'B' || chb[i][j].current == 'Q' || 
+					chb[i][j].current == 'K' || chb[i][j].current == 'N') {
+					if (piecesOverlap(chb, i, j, WKx, WKy, chb[i][j].current) == false ||
+						chb[i][j].current == 'N') {
+						if (king_is_threatened(WKx, WKy, i, j, chb[i][j].current, WHITE, chb) == true) {
+							W_check_count++;
+						}
+					}
+				}
+				k_domain_ctrl(i, j, BKx, BKy, chb[i][j].c, 'f');
+			} else if (chb[i][j].c == WHITE) {
+				if (chb[i][j].current == 'P') {
 					if ((j+1) == (BKy+1) && (i+1) == (BKx-1)) {
 						BKingLife[0][2] = 1;
 						*BK = safe_check;
@@ -668,41 +682,24 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 						B_check_count++;
 					}
 				}
-			}
-			if (chb[i][j].current == 'R' || chb[i][j].current == 'Q') {
-				if (chb[i][j].c == BLACK) {
-					if ((WKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
-						W_check_count++;
-					} else if ((WKy == j) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
-						W_check_count++;
-					}
-					king_is_threatened(WKx, WKy, i, j, chb[i][j].current, WHITE);
-				} else if (chb[i][j].c == WHITE) {
+				if (chb[i][j].current == 'R' || chb[i][j].current == 'Q') {
 					if ((BKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
 						B_check_count++;
 					} else if ((BKy == j) && (piecesOverlap(chb,i,j,BKx,BKy,chb[i][j].current) == false)) {
 						B_check_count++;
 					}
-					king_is_threatened(BKx, BKy, i, j, chb[i][j].current, BLACK);
+					king_is_threatened(BKx, BKy, i, j, chb[i][j].current, BLACK, chb);
 				}
-			}
-			if (chb[i][j].current == 'B' || chb[i][j].current == 'Q' || 
-				chb[i][j].current == 'K' || chb[i][j].current == 'N') {
-				if (chb[i][j].c == BLACK) {
-					if (piecesOverlap(chb, i, j, WKx, WKy, chb[i][j].current) == false ||
-						chb[i][j].current == 'N') {
-						if (king_is_threatened(WKx, WKy, i, j, chb[i][j].current, WHITE) == true) {
-							W_check_count++;
-						}
-					}
-				} else if (chb[i][j].c == WHITE) {
+				if (chb[i][j].current == 'B' || chb[i][j].current == 'Q' || 
+					chb[i][j].current == 'K' || chb[i][j].current == 'N') {
 					if (piecesOverlap(chb, i, j, BKx, BKy, chb[i][j].current) == false ||
-						chb[i][j].current == 'N') {
-						if (king_is_threatened(BKx, BKy, i, j, chb[i][j].current, BLACK) == true) {
-							B_check_count++;
+							chb[i][j].current == 'N') {
+							if (king_is_threatened(BKx, BKy, i, j, chb[i][j].current, BLACK, chb) == true) {
+								B_check_count++;
 						}
 					}
 				}
+				k_domain_ctrl(i, j, WKx, WKy, chb[i][j].c, 'f');
 			}
 		}
 	}
@@ -747,34 +744,32 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 }
 
 bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
-						const int ypiece, const char c, const int color)
+			const int ypiece, const char c, const int color, ch_template chb[][8])
 {
 	int k, l;
 	
 	if (c == 'R' || c == 'Q') {
-		if (Kx == xpiece) {
-			if (ypiece > Ky) {
-				for (l = ypiece; l > Ky; l--) {
+		if (ypiece > Ky) {
+			for (l = ypiece; l > Ky; l--) {
+				if (chb[xpiece][l].occ == false)
 					k_domain_ctrl(xpiece, l, Kx, Ky, color, 'e');
-				}
-			} else {
-				for (l = ypiece; l < Ky; l++) {
-					k_domain_ctrl(xpiece, l, Kx, Ky, color, 'e');
-				}
 			}
-			return true;
+		} else if (ypiece < Ky) {
+			for (l = ypiece; l < Ky; l++) {
+				if (chb[xpiece][l].occ == false)
+					k_domain_ctrl(xpiece, l, Kx, Ky, color, 'e');
+			}
 		}
-		if (Ky == ypiece) {
-			if (xpiece > Kx) {
-				for (k = xpiece; k > Kx; k--) {
+		if (xpiece > Kx) {
+			for (k = xpiece; k > Kx; k--) {
+				if (chb[k][ypiece].occ == false)
 					k_domain_ctrl(k, ypiece, Kx, Ky, color, 'e');
-				}
-			} else {
-				for (k = xpiece; k < Kx; k++) {
-					k_domain_ctrl(k, ypiece, Kx, Ky, color, 'e');
-				}
 			}
-			return true;
+		} else if (xpiece < Kx) {
+			for (k = xpiece; k < Kx; k++) {
+				if (chb[k][ypiece].occ == false)
+					k_domain_ctrl(k, ypiece, Kx, Ky, color, 'e');
+			}
 		}
 	}
 	if (c == 'B' || c == 'Q') {
@@ -785,7 +780,9 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			k = xpiece + 1;
 			l = ypiece + 1;
 			while ((k <= 7 && k >= 0) && (l <= 7 && l >= 0)) {
-				k_domain_ctrl(k, l, Kx, Ky, color, 'e');
+				if (chb[k][l].occ == false) {
+					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
+				}
 				if (k == Kx && l == Ky) {
 					return true;
 				}
@@ -796,7 +793,9 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			k = xpiece - 1;
 			l = ypiece + 1;
 			while ((k >= 0 && k <= 7) && (l <= 7 && l >= 0)) {
-				k_domain_ctrl(k, l, Kx, Ky, color, 'e');
+				if (chb[k][l].occ == false) {
+					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
+				}
 				if (k == Kx && l == Ky) {
 					return true;
 				}
@@ -807,7 +806,9 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			k = xpiece + 1;
 			l = ypiece - 1;
 			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
-				k_domain_ctrl(k, l, Kx, Ky, color, 'e');
+				if (chb[k][l].occ == false) {
+					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
+				}
 				if (k == Kx && l == Ky) {
 					return true;
 				}
@@ -818,7 +819,9 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			k = xpiece - 1; 
 			l = ypiece - 1;
 			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
-				k_domain_ctrl(k, l, Kx, Ky, color, 'e');
+				if (chb[k][l].occ == false) {
+					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
+				}
 				if (k == Kx && l == Ky) {
 					return true;
 				}
@@ -881,6 +884,17 @@ void k_domain_ctrl(const int x_p, const int y_p, const int Kx,
 	}
 }
 
+/*char *getPossibleMoves(int color) {
+	char *retvalue;
+	int i, j;
+
+	for (i = 0; i < 3; i++) {
+		for (j = 0; j < 3; j++) {
+			if WK
+		}
+	}
+}*/
+
 void check_mate(KingState **WK, KingState **BK)
 {
 	int i, j, Wcounter = 0, Bcounter = 0;
@@ -915,7 +929,7 @@ void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
 	if (round == WHITE) {
 		fprintf(logf, "Round  #%d:\tWhite moves ", c);
 	} else {
-		fprintf(logf, "            \tBlack moves ");
+		fprintf(logf, "             Black moves ");
 		c++;
 	}
 	if (plInput[0] == 'P') {
