@@ -56,6 +56,9 @@ typedef enum KingState {
 	safe_check	/*King is not allowed to move to certain squares*/
 } KingState;
 
+extern char *WKingMoves;
+extern char *BKingMoves;
+
 
 /*prototypes for the main library*/
 /*add pieces on the chess board recursively*/

@@ -10,13 +10,16 @@
 
 /*prototypes for functions used only in here*/
 /*checks if the king is threatened by an enemy piece, returns true if he is*/
-bool king_is_threatened(const int, const int, const int, const int, const char, const int, ch_template[][8]);
+static bool king_is_threatened(const int, const int, const int, const int, const char, const int, ch_template[][8]);
 
 /*remove king's life if a piece can move to the domain surrounding him*/
-void k_domain_ctrl(const int, const int, const int, const int, const int, const char);
+static void k_domain_ctrl(const int, const int, const int, const int, const int, const char);
 
 /*checks whether checkmate has happened is achieved*/
-void check_mate(KingState**, KingState**);
+static void check_mate(KingState**, KingState**);
+
+/*is called twice with the coords of each King and stores the possible moves a King can do, during check*/
+void get_king_moves(ch_template [][8], int, int, int);
 
 
 /*the energy/life of each King is measured in his free domain
@@ -28,6 +31,10 @@ static short WKingLife[3][3]; /*energy of white King*/
 
 static short BKingLife[3][3]; /*energy of black King*/
 
+/*in case a King is threatened these strings store the possible moves the King
+ *can make in character pairs; for example "A8 H4 P3", "F2 B0" etc)*/
+char *WKingMoves = NULL;
+char *BKingMoves = NULL;
 
 typedef struct KingDomain {
 	int x;
@@ -741,6 +748,10 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 		BKingLife[1][1] = 0;
 	}
 	check_mate(&WK, &BK);
+	if (*WK == check)
+		get_king_moves(chb, WKx, WKy, WHITE);
+	if (*BK == check)
+		get_king_moves(chb, BKx, BKy, BLACK);
 }
 
 bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
@@ -884,16 +895,43 @@ void k_domain_ctrl(const int x_p, const int y_p, const int Kx,
 	}
 }
 
-/*char *getPossibleMoves(int color) {
-	char *retvalue;
-	int i, j;
-
+void get_king_moves(ch_template chb[][8], int Kx, int Ky, int color) 
+{
+	KingDomain KD[3][3] = {{{Kx-1, Ky-1},{Kx-1, Ky},{Kx-1, Ky+1}},
+			{{Kx, Ky-1},{Kx, Ky},{Kx, Ky+1}},
+			{{Kx+1, Ky-1},{Kx+1, Ky},{Kx+1, Ky+1}}};
+	int i, j, str_index = 0, tempx, tempy;
+	
+	if (color == BLACK)
+		BKingMoves = malloc(22*sizeof(char));
+	else
+		WKingMoves = malloc(22*sizeof(char));
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 3; j++) {
-			if WK
+			if (color == BLACK) {
+				if (BKingLife[i][j] == 0) {
+					tempx = KD[i][j].x;
+					tempy = KD[i][j].y;
+					sprintf(&BKingMoves[str_index], "%c%c ",
+						chb[tempx][tempy].square[0],
+						chb[tempx][tempy].square[1]);
+					str_index+=3;
+				} 
+			} else {
+				if (WKingLife[i][j] == 0) {
+					tempx = KD[i][j].x;
+					tempy = KD[i][j].y;
+					sprintf(&WKingMoves[str_index], "%c%c ",
+						chb[tempx][tempy].square[0],
+						chb[tempx][tempy].square[1]);
+					str_index+=3;
+				}
+			}
 		}
 	}
-}*/
+	
+	
+}
 
 void check_mate(KingState **WK, KingState **BK)
 {
