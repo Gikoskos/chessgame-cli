@@ -757,27 +757,59 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			const int ypiece, const char c, const int color, ch_template chb[][8])
 {
-	int k, l;
+	int k, l, max;
 	
 	if (c == 'R' || c == 'Q') {
 		if (ypiece > Ky) {
-			for (l = ypiece; l > Ky; l--) {
+			if (xpiece != Kx) {
+				if (Ky >= 1) 
+					max = Ky-1;
+				else
+					max = Ky;
+			} else
+				max = Ky+1;
+			for (l = ypiece; l >= max; l--) {
+				if (l == Ky) continue;
 				if (chb[xpiece][l].occ == false)
 					k_domain_ctrl(xpiece, l, Kx, Ky, color, 'e');
 			}
 		} else if (ypiece < Ky) {
-			for (l = ypiece; l < Ky; l++) {
+			if (xpiece != Kx) {
+				if (Ky <= 6) 
+					max = Ky+1;
+				else
+					max = Ky;
+			} else
+				max = Ky-1;
+			for (l = ypiece; l <= max; l++) {
+				if (l == Ky) continue;
 				if (chb[xpiece][l].occ == false)
 					k_domain_ctrl(xpiece, l, Kx, Ky, color, 'e');
 			}
 		}
 		if (xpiece > Kx) {
-			for (k = xpiece; k > Kx; k--) {
+			if (ypiece != Ky) {
+				if (Kx >= 1) 
+					max = Kx-1;
+				else
+					max = Kx;
+			} else
+				max = Kx+1;
+			for (k = xpiece; k >= max; k--) {
+				if (k == Kx) continue;
 				if (chb[k][ypiece].occ == false)
 					k_domain_ctrl(k, ypiece, Kx, Ky, color, 'e');
 			}
 		} else if (xpiece < Kx) {
-			for (k = xpiece; k < Kx; k++) {
+			if (ypiece != Ky) {
+				if (Kx <= 6) 
+					max = Kx+1;
+				else
+					max = Kx;
+			} else
+				max = Kx-1;
+			for (k = xpiece; k <= max; k++) {
+				if (k == Kx) continue;
 				if (chb[k][ypiece].occ == false)
 					k_domain_ctrl(k, ypiece, Kx, Ky, color, 'e');
 			}
