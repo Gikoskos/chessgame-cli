@@ -38,13 +38,13 @@ manually the -lncurses linking option.
 
 * fix bug on Windows that rejects input other than the first character after some time (DONE)
 
-* add the functionality for the game to end when a King is unable to make a move without being threatened by another piece/checkmate (DONE!!!)
+* add the functionality for the game to end when a King is unable to make a move without being threatened by another piece/checkmate (WIP)
 
 * fix this bug that only happens with black Pawns (DONE)
 
   <img src="http://i.imgur.com/cVGe6Sd.png" alt="step1" width = "257" height = "341"/> <img src="http://i.imgur.com/mkwlxOY.png" alt="step1" width = "257" height = "341"/>
 
-* prevent the King from moving to a square that might threaten him
+* prevent the King from moving to a square that might threaten him (WIP)
 
 * port the main engine to other languages
 
