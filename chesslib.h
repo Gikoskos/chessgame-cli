@@ -3,7 +3,7 @@
 /*              declarations for the chesslib.c library             */
 /*                                                                  */
 /*                    by <cyberchiller@gmail.com>                   */
-/*              see COPYING for copyright information               */
+/*                                                                  */
 /********************************************************************/
 
 #pragma once
@@ -63,14 +63,15 @@ extern char *BKingMoves;
 
 
 /*prototypes for the main library*/
-/*add pieces on the chess board recursively*/
+/*fill a ch_template[8][8] chess board, with chess pieces, recursively*/
 void initChessboard(ch_template[][8], unsigned, char);
 
 /*function to print the board at any given point in the game*/
 void printBoard(ch_template[][8]);
 
-/*traverses the chessboard, finds and returns the piece that is capable to perform the move entered by the player
- *if more than one piece are capable of moving to the square entered by the player it finds and returns them both */
+/*traverses the chessboard, finds and returns the piece that is capable 
+ *to perform the move entered by the player if more than one piece can move
+ *to the square entered by the player it finds and returns them both*/
 char *findPiece(ch_template[][8], const char*, int);
 
 /*move the piece if no other piece is in the way; also checks for pawn promotion*/
@@ -79,7 +80,7 @@ bool movePiece(ch_template[][8], char*, char[2], int);
 /*checks if a move is valid based on whether the piece overlaps other pieces or not*/
 bool piecesOverlap(ch_template[][8], const int, const int, const int , const int, const char);
 
-/*check for validity of input*/
+/*check for validity of player input*/
 bool validInput(const char*, int*);
 
 /*create a string with the current date to be used as the log date_filename*/
@@ -94,10 +95,12 @@ void printError(int);
 /*copies the input buffer to a string and return that string*/
 char *getPlayerInput(void);
 
-/*handles move conflict: whether two pieces of the same kind and color are able to move in the same square at the same round*/
+/*handles move conflict: whether two pieces of the same kind and color 
+ *are able to move in the same square at the same round*/
 char *pieceConflict(const char*, const char);
 
-/*finds and saves the state of each King for the current round; see the KingState enum for all the states a King can have*/
+/*finds and saves the state of each King for the current round; see 
+ *the KingState enum for all the states a King can have*/
 void findKState(ch_template[][8], KingState*, KingState*);
 
 /*functions I created to adjust my own chess game*/
