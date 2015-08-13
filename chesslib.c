@@ -15,7 +15,7 @@ static bool king_is_threatened(const int, const int, const int, const int, const
 /*remove king's life if a piece can move to the domain surrounding him*/
 static void k_domain_ctrl(const int, const int, const int, const int, const int, const char);
 
-/*checks whether checkmate has happened is achieved*/
+/*checks whether a king is captured in the next move, thus ending the game*/
 static void check_mate(KingState**, KingState**);
 
 /*is called twice with the coords of each King and stores the possible moves a King can do, during check*/
@@ -667,8 +667,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 					}
 					king_is_threatened(WKx, WKy, i, j, chb[i][j].current, WHITE, chb);
 				}
-				if (chb[i][j].current == 'B' || chb[i][j].current == 'Q' || 
-					chb[i][j].current == 'K' || chb[i][j].current == 'N') {
+				if (chb[i][j].current == 'B' || chb[i][j].current == 'Q' || chb[i][j].current == 'N') {
 					if (piecesOverlap(chb, i, j, WKx, WKy, chb[i][j].current) == false ||
 						chb[i][j].current == 'N') {
 						if (king_is_threatened(WKx, WKy, i, j, chb[i][j].current, WHITE, chb) == true) {
@@ -697,12 +696,11 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 					}
 					king_is_threatened(BKx, BKy, i, j, chb[i][j].current, BLACK, chb);
 				}
-				if (chb[i][j].current == 'B' || chb[i][j].current == 'Q' || 
-					chb[i][j].current == 'K' || chb[i][j].current == 'N') {
+				if (chb[i][j].current == 'B' || chb[i][j].current == 'Q' || chb[i][j].current == 'N') {
 					if (piecesOverlap(chb, i, j, BKx, BKy, chb[i][j].current) == false ||
-							chb[i][j].current == 'N') {
-							if (king_is_threatened(BKx, BKy, i, j, chb[i][j].current, BLACK, chb) == true) {
-								B_check_count++;
+						chb[i][j].current == 'N') {
+						if (king_is_threatened(BKx, BKy, i, j, chb[i][j].current, BLACK, chb) == true) {
+							B_check_count++;
 						}
 					}
 				}
@@ -735,14 +733,14 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 
 	if (W_check_count > 0) {
 		*WK = check;
-		WKingLife[1][1] = 1;
+		//WKingLife[1][1] = 1;
 	} else if (!W_check_count) {
 		*WK = safe;
 		WKingLife[1][1] = 0;
 	}
 	if (B_check_count > 0) {
 		*BK = check;
-		BKingLife[1][1] = 1;
+		//BKingLife[1][1] = 1;
 	} else if (!B_check_count) {
 		*BK = safe;
 		BKingLife[1][1] = 0;
@@ -757,61 +755,58 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			const int ypiece, const char c, const int color, ch_template chb[][8])
 {
-	int k, l, max;
+	int k, l, max, ovlap_flag = false;
 	
 	if (c == 'R' || c == 'Q') {
 		if (ypiece > Ky) {
-			if (xpiece != Kx) {
-				if (Ky >= 1) 
-					max = Ky-1;
-				else
-					max = Ky;
-			} else
-				max = Ky+1;
-			for (l = ypiece; l >= max; l--) {
-				if (l == Ky) continue;
-				if (chb[xpiece][l].occ == false)
+			if (Ky >= 1) 
+				max = Ky-1;
+			else
+				max = Ky;
+			for (l = ypiece-1; l >= max; l--) {
+				if (chb[xpiece][l].occ == true && (xpiece != Kx && l != Ky))
+					ovlap_flag = true;
+				if (ovlap_flag == false)
 					k_domain_ctrl(xpiece, l, Kx, Ky, color, 'e');
+				else break;
 			}
 		} else if (ypiece < Ky) {
-			if (xpiece != Kx) {
-				if (Ky <= 6) 
-					max = Ky+1;
-				else
-					max = Ky;
-			} else
-				max = Ky-1;
-			for (l = ypiece; l <= max; l++) {
-				if (l == Ky) continue;
-				if (chb[xpiece][l].occ == false)
+			if (Ky <= 6) 
+				max = Ky+1;
+			else
+				max = Ky;
+			for (l = ypiece+1; l <= max; l++) {
+				if (chb[xpiece][l].occ == true && (xpiece != Kx && l != Ky))
+					ovlap_flag = true;
+				if (ovlap_flag == false)
 					k_domain_ctrl(xpiece, l, Kx, Ky, color, 'e');
+				else break;
 			}
 		}
+		ovlap_flag = false;
 		if (xpiece > Kx) {
-			if (ypiece != Ky) {
-				if (Kx >= 1) 
-					max = Kx-1;
-				else
-					max = Kx;
-			} else
-				max = Kx+1;
-			for (k = xpiece; k >= max; k--) {
-				if (k == Kx) continue;
-				if (chb[k][ypiece].occ == false)
+			if (Kx >= 1) 
+				max = Kx-1;
+			else
+				max = Kx;
+			for (k = xpiece-1; k >= max; k--) {
+				if (chb[k][ypiece].occ == true && (k != Kx && ypiece != Ky))
+					ovlap_flag = true;
+				if (ovlap_flag == false)
 					k_domain_ctrl(k, ypiece, Kx, Ky, color, 'e');
+				else break;
 			}
 		} else if (xpiece < Kx) {
-			if (ypiece != Ky) {
-				if (Kx <= 6) 
-					max = Kx+1;
-				else
-					max = Kx;
-			} else
-				max = Kx-1;
-			for (k = xpiece; k <= max; k++) {
-				if (k == Kx) continue;
-				if (chb[k][ypiece].occ == false)
+			if (Kx <= 6) 
+				max = Kx+1;
+			else
+				max = Kx;
+			for (k = xpiece+1; k <= max; k++) {
+				if (chb[k][ypiece].occ == true && (k != Kx && ypiece != Ky))
+					ovlap_flag = true;
+				if (ovlap_flag == false)
 					k_domain_ctrl(k, ypiece, Kx, Ky, color, 'e');
+				else break;
 			}
 		}
 	}
@@ -823,10 +818,11 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			k = xpiece + 1;
 			l = ypiece + 1;
 			while ((k <= 7 && k >= 0) && (l <= 7 && l >= 0)) {
-				if (chb[k][l].occ == false) {
+				if (chb[k][l].occ == true && (k != Kx && l != Ky))
+					ovlap_flag = true;
+				if (ovlap_flag == false)
 					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
-				}
-				if (k == Kx && l == Ky) {
+				if (k == (Kx+1) && l == (Ky+1)) {
 					return true;
 				}
 				k++;
@@ -836,10 +832,11 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			k = xpiece - 1;
 			l = ypiece + 1;
 			while ((k >= 0 && k <= 7) && (l <= 7 && l >= 0)) {
-				if (chb[k][l].occ == false) {
+				if (chb[k][l].occ == true && (k != Kx && l != Ky))
+					ovlap_flag = true;
+				if (ovlap_flag == false)
 					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
-				}
-				if (k == Kx && l == Ky) {
+				if (k == (Kx-1) && l == (Ky+1)) {
 					return true;
 				}
 				k--;
@@ -849,10 +846,11 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			k = xpiece + 1;
 			l = ypiece - 1;
 			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
-				if (chb[k][l].occ == false) {
+				if (chb[k][l].occ == true && (k != Kx && l != Ky))
+					ovlap_flag = true;
+				if (ovlap_flag == false)
 					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
-				}
-				if (k == Kx && l == Ky) {
+				if (k == (Kx+1) && l == (Ky-1)) {
 					return true;
 				}
 				k++;
@@ -862,10 +860,11 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			k = xpiece - 1; 
 			l = ypiece - 1;
 			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
-				if (chb[k][l].occ == false) {
+				if (chb[k][l].occ == true && (k != Kx && l != Ky))
+					ovlap_flag = true;
+				if (ovlap_flag == false)
 					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
-				}
-				if (k == Kx && l == Ky) {
+				if (k == (Kx-1) && l == (Ky-1)) {
 					return true;
 				}
 				k--;
@@ -908,18 +907,18 @@ void k_domain_ctrl(const int x_p, const int y_p, const int Kx,
 
 	for (k = 0; k < 3; k++) {
 		for (l = 0; l < 3; l++) {
-			if ((k == 1 && l == 1) || KD[k][l].x < 0 || KD[k][l].y < 0 || 
-				KD[k][l].y > 7 || KD[k][l].x > 7) continue;
+			/*if ((k == 1 && l == 1) || KD[k][l].x < 0 || KD[k][l].y < 0 || 
+				KD[k][l].y > 7 || KD[k][l].x > 7) continue;*/
 			if (KD[k][l].x == x_p && KD[k][l].y == y_p) {
 				if (color == BLACK) {
 					if (flag == 'e')
 						BKingLife[k][l] = 1;
-					else
+					else if (flag == 'f')
 						BKingLife[k][l] = 2;
 				} else {
 					if (flag == 'e')
 						WKingLife[k][l] = 1;
-					else
+					else if (flag == 'f')
 						WKingLife[k][l] = 2;
 				}
 			}
@@ -961,8 +960,6 @@ void get_king_moves(ch_template chb[][8], int Kx, int Ky, int color)
 			}
 		}
 	}
-	
-	
 }
 
 void check_mate(KingState **WK, KingState **BK)
