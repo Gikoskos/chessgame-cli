@@ -56,6 +56,8 @@ typedef enum KingState {
 	safe_check	/*King is not allowed to move to certain squares*/
 } KingState;
 
+/*possible moves that each King can do after a check situation
+ *for example WKingMoves = "A8 H4 B3"*/
 extern char *WKingMoves;
 extern char *BKingMoves;
 
