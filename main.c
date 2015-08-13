@@ -16,7 +16,7 @@
 /*       small game making use of the chesslib.c chess library      */
 /*                                                                  */
 /*                    by <cyberchiller@gmail.com>                   */
-/*              see COPYING for copyright information               */
+/*                                                                  */
 /********************************************************************/
 
 #include "chesslib.h"
@@ -25,16 +25,16 @@ int main(int argc, char *argv[])
 {
 	ch_template chess_board[8][8];
 	char *playerInput = NULL, piece_to_move[2], fn[s_l], attack_guard[5], temp_cpiece;
-		/*playerInput: input from stdin
-		 *piece_to_move: the final piece to move
-		 *fn: file name string with s_l length
-		 *attack_guard: double pawn attack guard and temporary storage for the return of findPiece
-		 *temp_cpiece: value to store the current piece name in use with the pieceConflict function*/
+	/*playerInput: input from stdin
+	*piece_to_move: the final piece to move
+	*fn: file name string with s_l length
+	*attack_guard: double pawn attack guard and temporary storage for the return of findPiece
+	*temp_cpiece: value to store the current piece name in use with the pieceConflict function*/
 	int round = 0, roundcount = 1, p_err = 0, loop_count = 1;
-		/*round: for each player's round, 1 for black, 2 for white
-		 *roundcount: total number of rounds
-		 *p_err: holds the position of the error_out array
-		 *loop_count: counter for LOOP*/
+	/*round: for each player's round, 1 for black, 2 for white
+	*roundcount: total number of rounds
+	*p_err: holds the position of the error_out array
+	*loop_count: counter for LOOP*/
 	KingState white_king = safe, black_king = safe;
 	FILE *logfile;
 
@@ -91,6 +91,12 @@ int main(int argc, char *argv[])
 			if (black_king == check) {
 				printf("Black king is in danger!\n"); 
 				printf("Possible moves: %s\n", BKingMoves);
+			}
+			if (white_king == safe_check) {
+				printf("Possible moves for white king: %s\n", WKingMoves);
+			}
+			if (black_king == safe_check) {
+				printf("Possible moves for black king: %s\n", BKingMoves);
 			}
 			if (round == BLACK) 
 				printf("It\'s black\'s turn: ");
