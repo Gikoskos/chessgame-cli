@@ -85,12 +85,10 @@ int main(int argc, char *argv[])
 				goto ENDGAME;
 			}
 			if (white_king == check) {
-				printf("White king is in danger!\n");
-				printf("Possible moves: %s\n", WKingMoves);
+				printf("Possible moves for white King: %s\n", WKingMoves);
 			}
 			if (black_king == check) {
-				printf("Black king is in danger!\n"); 
-				printf("Possible moves: %s\n", BKingMoves);
+				printf("Possible moves for black King: %s\n", BKingMoves);
 			}
 			if (round == BLACK) 
 				printf("It\'s black\'s turn: ");
