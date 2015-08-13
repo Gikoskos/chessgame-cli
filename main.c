@@ -92,12 +92,6 @@ int main(int argc, char *argv[])
 				printf("Black king is in danger!\n"); 
 				printf("Possible moves: %s\n", BKingMoves);
 			}
-			if (white_king == safe_check) {
-				printf("Possible moves for white king: %s\n", WKingMoves);
-			}
-			if (black_king == safe_check) {
-				printf("Possible moves for black king: %s\n", BKingMoves);
-			}
 			if (round == BLACK) 
 				printf("It\'s black\'s turn: ");
 			else 
@@ -158,9 +152,9 @@ int main(int argc, char *argv[])
 	ENDGAME:
 	if (white_king == checkmate || black_king == checkmate) {
 #if !defined(__MINGW32__) || !defined(_WIN32)
-	sleep(4);
+		sleep(4);
 #else
-	Sleep(4);
+		Sleep(4);
 #endif
 	}
 	playerInput = NULL;
