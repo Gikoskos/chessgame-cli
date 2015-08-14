@@ -849,7 +849,7 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			else
 				max = Ky;
 			for (l = ypiece-1; l >= max; l--) {
-				if (chb[xpiece][l].occ == true)
+				if (chb[xpiece][l].occ == true && l!=Ky)
 					ovlap_once = ovlap_flag = true;
 				if (l == Ky && ovlap_once == false)
 					ovlap_flag = false;
@@ -862,7 +862,7 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			else
 				max = Ky;
 			for (l = ypiece+1; l <= max; l++) {
-				if (chb[xpiece][l].occ == true)
+				if (chb[xpiece][l].occ == true && l!=Ky)
 					ovlap_once = ovlap_flag = true;
 				if (l == Ky && ovlap_once == false)
 					ovlap_flag = false;
@@ -877,7 +877,7 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			else
 				max = Kx;
 			for (k = xpiece-1; k >= max; k--) {
-				if (chb[k][ypiece].occ == true)
+				if (chb[k][ypiece].occ == true && k!=Kx)
 					ovlap_once = ovlap_flag = true;
 				if (k == Kx && ovlap_once == false)
 					ovlap_flag = false;
@@ -890,7 +890,7 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			else
 				max = Kx;
 			for (k = xpiece+1; k <= max; k++) {
-				if (chb[k][ypiece].occ == true)
+				if (chb[k][ypiece].occ == true && k!=Kx)
 					ovlap_once = ovlap_flag = true;
 				if (k == Kx && ovlap_once == false)
 					ovlap_flag = false;
@@ -908,7 +908,7 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			k = xpiece + 1;
 			l = ypiece + 1;
 			while ((k <= 7 && k >= 0) && (l <= 7 && l >= 0)) {
-				if (chb[k][l].occ == true)
+				if (chb[k][l].occ == true && (k != Kx && l != Ky))
 					ovlap_once = ovlap_flag = true;
 				if ((k == Kx && l == Ky) && ovlap_once == false)
 					ovlap_flag = false;
@@ -930,7 +930,7 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			k = xpiece - 1;
 			l = ypiece + 1;
 			while ((k >= 0 && k <= 7) && (l <= 7 && l >= 0)) {
-				if (chb[k][l].occ == true)
+				if (chb[k][l].occ == true && (k != Kx && l != Ky))
 					ovlap_once = ovlap_flag = true;
 				if ((k == Kx && l == Ky) && ovlap_once == false)
 					ovlap_flag = false;
@@ -952,7 +952,7 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			k = xpiece + 1;
 			l = ypiece - 1;
 			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
-				if (chb[k][l].occ == true)
+				if (chb[k][l].occ == true && (k != Kx && l != Ky))
 					ovlap_once = ovlap_flag = true;
 				if ((k == Kx && l == Ky) && ovlap_once == false)
 					ovlap_flag = false;
@@ -974,7 +974,7 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			k = xpiece - 1; 
 			l = ypiece - 1;
 			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
-				if (chb[k][l].occ == true)
+				if (chb[k][l].occ == true && (k != Kx && l != Ky))
 					ovlap_once = ovlap_flag = true;
 				if ((k == Kx && l == Ky) && ovlap_once == false)
 					ovlap_flag = false;
