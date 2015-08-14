@@ -1182,8 +1182,8 @@ extern void printBanner(const char *banner)
 {
 	int i, j, c = 0, len = (int)strlen(banner);
 #if !defined (__MINGW32__) || !defined(_WIN32)
-	struct timespec *start_t = malloc(sizeof(struct timespec));
-	struct timespec *end_t = malloc(sizeof(struct timespec));
+	struct timespec *start_t = alloca(sizeof(struct timespec));
+	struct timespec *end_t = alloca(sizeof(struct timespec));
 
 	*start_t = (struct timespec){0, (BANNER_SPEED)*1000000};
 	*end_t = (struct timespec){0, (BANNER_SPEED)*1000000};
@@ -1205,8 +1205,4 @@ extern void printBanner(const char *banner)
 		}
 		printf("\n");
 	}
-#if !defined (__MINGW32__) || !defined(_WIN32)
-	free(start_t);
-	free(end_t);
-#endif
 }
