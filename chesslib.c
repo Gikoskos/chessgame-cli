@@ -132,9 +132,9 @@ void printBoard(ch_template chb[][8], char p)
 #else
 	int i, j, max, y = 0, x = 0;
 
-	printf("    a   b   c   d   e   f   g   h  \n");
+		printf("   \033[1m a   b   c   d   e   f   g   h \033[0m \n");
 	for (i = 0; i < (max = (MOS%2)?MOS:(MOS-1)); i++) {
-		if(i%2 == true) printf("%d ", y + 1);
+		if(i%2 == true) printf("\033[1m%d\033[0m ", y + 1);
 		else printf("  ");
 		for (j = 0; j < max; j++) {
 			if (!i) { 
@@ -205,13 +205,13 @@ void printBoard(ch_template chb[][8], char p)
 		}
 		x = 0;
 		if(i%2 == true) {
-			printf(" %d", y + 1);
+			printf(" \033[1m%d\033[0m", y + 1);
 			y++;
 		} else
 			printf("  ");
 		printf("\n");
 	}
-	printf("    a   b   c   d   e   f   g   h  \n");
+	printf("   \033[1m a   b   c   d   e   f   g   h \033[0m \n");
 	printf("\n");
 #endif
 }
