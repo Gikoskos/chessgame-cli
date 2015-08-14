@@ -28,6 +28,9 @@ Would recommend to compile through the Makefile, if you're on a linux distro, on
 gcc, make and libncurses though. The Makefile works with Mingw-w64's make as well, but you will have to remove 
 manually the -lncurses linking option.
 
+I will be releasing debs created on Ubuntu 14.04 i386 that will also work on almost all debian-based distributions(and versions), 
+each time I fix bugs or change something in the UI.
+
 ## TODO
 
 * fix stupid bugs like this (DONE)
