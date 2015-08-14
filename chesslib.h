@@ -17,6 +17,11 @@
 #include <unistd.h>
 
 #if defined(__MINGW32__) || defined(_WIN32)
+# ifdef BUILD_CHESSLIB_DLL
+#  define CHESSLIB_DLL __declspec(dllexport)
+# else
+#  define CHESSLIB_DLL __declspec(dllimport)
+# endif
 # ifndef UNICODE
 #  define UNICODE
 # endif
@@ -39,7 +44,7 @@
 #define BLACK 1
 #define EMPTY 0
 #define BANNER_SPEED 100 - R_SPEED
-#define R_SPEED 75	/*speed of the animated banner, bigger value bigger speed; maximum value is 99*/
+#define R_SPEED 80	/*speed of the animated banner, bigger value bigger speed; maximum value is 99*/
 #define s_l 26	/*length of the filename string*/
 
 typedef struct ch_template {
@@ -67,8 +72,8 @@ extern char *BKingMoves;
 void initChessboard(ch_template[][8], unsigned, char);
 
 /*function to print the board at any given point in the game; second argument is
- *a character to determine the type of chessboard that will be printed*/
-void printBoard(ch_template[][8], char);
+ *a character to determine the type of chessboard that will be printed (only works on Linux for now)*/
+void printBoard(ch_template[][8], const char);
 
 /*traverses the chessboard, finds and returns the piece that is capable 
  *to perform the move entered by the player if more than one piece can move
