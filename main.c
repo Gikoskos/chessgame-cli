@@ -24,7 +24,7 @@
 int main(int argc, char *argv[])
 {
 	ch_template chess_board[8][8];
-	char *playerInput = NULL, piece_to_move[2], fn[s_l], attack_guard[5], temp_cpiece;
+	char *playerInput = NULL, piece_to_move[2], fn[s_l], attack_guard[5], temp_cpiece, chbflag = 'a';
 	/*playerInput: input from stdin
 	*piece_to_move: the final piece to move
 	*fn: file name string with s_l length
@@ -69,13 +69,13 @@ int main(int argc, char *argv[])
 			if (loop_count > 1) {
 				clear_screen();
 				printf("\n\n\n\n\n\n");
-				printBoard(chess_board);
+				printBoard(chess_board, chbflag);
 				if (!strcmp(playerInput, "help")) {
 					printInstructions();
 					p_err = 0;
 				}
 			} else 
-				printBoard(chess_board);
+				printBoard(chess_board, chbflag);
 			printError(p_err);
 			if (white_king == checkmate) {
 				printf("Black player wins! Thanks for playing!\n\t\t");
@@ -104,6 +104,15 @@ int main(int argc, char *argv[])
 				goto ENDGAME;
 			}
 			if (strlen(playerInput) > 4 || playerInput[0] == '\n') {	/*change error code for bad input*/
+				if (strncmp(playerInput, "pieces", 6) == 0) {
+					chbflag = 'p';
+					loop_count++;
+					continue;
+				} else if (strncmp(playerInput, "letters", 7) == 0) {
+					chbflag = 'a';
+					loop_count++;
+					continue;
+				}
 				p_err = 2;
 				loop_count++;
 				continue;

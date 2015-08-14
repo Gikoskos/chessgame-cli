@@ -66,8 +66,9 @@ extern char *BKingMoves;
 /*fill a ch_template[8][8] chess board, with chess pieces, recursively*/
 void initChessboard(ch_template[][8], unsigned, char);
 
-/*function to print the board at any given point in the game*/
-void printBoard(ch_template[][8]);
+/*function to print the board at any given point in the game; second argument is
+ *a character to determine the type of chessboard that will be printed*/
+void printBoard(ch_template[][8], char);
 
 /*traverses the chessboard, finds and returns the piece that is capable 
  *to perform the move entered by the player if more than one piece can move

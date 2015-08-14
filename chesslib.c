@@ -95,7 +95,7 @@ void initChessboard(ch_template chb[][8], unsigned k, char col)	/*k is row, col 
 		initChessboard(chb, k, col);
 }
 
-void printBoard(ch_template chb[][8])
+void printBoard(ch_template chb[][8], char p)
 {
 #ifdef _WIN32
 	HANDLE cmdhandle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -113,13 +113,15 @@ void printBoard(ch_template chb[][8])
 			if (chb[i][j].occ == false) {
 				printf("  | ");
 			} else {
-				if (chb[i][j].c == BLACK)
-					SetConsoleTextAttribute(cmdhandle, FOREGROUND_RED); 
-				else
-					SetConsoleTextAttribute(cmdhandle, FOREGROUND_GREEN);
-				printf("%c", chb[i][j].current);
-				SetConsoleTextAttribute(cmdhandle, sv_att);
-				printf(" | ");
+				if (p == 'a') {
+					if (chb[i][j].c == BLACK)
+						SetConsoleTextAttribute(cmdhandle, FOREGROUND_RED); 
+					else
+						SetConsoleTextAttribute(cmdhandle, FOREGROUND_GREEN);
+					printf("%c", chb[i][j].current);
+					SetConsoleTextAttribute(cmdhandle, sv_att);
+					printf(" | ");
+				}
 			}
 		}
 		printf("%d", i + 1);
@@ -153,10 +155,44 @@ void printBoard(ch_template chb[][8])
 					if (chb[y][x].occ == false)
 						printf("   ");
 					else {
-						if (chb[y][x].c == BLACK)
-							printf(" %s%c%s ", KRED, chb[y][x].current, RESET);
-						else
-							printf(" %s%c%s ", KYEL, chb[y][x].current, RESET);
+						if (p == 'a') {
+							if (chb[y][x].c == BLACK)
+								printf(" %s%c%s ", KRED, chb[y][x].current, RESET);
+							else
+								printf(" %s%c%s ", KYEL, chb[y][x].current, RESET);
+						} else {
+							if (chb[y][x].current == 'P') {
+								if (chb[y][x].c == BLACK)
+									printf(" \u265F ");
+								else
+									printf(" \u2659 ");
+							} else if (chb[y][x].current == 'Q') {
+								if (chb[y][x].c == BLACK)
+									printf(" \u265B ");
+								else
+									printf(" \u2655 ");
+							} else if (chb[y][x].current == 'B') {
+								if (chb[y][x].c == BLACK)
+									printf(" \u265D ");
+								else
+									printf(" \u2657 ");
+							} else if (chb[y][x].current == 'R') {
+								if (chb[y][x].c == BLACK)
+									printf(" \u265C ");
+								else
+									printf(" \u2656 ");
+							} else if (chb[y][x].current == 'N') {
+								if (chb[y][x].c == BLACK)
+									printf(" \u265E ");
+								else
+									printf(" \u2658 ");
+							} else if (chb[y][x].current == 'K') {
+								if (chb[y][x].c == BLACK)
+									printf(" \u265A ");
+								else
+									printf(" \u2654 ");
+							}
+						}
 					}
 					x++;
 				}
@@ -182,7 +218,8 @@ void printBoard(ch_template chb[][8])
 
 bool validInput(const char *input, int *errPtr)
 {
-	if (!strcmp(input, "help") || strlen(input) > 3) {
+	if (!strcmp(input, "help") || strlen(input) > 3 || (strncmp(input, "letters", 7) == 0) ||
+		(strncmp(input, "pieces", 6) == 0)) {
 		return false;
 	} else if (input[0] != 'R' && input[0] != 'N' && input[0] != 'B' && input[0] != 'Q' && input[0] != 'K' && input[0] != 'P') {
 		*errPtr = 5;
