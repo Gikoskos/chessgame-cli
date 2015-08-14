@@ -652,6 +652,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 					k_domain_ctrl(i,j,WKx,WKy,chb[i][j].c, 'e');
 					k_domain_ctrl(i-1,j+1,WKx,WKy,chb[i][j].c, 'e');
 					k_domain_ctrl(i-1,j-1,WKx,WKy,chb[i][j].c, 'e');
+					k_domain_ctrl(i,j,BKx,BKy,chb[i][j].c, 'f');
 				}
 				if (chb[i][j].current == 'R' || chb[i][j].current == 'Q') {
 					if ((WKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
@@ -676,6 +677,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 					k_domain_ctrl(i,j,BKx,BKy,chb[i][j].c, 'e');
 					k_domain_ctrl(i+1,j+1,BKx,BKy,chb[i][j].c, 'e');
 					k_domain_ctrl(i+1,j-1,BKx,BKy,chb[i][j].c, 'e');
+					k_domain_ctrl(i,j,WKx,WKy,chb[i][j].c, 'f');
 				}
 				if (chb[i][j].current == 'R' || chb[i][j].current == 'Q') {
 					if ((BKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
