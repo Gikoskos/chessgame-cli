@@ -769,7 +769,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 	}
 	if (B_check_count > 0) {
 		*BK = check;
-		WKingLife[1][1] = 1;
+		BKingLife[1][1] = 1;
 	} else if (!B_check_count) {
 		*BK = safe;
 		BKingLife[1][1] = 0;
