@@ -95,40 +95,98 @@ void initChessboard(ch_template chb[][8], unsigned k, char col)	/*k is row, col 
 		initChessboard(chb, k, col);
 }
 
-void printBoard(ch_template chb[][8], char p)
+void printBoard(ch_template chb[][8], const char p)
 {
 #ifdef _WIN32
 	HANDLE cmdhandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO cmdinfo;
 	WORD sv_att;
-	int i, j;
+	int i, j, max, y = 0, x = 0;
 
 	GetConsoleScreenBufferInfo(cmdhandle, &cmdinfo);
 	sv_att = cmdinfo.wAttributes;
 
 	printf("    a   b   c   d   e   f   g   h  \n");
-	for (i = 0; i < 8; i++) {
-		printf("%d | ", i + 1);
-		for (j = 0; j < 8; j++) {
-			if (chb[i][j].occ == false) {
-				printf("  | ");
-			} else {
-				if (p == 'a') {
-					if (chb[i][j].c == BLACK)
-						SetConsoleTextAttribute(cmdhandle, FOREGROUND_RED); 
-					else
-						SetConsoleTextAttribute(cmdhandle, FOREGROUND_GREEN);
-					printf("%c", chb[i][j].current);
-					SetConsoleTextAttribute(cmdhandle, sv_att);
-					printf(" | ");
+	for (i = 0; i < (max = (MOS%2)?MOS:(MOS-1)); i++) {
+		if(i%2 == true) printf("%d ", y + 1);
+		else printf("  ");
+		for (j = 0; j < max; j++) {
+			if (!i) { 
+				if(!j) printf("%c", 218);
+				else if(j == (max-1)) printf("%c", 191);
+				else if(j%2) printf("%c%c%c", 196,196,196);
+				else if(!(j%2)) printf("%c", 194);
+			} else if (i == max-1) {
+				if(!j)printf("%c", 192);
+				else if(j == (max-1)) printf("%c", 217);
+				else if(j%2) printf("%c%c%c", 196,196,196);
+				else if(!(j%2)) printf("%c", 193);
+			} else if (i%2) {
+				if(!(j%2)) printf("%c", 179);
+				else {
+					if (chb[y][x].occ == false)
+						printf("   ");
+					else {
+						if (p == 'a') {
+							if (chb[y][x].c == BLACK)
+								SetConsoleTextAttribute(cmdhandle, FOREGROUND_RED); 
+							else
+								SetConsoleTextAttribute(cmdhandle, FOREGROUND_GREEN);
+							printf(" %c ", chb[y][x].current);
+							SetConsoleTextAttribute(cmdhandle, sv_att);
+						} else {
+							if (chb[y][x].current == 'P') {
+								if (chb[y][x].c == BLACK)
+									printf(" \u265F ");
+								else
+									printf(" \u2659 ");
+							} else if (chb[y][x].current == 'Q') {
+								if (chb[y][x].c == BLACK)
+									printf(" \u265B ");
+								else
+									printf(" \u2655 ");
+							} else if (chb[y][x].current == 'B') {
+								if (chb[y][x].c == BLACK)
+									printf(" \u265D ");
+								else
+									printf(" \u2657 ");
+							} else if (chb[y][x].current == 'R') {
+								if (chb[y][x].c == BLACK)
+									printf(" \u265C ");
+								else
+									printf(" \u2656 ");
+							} else if (chb[y][x].current == 'N') {
+								if (chb[y][x].c == BLACK)
+									printf(" \u265E ");
+								else
+									printf(" \u2658 ");
+							} else if (chb[y][x].current == 'K') {
+								if (chb[y][x].c == BLACK)
+									printf(" \u265A ");
+								else
+									printf(" \u2654 ");
+							}
+						}
+					}
+					x++;
 				}
+			} else if (!(i%2)) {
+				if(!j) printf("%c", 195);
+				else if(j == (max-1)) printf("%c", 180);
+				else if(j%2) printf("%c%c%c", 196,196,196);
+				else if(!(j%2)) printf("%c", 197);
 			}
 		}
-		printf("%d", i + 1);
+		x = 0;
+		if(i%2 == true) {
+			printf(" %d", y + 1);
+			y++;
+		} else
+			printf("  ");
 		printf("\n");
 	}
 	printf("    a   b   c   d   e   f   g   h  \n");
-	printf("\n\n");
+	printf("\n");
 #else
 	int i, j, max, y = 0, x = 0;
 

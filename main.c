@@ -104,6 +104,7 @@ int main(int argc, char *argv[])
 				goto ENDGAME;
 			}
 			if (strlen(playerInput) > 4 || playerInput[0] == '\n') {	/*change error code for bad input*/
+#if !defined (__MINGW32__) || !defined(_WIN32)
 				if (strncmp(playerInput, "pieces", 6) == 0) {
 					chbflag = 'p';
 					loop_count++;
@@ -113,6 +114,7 @@ int main(int argc, char *argv[])
 					loop_count++;
 					continue;
 				}
+#endif
 				p_err = 2;
 				loop_count++;
 				continue;
