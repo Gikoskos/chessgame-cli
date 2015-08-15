@@ -13,10 +13,10 @@ so it can end after the other player directly kills the King.
 
 A log file that records all the moves that took place, is created during the game.
 
-The thought process behind this project was for me to implement a chess engine for the first time, without seeing
-code from other projects.
+With the Linux version if you type 'pieces' you will get the Unicode chess characters and if you type 'letters' it reverts back.
 
-There might be tons of other implementations that are probably way smarter than mine but even so, I just did this to have fun :D
+The thought process behind this project was for me to implement a chess engine for the first time, without seeing
+code from other projects or how implementations of chess engines are generally done.
 
 ## Prerequisites
 
