@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
 #if !defined(__MINGW32__) || !defined(_WIN32)
 		sleep(4);
 #else
-		Sleep(4);
+		Sleep(4000);
 #endif
 	}
 	playerInput = NULL;
