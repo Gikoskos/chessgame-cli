@@ -127,46 +127,12 @@ void printBoard(ch_template chb[][8], const char p)
 					if (chb[y][x].occ == false)
 						printf("   ");
 					else {
-						if (p == 'a') {
-							if (chb[y][x].c == BLACK)
-								SetConsoleTextAttribute(cmdhandle, FOREGROUND_RED); 
-							else
-								SetConsoleTextAttribute(cmdhandle, FOREGROUND_GREEN);
-							printf(" %c ", chb[y][x].current);
-							SetConsoleTextAttribute(cmdhandle, sv_att);
-						} else {
-							if (chb[y][x].current == 'P') {
-								if (chb[y][x].c == BLACK)
-									printf(" \u265F ");
-								else
-									printf(" \u2659 ");
-							} else if (chb[y][x].current == 'Q') {
-								if (chb[y][x].c == BLACK)
-									printf(" \u265B ");
-								else
-									printf(" \u2655 ");
-							} else if (chb[y][x].current == 'B') {
-								if (chb[y][x].c == BLACK)
-									printf(" \u265D ");
-								else
-									printf(" \u2657 ");
-							} else if (chb[y][x].current == 'R') {
-								if (chb[y][x].c == BLACK)
-									printf(" \u265C ");
-								else
-									printf(" \u2656 ");
-							} else if (chb[y][x].current == 'N') {
-								if (chb[y][x].c == BLACK)
-									printf(" \u265E ");
-								else
-									printf(" \u2658 ");
-							} else if (chb[y][x].current == 'K') {
-								if (chb[y][x].c == BLACK)
-									printf(" \u265A ");
-								else
-									printf(" \u2654 ");
-							}
-						}
+						if (chb[y][x].c == BLACK)
+							SetConsoleTextAttribute(cmdhandle, FOREGROUND_RED); 
+						else
+							SetConsoleTextAttribute(cmdhandle, FOREGROUND_GREEN);
+						printf(" %c ", chb[y][x].current);
+						SetConsoleTextAttribute(cmdhandle, sv_att);
 					}
 					x++;
 				}
@@ -1128,7 +1094,7 @@ void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
 	if (round == WHITE) {
 		fprintf(logf, "Round  #%d:\tWhite moves ", c);
 	} else {
-		fprintf(logf, "             Black moves ");
+		fprintf(logf, "           \tBlack moves ");
 		c++;
 	}
 	if (plInput[0] == 'P') {
