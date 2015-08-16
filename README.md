@@ -25,8 +25,7 @@ Needs libncurses to compile. (on Linux)
 If you're compiling on Windows, try using Mingw-w64 to install gcc. I don't think it will compile as well with MSVC.
 
 Would recommend to compile through the Makefile, if you're on a linux distro, only after you've installed
-gcc, make and libncurses though. The Makefile works with Mingw-w64's make as well, but you will have to remove 
-manually the -lncurses linking option.
+gcc, make and libncurses though. To compile on Windows with the makefile run this command: dmake dll & dmake exe (or make).
 
 I will be releasing debs created on Ubuntu 14.04 i386 that will probably also work on almost all debian-based 
 distributions(and versions), each time I fix bugs or change something in the UI.
@@ -48,6 +47,8 @@ distributions(and versions), each time I fix bugs or change something in the UI.
   <img src="http://i.imgur.com/cVGe6Sd.png" alt="step1" width = "257" height = "341"/> <img src="http://i.imgur.com/mkwlxOY.png" alt="step1" width = "257" height = "341"/>
 
 * prevent the King from moving to a square that might threaten him (WIP)
+
+* add castling (WIP)
 
 * port the main engine to other languages
 
