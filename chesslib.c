@@ -100,12 +100,11 @@ void printBoard(ch_template chb[][8], const char p)
 #ifdef _WIN32
 	HANDLE cmdhandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO cmdinfo;
-	WORD sv_att;
+	WORD cldefault;
 	int i, j, max, y = 0, x = 0;
 
 	GetConsoleScreenBufferInfo(cmdhandle, &cmdinfo);
-	sv_att = cmdinfo.wAttributes;
-
+	cldefault = cmdinfo.wAttributes;
 	printf("    a   b   c   d   e   f   g   h  \n");
 	for (i = 0; i < (max = (MOS%2)?MOS:(MOS-1)); i++) {
 		if(i%2 == true) printf("%d ", y + 1);
@@ -128,11 +127,11 @@ void printBoard(ch_template chb[][8], const char p)
 						printf("   ");
 					else {
 						if (chb[y][x].c == BLACK)
-							SetConsoleTextAttribute(cmdhandle, FOREGROUND_RED); 
+							SetConsoleTextAttribute(cmdhandle, FOREGROUND_INTENSITY | FOREGROUND_RED); 
 						else
-							SetConsoleTextAttribute(cmdhandle, FOREGROUND_GREEN);
+							SetConsoleTextAttribute(cmdhandle, FOREGROUND_INTENSITY | FOREGROUND_GREEN);
 						printf(" %c ", chb[y][x].current);
-						SetConsoleTextAttribute(cmdhandle, sv_att);
+						SetConsoleTextAttribute(cmdhandle, cldefault);
 					}
 					x++;
 				}
