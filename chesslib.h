@@ -55,14 +55,15 @@ typedef struct ch_template {
 } ch_template;
 
 typedef enum KingState {
-	check,
-	checkmate,
-	safe,	/*King is safe (not threatened in his 3x3 vicinity*/
+	check,	/*King is threatened and needs to move immediately*/
+	checkmate,	/*King will be inevitably captured in the next round*/
+	safe,	/*King is safe (not threatened at all in his 3x3 vicinity*/
 	safe_check	/*King is not allowed to move to certain squares*/
 } KingState;
 
 /*possible moves that each King can do after a check situation
- *for example WKingMoves = "A8 H4 B3"*/
+ *for example WKingMoves = "A8 H4 B3"; If the King can't move at all
+ *the string is filled with garbage values, still looking for a way to fix this*/
 extern char *WKingMoves;
 extern char *BKingMoves;
 
@@ -76,29 +77,30 @@ void initChessboard(ch_template[][8], unsigned, char);
 void printBoard(ch_template[][8], const char);
 
 /*traverses the chessboard, finds and returns the piece that is capable 
- *to perform the move entered by the player if more than one piece can move
- *to the square entered by the player it finds and returns them both*/
+ *to perform the move entered by the player; if more than one piece can move
+ *to the square entered by the player it finds and returns them both in the ch_template square format*/
 char *findPiece(ch_template[][8], const char*, int);
 
-/*move the piece if no other piece is in the way; also checks for pawn promotion*/
+/*moves the piece if no other piece is in the way; also checks for pawn promotion*/
 bool movePiece(ch_template[][8], char*, char[2], int);
 
-/*checks if a move is valid based on whether the piece overlaps other pieces or not*/
+/*checks whether a move of a certain piece from one square to another overlaps other pieces or not*/
 bool piecesOverlap(ch_template[][8], const int, const int, const int , const int, const char);
 
-/*check for validity of player input*/
+/*checks for validity of player input*/
 bool validInput(const char*, int*);
 
-/*create a string with the current date to be used as the log date_filename*/
+/*creates a string with the current date to be used as the log date_filename, second argument
+ *is the length of the string; minimum length is 26, if it's any lower the string won't be written*/
 void date_filename(char*, int);
 
 /*write each player's moves to a log file*/
 void write_to_log(int, FILE*, char*, char[]);
 
-/*basic error printing function; writes output to stderr*/
+/*basic error printing function, see implementation for error codes; writes output to stderr*/
 void printError(int);
 
-/*copies the input buffer to a string and return that string*/
+/*copies the input buffer to a string and returns that string*/
 char *getPlayerInput(void);
 
 /*handles move conflict: whether two pieces of the same kind and color 
