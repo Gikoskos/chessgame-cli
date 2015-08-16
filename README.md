@@ -27,8 +27,8 @@ If you're compiling on Windows, try using Mingw-w64 to install gcc. I don't thin
 Would recommend to compile through the Makefile, if you're on a linux distro, only after you've installed
 gcc, make and libncurses though. To compile on Windows with the makefile run this command: dmake dll & dmake exe (or make).
 
-I will be releasing debs created on Ubuntu 14.04 i386 that will probably also work on almost all debian-based 
-distributions(and versions), each time I fix bugs or change something in the UI.
+I will be releasing debs and binaries created on Ubuntu 14.04 i386 and Windows 7 x86 respectively, each time I fix
+bugs or change something in the UI.
 
 ## TODO
 
