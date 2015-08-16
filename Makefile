@@ -18,7 +18,7 @@ chessgameWall: main.c chesslib.c chesslib.h
 	&& $(CC) $(CFLAGS) $(INC_W_LEVEL) $< $(CHESSLIB) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 chesslib: chesslib.c
-	@$(CC) -c $(CFLAGS) $<; \
+	$(CC) -c $(CFLAGS) $<; \
 	ar -cq chesslib.a chesslib.o; \
 	rm chesslib.o
 	
@@ -38,7 +38,7 @@ run:
 runW:
 	exec ./$(BLDFOLDER)/$(ELF)Wall
 
-.PHONY: clean install cleantxt
+.PHONY: install clean  cleantxt
 clean:
 	rm -rf build \
 	rm -rf *.o
@@ -47,5 +47,5 @@ cleantxt:
 	rm -rf build/*.txt \
 	rm -rf *.txt
 
-install: $(BLDFOLDER)/chessgame
+install: chessgame $(BLDFOLDER)/chessgame
 	install -m 0755 $< $(prefix)/bin
