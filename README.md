@@ -29,7 +29,7 @@ To compile and run on Windows with dmake (or make):
 
     dmake dll & dmake exe & chessgame.exe
 
-To compile on Linux:
+To compile and run on Linux:
 
     make && ./build/chessgame
 
