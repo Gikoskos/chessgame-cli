@@ -47,5 +47,5 @@ cleantxt:
 	rm -rf build/*.txt \
 	rm -rf *.txt
 
-install: chessgame $(BLDFOLDER)/chessgame
-	install -m 0755 $< $(prefix)/bin
+install: chessgame
+	install -m 0755 $(BLDFOLDER)/chessgame $(prefix)/bin
