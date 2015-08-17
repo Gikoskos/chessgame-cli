@@ -18,18 +18,23 @@ With the Linux version if you type 'pieces' you will get the Unicode chess chara
 The thought process behind this project was for me to implement a chess engine for the first time, without seeing
 code from other projects or how implementations of chess engines are generally done.
 
-## Prerequisites
+## Building
 
-Needs libncurses to compile. (on Linux)
+Needs libncurses to compile.
 
-If you're compiling on Windows, try using Mingw-w64 to install gcc. I don't think it will compile as well with MSVC.
+If you're compiling on Windows, try using Mingw-w64 to install gcc and dmake (or make). I don't think it will compile as well 
+with MSVC.
 
-Would recommend to compile through the Makefile, if you're on a linux distro, only after you've installed
-gcc, make and libncurses though. The Makefile works with Mingw-w64's make as well, but you will have to remove 
-manually the -lncurses linking option.
+To compile and run on Windows:
 
-I will be releasing debs created on Ubuntu 14.04 i386 that will probably also work on almost all debian-based 
-distributions(and versions), each time I fix bugs or change something in the UI.
+    make dll & dmake exe & chessgame.exe
+
+To compile on Linux:
+
+    make && ./build/chessgame
+
+I will be releasing precompiled binaries made on Ubuntu 14.04 i386 
+and Windows 7 32bit, when bugs are fixed or something in the UI changes.
 
 ## TODO
 
