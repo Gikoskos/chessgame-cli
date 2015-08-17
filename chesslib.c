@@ -422,10 +422,6 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 					for (k = i - 1; k < i + 2; k++){
 						for (l = j - 1; l < j + 2; l++){
 							if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
-								if (chb[i][j].c == WHITE)
-									check_castling.KWhite = false;
-								else if (chb[i][j].c == BLACK)
-									check_castling.KBlack = false;
 								return retvalue;
 							}
 						}  
@@ -452,17 +448,6 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 							continue;
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
 							if (input[0] == 'R') {
-								if (chb[i][j].square[0] == 'D') {
-									if (chb[i][j].c == BLACK)
-										check_castling.WR_left = false;
-									else
-										check_castling.BR_left = false;
-								} else if (chb[i][j].square[0] == 'F') {
-									if (chb[i][j].c == BLACK)
-										check_castling.WR_right = false;
-									else
-										check_castling.BR_right = false;
-								}
 								if (conflict == false) {
 									conflict = true;
 									goto EXIT_LOOP;
@@ -482,14 +467,14 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 							if (input[0] == 'R') {
 								if (chb[i][j].square[0] == 'D') {
 									if (chb[i][j].c == BLACK)
-										check_castling.WR_left = false;
-									else
 										check_castling.BR_left = false;
+									else
+										check_castling.WR_left = false;
 								} else if (chb[i][j].square[0] == 'F') {
 									if (chb[i][j].c == BLACK)
-										check_castling.WR_right = false;
-									else
 										check_castling.BR_right = false;
+									else
+										check_castling.WR_right = false;
 								}
 								if (conflict == false) {
 									conflict = true;
@@ -662,6 +647,25 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 	starty = piece[0] - 65;
 	if (!piecesOverlap(chb, startx, starty, endx, endy, plInput[0])) {
 		if (chb[endx][endy].c != color) {	/*checks whether it's a piece of the same color or not*/
+			if (chb[startx][starty].current == 'K' || chb[startx][starty].current == 'R') {
+				if (startx == 0) {
+					if (starty == 0)
+						check_castling.WR_left = false;
+					else if (starty == 7)
+						check_castling.WR_right = false;
+				} else if (startx == 7) {
+					if (starty == 0)
+						check_castling.BR_left = false;
+					else if (starty == 7)
+						check_castling.BR_right = false;
+				}
+				if (plInput[0] == 'K') {
+					if (color == BLACK)
+						check_castling.KBlack = false;
+					else
+						check_castling.KWhite = false;
+				}
+			}
 			chb[endx][endy].occ = true;
 			chb[endx][endy].current = chb[startx][starty].current;
 			chb[endx][endy].c = color;
@@ -1183,17 +1187,17 @@ void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
 
 	if (!strncmp(piece, CSTL_LEFTROOK, 2)) {
 		if (round == WHITE) {
-			fprintf(logf, "Round  #%d:\tWhite uses castling with Rook at A1 and King at E1\n", c);
+			fprintf(logf, "Round  #%d:\tWhite moves Rook from A1 to D1 and King from E1 to C1\n", c);
 		} else {
-			fprintf(logf, "           \tBlack uses castling with Rook at A8 and King at E8\n");
+			fprintf(logf, "           \tBlack moves Rook from A8 to D8 and King from E8 to C8\n");
 			c++;
 		}
 		return;
 	} else if (!strncmp(piece, CSTL_RIGHTROOK, 2)) {
 		if (round == WHITE)
-			fprintf(logf, "Round  #%d:\tWhite uses castling with Rook at H1 and King at E1\n", c);
+			fprintf(logf, "Round  #%d:\tWhite moves Rook from H1 to F1 and King from E1 to G1\n", c);
 		else {
-			fprintf(logf, "           \tBlack uses castling with Rook at H8 and King at E8\n");
+			fprintf(logf, "           \tBlack moves Rook from H8 to F8 and King from E8 to G8\n");
 			c++;
 		}
 		return;
@@ -1205,17 +1209,17 @@ void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
 		c++;
 	}
 	if (plInput[0] == 'P') {
-		fprintf(logf, "pawn ");
+		fprintf(logf, "Pawn ");
 	} else if (plInput[0] == 'R') {
-		fprintf(logf, "rook ");
+		fprintf(logf, "Rook ");
 	} else if (plInput[0] == 'N') {
-		fprintf(logf, "knight ");
+		fprintf(logf, "Knight ");
 	} else if (plInput[0] == 'B') {
-		fprintf(logf, "bishop ");
+		fprintf(logf, "Bishop ");
 	} else if (plInput[0] == 'Q') {
-		fprintf(logf, "queen ");
+		fprintf(logf, "Queen ");
 	} else if (plInput[0] == 'K') {
-		fprintf(logf, "king ");
+		fprintf(logf, "King ");
 	}
 	fprintf(logf, "from %c%c to %c%c\n", piece[0], piece[1], plInput[1], plInput[2]);
 }
