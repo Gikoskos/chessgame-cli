@@ -78,6 +78,7 @@ typedef enum KingState {
 extern char *WKingMoves;
 extern char *BKingMoves;
 
+/*if a castling situation is possible the value of this boolean is true*/
 extern bool cstl_is_enabled;
 
 /*prototypes for the main library*/
@@ -122,6 +123,7 @@ char *pieceConflict(const char*, const char);
  *the KingState enum for all the states a King can have*/
 void findKState(ch_template[][8], KingState*, KingState*);
 
+/*takes care of all the moves that happen during castling; only call it if cstl_is_enabled is true*/
 void setCastling(ch_template[][8], char*, int);
 
 /*functions I created to adjust my own chess game*/
