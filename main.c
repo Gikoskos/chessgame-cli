@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
 		}
 		if (cstl_is_enabled) {
 			setCastling(chess_board, playerInput, round);
-			goto NMP;
+			goto LOG;
 		}
 		strncpy(attack_guard,findPiece(chess_board, playerInput, round), 4);
 		if (strlen(attack_guard) < 3) {
@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 			p_err = 3;
 			goto LOOP;
 		}
-		NMP:
+		LOG:
 		if (!(logfile = fopen(fn, "a"))) {
 			printError(3);
 		} else {
