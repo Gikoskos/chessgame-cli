@@ -13,7 +13,7 @@
 static bool king_is_threatened(const int, const int, const int, const int, const char, const int, ch_template[][8]);
 
 /*remove king's life if a piece can move to the domain surrounding him*/
-static void k_domain_ctrl(const int, const int, const int, const int, const int, const char);
+static _Bool k_domain_ctrl(const int, const int, const int, const int, const int, const char);
 
 /*checks whether a king is captured in the next move, thus ending the game
  *or if he is about to be captured by moving to a certain square*/
@@ -244,7 +244,7 @@ void printBoard(ch_template chb[][8], const char p)
 #endif
 }
 
-bool validInput(const char *input, int *errPtr)
+_Bool validInput(const char *input, int *errPtr)
 {
 	if (!strcmp(input, "help") || strlen(input) > 3 || (strncmp(input, "letters", 7) == 0) ||
 		(strncmp(input, "pieces", 6) == 0)) {
@@ -637,7 +637,7 @@ void setCastling(ch_template chb[][8], char *plInput, int color)
 	/*cstl_is_enabled = false;*/
 }
 
-bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
+_Bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 {
 	int startx, starty, endx, endy; /*cords for the current tile and for the tile to move the piece to*/
 
@@ -700,7 +700,7 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 	return false;
 }
 
-bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
+_Bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 		const int ex, const int ey, const char piece)
 {
 	int tempx = sx, tempy = sy;
@@ -804,10 +804,12 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 		for (j = 0; j < 8; j++) {
 			if (chb[i][j].c == BLACK) {
 				if (chb[i][j].current == 'P') {
-					k_domain_ctrl(i,j,WKx,WKy,chb[i][j].c, 'e');
-					k_domain_ctrl(i-1,j+1,WKx,WKy,chb[i][j].c, 'e');
-					k_domain_ctrl(i-1,j-1,WKx,WKy,chb[i][j].c, 'e');
+					if (k_domain_ctrl(i,j,WKx,WKy,chb[i][j].c, 'e') || 
+					k_domain_ctrl(i-1,j+1,WKx,WKy,chb[i][j].c, 'e') || 
+					k_domain_ctrl(i-1,j-1,WKx,WKy,chb[i][j].c, 'e'))
+						W_check_count++;
 					k_domain_ctrl(i,j,BKx,BKy,chb[i][j].c, 'f');
+					
 				}
 				if (chb[i][j].current == 'R' || chb[i][j].current == 'Q') {
 					if ((WKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
@@ -829,9 +831,10 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 				k_domain_ctrl(i, j, BKx, BKy, chb[i][j].c, 'f');
 			} else if (chb[i][j].c == WHITE) {
 				if (chb[i][j].current == 'P') {
-					k_domain_ctrl(i,j,BKx,BKy,chb[i][j].c, 'e');
-					k_domain_ctrl(i+1,j+1,BKx,BKy,chb[i][j].c, 'e');
-					k_domain_ctrl(i+1,j-1,BKx,BKy,chb[i][j].c, 'e');
+					if (k_domain_ctrl(i,j,BKx,BKy,chb[i][j].c, 'e') ||
+					k_domain_ctrl(i+1,j+1,BKx,BKy,chb[i][j].c, 'e') || 
+					k_domain_ctrl(i+1,j-1,BKx,BKy,chb[i][j].c, 'e'))
+						B_check_count++;
 					k_domain_ctrl(i,j,WKx,WKy,chb[i][j].c, 'f');
 				}
 				if (chb[i][j].current == 'R' || chb[i][j].current == 'Q') {
@@ -897,7 +900,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 	get_king_moves(chb, BKx, BKy, BLACK);
 }
 
-bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
+_Bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 			const int ypiece, const char c, const int color, ch_template chb[][8])
 {
 	int k, l, max, ovlap_flag = false, ovlap_once = false;
@@ -1079,13 +1082,13 @@ bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
 	return false;
 }
 
-void k_domain_ctrl(const int x_p, const int y_p, const int Kx, 
+_Bool k_domain_ctrl(const int x_p, const int y_p, const int Kx, 
 				   const int Ky, const int color, const char flag)
 {
 	KingDomain KD[3][3] = {{{Kx-1, Ky-1},{Kx-1, Ky},{Kx-1, Ky+1}},
 			{{Kx, Ky-1},{Kx, Ky},{Kx, Ky+1}},
 			{{Kx+1, Ky-1},{Kx+1, Ky},{Kx+1, Ky+1}}};
-	int k, l;
+	int k, l, retvalue = false;
 
 	for (k = 0; k < 3; k++) {
 		for (l = 0; l < 3; l++) {
@@ -1093,19 +1096,24 @@ void k_domain_ctrl(const int x_p, const int y_p, const int Kx,
 				KD[k][l].y > 7 || KD[k][l].x > 7) continue;
 			if (KD[k][l].x == x_p && KD[k][l].y == y_p) {
 				if (color == BLACK) {
-					if (flag == 'e')
-						BKingLife[k][l] = 1;
+					if (flag == 'e') {
+						WKingLife[k][l] = 1;
+						retvalue = true;
+					}
 					else if (flag == 'f')
 						BKingLife[k][l] = 2;
 				} else {
-					if (flag == 'e')
-						WKingLife[k][l] = 1;
+					if (flag == 'e') {
+						BKingLife[k][l] = 1;
+						retvalue = true;
+					}
 					else if (flag == 'f')
 						WKingLife[k][l] = 2;
 				}
 			}
 		}
 	}
+	return retvalue;
 }
 
 void get_king_moves(ch_template chb[][8], int Kx, int Ky, int color) 
