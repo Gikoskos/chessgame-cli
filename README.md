@@ -31,7 +31,7 @@ To compile and run on Windows with dmake (or make):
 
 To compile and run on Linux:
 
-    make && ./build/chessgame
+    make && make run
 
 I will be releasing precompiled binaries made on Ubuntu 14.04 i386 
 and Windows 7 32bit, when bugs are fixed or something in the UI changes.
