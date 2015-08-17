@@ -127,7 +127,11 @@ int main(int argc, char *argv[])
 			p_err = 3;
 			goto LOOP;
 		}
-		strcpy(attack_guard,findPiece(chess_board, playerInput, round));
+		if (cstl_is_enabled) {
+			setCastling(chess_board, playerInput, round);
+			goto NMP;
+		}
+		strncpy(attack_guard,findPiece(chess_board, playerInput, round), 4);
 		if (strlen(attack_guard) < 3) {
 			memcpy(piece_to_move, attack_guard, 2);
 		} else if (piecesOverlap(chess_board, (attack_guard[1]-'1'), (attack_guard[0]-65),
@@ -146,10 +150,19 @@ int main(int argc, char *argv[])
 			p_err = 3;
 			goto LOOP;
 		}
+		NMP:
 		if (!(logfile = fopen(fn, "a"))) {
 			printError(3);
 		} else {
-			write_to_log(round, logfile, playerInput, piece_to_move);
+			if (cstl_is_enabled) {
+				cstl_is_enabled = false;
+				if (playerInput[1] == 'C' || playerInput[1] == 'D')
+					write_to_log(round, logfile, playerInput, CSTL_LEFTROOK);
+				else
+					write_to_log(round, logfile, playerInput, CSTL_RIGHTROOK);
+			} else {
+				write_to_log(round, logfile, playerInput, piece_to_move);
+			}
 		}
 		fclose(logfile);
 		free(playerInput);

@@ -36,6 +36,10 @@ static short BKingLife[3][3]; /*energy of black King*/
 char *WKingMoves = NULL;
 char *BKingMoves = NULL;
 
+static CastlingBool check_castling = ALL_CASTL_TRUE;
+
+bool cstl_is_enabled = false;
+
 typedef struct KingDomain {
 	int x;
 	int y;
@@ -382,9 +386,46 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 					}
 					continue;
 				} else if (input[0] == 'K') {
+					if (chb[i][j].c == BLACK && check_castling.KBlack) {
+						if ((input[1] == 'G' && input[2] == '8') && check_castling.BR_right) {
+							if(!piecesOverlap(chb, 7, ('H'-65), i, j, 'R')) {
+								check_castling.KBlack = false;
+								check_castling.BR_right = false;
+								cstl_is_enabled = true;
+								return retvalue;
+							}
+						} else if ((input[1] == 'C' && input[2] == '8') && check_castling.BR_left) {
+							if(!piecesOverlap(chb, 7, ('A'-65), i, j, 'R')) {
+								check_castling.KBlack = false;
+								check_castling.BR_left = false;
+								cstl_is_enabled = true;
+								return retvalue;
+							}
+						}
+					} else if (chb[i][j].c == WHITE && check_castling.KWhite) {
+						if ((input[1] == 'G' && input[2] == '1') && check_castling.WR_right) {
+							if(!piecesOverlap(chb, 0, ('H'-65), i, j, 'R')) {
+								check_castling.KWhite = false;
+								check_castling.WR_right = false;
+								cstl_is_enabled = true;
+								return retvalue;
+							}
+						} else if ((input[1] == 'C' && input[2] == '1') && check_castling.WR_left) {
+							if(!piecesOverlap(chb, 0, ('A'-65), i, j, 'R')) {
+								check_castling.KWhite = false;
+								check_castling.WR_left = false;
+								cstl_is_enabled = true;
+								return retvalue;
+							}
+						}
+					}
 					for (k = i - 1; k < i + 2; k++){
 						for (l = j - 1; l < j + 2; l++){
 							if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
+								if (chb[i][j].c == WHITE)
+									check_castling.KWhite = false;
+								else if (chb[i][j].c == BLACK)
+									check_castling.KBlack = false;
 								return retvalue;
 							}
 						}  
@@ -411,6 +452,17 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 							continue;
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
 							if (input[0] == 'R') {
+								if (chb[i][j].square[0] == 'D') {
+									if (chb[i][j].c == BLACK)
+										check_castling.WR_left = false;
+									else
+										check_castling.BR_left = false;
+								} else if (chb[i][j].square[0] == 'F') {
+									if (chb[i][j].c == BLACK)
+										check_castling.WR_right = false;
+									else
+										check_castling.BR_right = false;
+								}
 								if (conflict == false) {
 									conflict = true;
 									goto EXIT_LOOP;
@@ -428,6 +480,17 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 							continue;
 						if (chb[k][l].square[0] == input[1] && chb[k][l].square[1] == input[2]) {
 							if (input[0] == 'R') {
+								if (chb[i][j].square[0] == 'D') {
+									if (chb[i][j].c == BLACK)
+										check_castling.WR_left = false;
+									else
+										check_castling.BR_left = false;
+								} else if (chb[i][j].square[0] == 'F') {
+									if (chb[i][j].c == BLACK)
+										check_castling.WR_right = false;
+									else
+										check_castling.BR_right = false;
+								}
 								if (conflict == false) {
 									conflict = true;
 									goto EXIT_LOOP;
@@ -560,7 +623,34 @@ extern void clear_screen(void)
 	/*puts( "\033[2J" );
 	 *clear screen using ASCII; doesn't work as well, only use it if you can't install libncurses
 	 *don't forget to delete or comment lines 492-501*/
-} 
+}
+
+void setCastling(ch_template chb[][8], char *plInput, int color) 
+{
+	int row, kcol_start = 4, kcol_end, rcol_start, rcol_end;
+	
+	if (color == WHITE)
+		row = 0;
+	else
+		row = 7;
+	if (plInput[1] == 'C' || plInput[1] == 'D') {
+		kcol_end = 2;
+		rcol_start = 0;
+		rcol_end = 3;
+	} else {
+		kcol_end = 6;
+		rcol_start = 7;
+		rcol_end = 5;
+	}
+	chb[row][kcol_start].occ = chb[row][rcol_start].occ = false;
+	chb[row][kcol_start].c = chb[row][rcol_start].c = EMPTY;
+	chb[row][kcol_start].current = chb[row][rcol_start].current = 'e';
+	chb[row][kcol_end].occ = chb[row][rcol_end].occ = true;
+	chb[row][kcol_end].c = chb[row][rcol_end].c = color;
+	chb[row][kcol_end].current = 'K';
+	chb[row][rcol_end].current = 'R';
+	/*cstl_is_enabled = false;*/
+}
 
 bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 {
@@ -1091,6 +1181,23 @@ void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
 {
 	static unsigned short c = 1;
 
+	if (!strncmp(piece, CSTL_LEFTROOK, 2)) {
+		if (round == WHITE) {
+			fprintf(logf, "Round  #%d:\tWhite uses castling with Rook at A1 and King at E1\n", c);
+		} else {
+			fprintf(logf, "           \tBlack uses castling with Rook at A8 and King at E8\n");
+			c++;
+		}
+		return;
+	} else if (!strncmp(piece, CSTL_RIGHTROOK, 2)) {
+		if (round == WHITE)
+			fprintf(logf, "Round  #%d:\tWhite uses castling with Rook at H1 and King at E1\n", c);
+		else {
+			fprintf(logf, "           \tBlack uses castling with Rook at H8 and King at E8\n");
+			c++;
+		}
+		return;
+	}
 	if (round == WHITE) {
 		fprintf(logf, "Round  #%d:\tWhite moves ", c);
 	} else {

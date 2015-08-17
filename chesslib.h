@@ -46,6 +46,9 @@
 #define BANNER_SPEED 100 - R_SPEED
 #define R_SPEED 80	/*speed of the animated banner, bigger value bigger speed; maximum value is 99*/
 #define s_l 26	/*length of the filename string*/
+#define ALL_CASTL_TRUE {true, true, true, true, true, true}
+#define CSTL_LEFTROOK "l"
+#define CSTL_RIGHTROOK "r"
 
 typedef struct ch_template {
 	char current ;	/*current piece letter, e for empty square*/
@@ -53,6 +56,15 @@ typedef struct ch_template {
 	bool occ;	/*flag to check if square is occupied*/
 	int c;	/*piece color, 0 if there is no piece, 1 for black, 2 for white*/
 } ch_template;
+
+typedef struct CastlingBool {
+	bool WR_left;
+	bool WR_right;
+	bool BR_left;
+	bool BR_right;
+	bool KBlack;
+	bool KWhite;
+} CastlingBool;
 
 typedef enum KingState {
 	check,
@@ -66,6 +78,7 @@ typedef enum KingState {
 extern char *WKingMoves;
 extern char *BKingMoves;
 
+extern bool cstl_is_enabled;
 
 /*prototypes for the main library*/
 /*fill a ch_template[8][8] chess board, with chess pieces, recursively*/
@@ -108,6 +121,8 @@ char *pieceConflict(const char*, const char);
 /*finds and saves the state of each King for the current round; see 
  *the KingState enum for all the states a King can have*/
 void findKState(ch_template[][8], KingState*, KingState*);
+
+void setCastling(ch_template[][8], char*, int);
 
 /*functions I created to adjust my own chess game*/
 inline void clear_screen(void);
