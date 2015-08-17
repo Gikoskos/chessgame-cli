@@ -25,9 +25,9 @@ Needs libncurses to compile.
 If you're compiling on Windows, try using Mingw-w64 to install gcc and dmake (or make). I don't think it will compile as well 
 with MSVC.
 
-To compile and run on Windows:
+To compile and run on Windows with dmake (or make):
 
-    make dll & dmake exe & chessgame.exe
+    dmake dll & dmake exe & chessgame.exe
 
 To compile on Linux:
 
