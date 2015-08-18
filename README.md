@@ -20,7 +20,7 @@ code from other projects or how implementations of chess engines are generally d
 
 ## Building
 
-Needs libncurses to compile.
+Needs libncurses to compile on Linux.
 
 If you're compiling on Windows, try using Mingw-w64 to install gcc and dmake (or make). I don't think it will compile as well 
 with MSVC.
@@ -28,6 +28,10 @@ with MSVC.
 To compile and run on Windows with dmake (or make):
 
     dmake dll & dmake exe & chessgame.exe
+    
+or with Powershell:
+
+    dmake dll;dmake exe;./chessgame.exe
 
 To compile and run on Linux:
 
