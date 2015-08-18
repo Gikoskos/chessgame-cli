@@ -900,7 +900,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 	get_king_moves(chb, BKx, BKy, BLACK);
 }
 
-_Bool king_is_threatened(const int Kx, const int Ky, const int const xpiece,
+_Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			const int ypiece, const char c, const int color, ch_template chb[][8])
 {
 	int k, l, max, ovlap_flag = false, ovlap_once = false;
