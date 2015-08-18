@@ -78,10 +78,10 @@ int main(int argc, char *argv[])
 				printBoard(chess_board, chbflag);
 			printError(p_err);
 			if (white_king == checkmate) {
-				printf("Black player wins! Thanks for playing!\n\t\t");
+				printf("Black player wins! Thanks for playing!\n\t\t\n");
 				goto ENDGAME;
 			} else if (black_king == checkmate) {
-				printf("White player wins! Thanks for playing!\n\t\t");
+				printf("White player wins! Thanks for playing!\n\t\t\n");
 				goto ENDGAME;
 			}
 			if (white_king == check) {
