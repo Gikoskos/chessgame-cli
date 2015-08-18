@@ -29,7 +29,7 @@
 #  define _UNICODE
 # endif
 # include <windows.h>
-#elif defined(__unix__) || defined(__gnu_linux__)
+#elif defined(__unix__) || defined(__gnu_linux__) || defined(__APPLE__)
 # define KRED  "\x1B[31m"
 # define KYEL  "\x1B[33m"
 # define RESET "\033[0m"
