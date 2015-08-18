@@ -1150,6 +1150,14 @@ void get_king_moves(ch_template chb[][8], int Kx, int Ky, int color)
 			}
 		}
 	}
+	if (color == BLACK && !str_index) {
+		free(BKingMoves);
+		BKingMoves = NULL;
+	}
+	if (color == WHITE && !str_index) {
+		free(WKingMoves);
+		WKingMoves = NULL;
+	}
 }
 
 void check_mate(KingState **WK, KingState **BK)
