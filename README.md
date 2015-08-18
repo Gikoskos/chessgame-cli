@@ -29,7 +29,7 @@ To compile and run on Windows with dmake (or make):
 
     dmake dll & dmake exe & chessgame.exe
     
-or with Powershell:
+or if you're using Powershell:
 
     dmake dll;dmake exe;./chessgame.exe
 
