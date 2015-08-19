@@ -140,12 +140,12 @@ int main(int argc, char *argv[])
 		strncpy(attack_guard,findPiece(chess_board, playerInput, round), 4);
 		if (strlen(attack_guard) < 3) {
 			memcpy(piece_to_move, attack_guard, 2);
-		} else if (piecesOverlap(chess_board, (attack_guard[1]-'1'), (attack_guard[0]-65),
-				(playerInput[2] - '1'), (playerInput[1] - 65), playerInput[0]) == true && playerInput[0] != 'N') {
+		} else if (piecesOverlap(chess_board, (attack_guard[1]-'1'), (attack_guard[0]-'A'),
+				(playerInput[2]-'1'), (playerInput[1]-'A'), playerInput[0]) == true && playerInput[0] != 'N') {
 			piece_to_move[0] = attack_guard[2];
 			piece_to_move[1] = attack_guard[3];
-		} else if (piecesOverlap(chess_board, (attack_guard[3]-'1'), (attack_guard[2]-65),
-				(playerInput[2] - '1'), (playerInput[1] - 65), playerInput[0]) == true && playerInput[0] != 'N') {
+		} else if (piecesOverlap(chess_board, (attack_guard[3]-'1'), (attack_guard[2]-'A'),
+				(playerInput[2]-'1'), (playerInput[1]-'A'), playerInput[0]) == true && playerInput[0] != 'N') {
 			memcpy(piece_to_move, attack_guard, 2);
 		} else {
 			temp_cpiece = playerInput[0];

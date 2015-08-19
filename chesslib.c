@@ -38,6 +38,9 @@ char *BKingMoves = NULL;
 
 static CastlingBool check_castling = ALL_CASTL_TRUE;
 
+/*counter for the total of game rounds; a game round ends when Black finishes his move*/
+static unsigned short rc = 1;
+
 bool cstl_is_enabled = false;
 
 typedef struct KingDomain {
@@ -56,39 +59,39 @@ void initChessboard(ch_template chb[][8], unsigned k, char col)	/*k is row, col 
 { 
 	if (k == 0 || k == 7) {
 		if (col == 'A' || col == 'H')
-			chb[k][col - 65].current = 'R';
+			chb[k][col - 'A'].current = 'R';
 		else if (col == 'B' || col == 'G')
-			chb[k][col - 65].current = 'N';
+			chb[k][col - 'A'].current = 'N';
 		else if (col == 'C' || col == 'F')
-			chb[k][col - 65].current = 'B';
+			chb[k][col - 'A'].current = 'B';
 		else if (col == 'D')
-			chb[k][col - 65].current = 'Q';
+			chb[k][col - 'A'].current = 'Q';
 		else
-			chb[k][col - 65].current = 'K';
+			chb[k][col - 'A'].current = 'K';
 		if (k == 0)
-			chb[k][col - 65].c = WHITE;	/*colorize the pieces*/
+			chb[k][col - 'A'].c = WHITE;	/*colorize the pieces*/
 		else
-			chb[k][col - 65].c = BLACK;
-		chb[k][col - 65].occ = true;
-		chb[k][col - 65].square[0] = col;
-		chb[k][col - 65].square[1] = k + '1';
+			chb[k][col - 'A'].c = BLACK;
+		chb[k][col - 'A'].occ = true;
+		chb[k][col - 'A'].square[0] = col;
+		chb[k][col - 'A'].square[1] = k + '1';
 		col = col + 1;
 	} else if (k == 1 || k == 6) {
 		if(k == 1) 
-			chb[k][col - 65].c = WHITE;
+			chb[k][col - 'A'].c = WHITE;
 		else 
-			chb[k][col - 65].c = BLACK;
-		chb[k][col - 65].current = 'P';
-		chb[k][col - 65].occ = true;
-		chb[k][col - 65].square[0] = col;
-		chb[k][col - 65].square[1] = k + '1';
+			chb[k][col - 'A'].c = BLACK;
+		chb[k][col - 'A'].current = 'P';
+		chb[k][col - 'A'].occ = true;
+		chb[k][col - 'A'].square[0] = col;
+		chb[k][col - 'A'].square[1] = k + '1';
 		col = col + 1;
 	} else if (k >= 2 && k <= 5) {
-		chb[k][col - 65].c = EMPTY;
-		chb[k][col - 65].current = 'e';
-		chb[k][col - 65].occ = false;
-		chb[k][col - 65].square[0] = col;
-		chb[k][col - 65].square[1] = k + '1';
+		chb[k][col - 'A'].c = EMPTY;
+		chb[k][col - 'A'].current = 'e';
+		chb[k][col - 'A'].occ = false;
+		chb[k][col - 'A'].square[0] = col;
+		chb[k][col - 'A'].square[1] = k + '1';
 		col = col + 1;
 	}
 	if (col == 'I') {
@@ -246,8 +249,7 @@ void printBoard(ch_template chb[][8], const char p)
 
 _Bool validInput(const char *input, int *errPtr)
 {
-	if (!strcmp(input, "help") || strlen(input) > 3 || (strncmp(input, "letters", 7) == 0) ||
-		(strncmp(input, "pieces", 6) == 0)) {
+	if (strlen(input) > 3) {
 		return false;
 	} else if (input[0] != 'R' && input[0] != 'N' && input[0] != 'B' && input[0] != 'Q' && input[0] != 'K' && input[0] != 'P') {
 		*errPtr = 5;
@@ -304,7 +306,7 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 				retvalue[1] = chb[i][j].square[1];
 				if (input[0] == 'P'){
 					l = input[2] - '1';
-					k = input[1] - 65;
+					k = input[1] - 'A';
 					if (color == BLACK) { 
 						if ((i == 6) && (l == i - 2) && (j == k) && (chb[l][k].occ == false) && (chb[i-1][j].occ == false)) 
 							return retvalue;	/*check for pawn's double first move*/
@@ -388,14 +390,14 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 				} else if (input[0] == 'K') {
 					if (chb[i][j].c == BLACK && check_castling.KBlack) {
 						if ((input[1] == 'G' && input[2] == '8') && check_castling.BR_right) {
-							if(!piecesOverlap(chb, 7, ('H'-65), i, j, 'R')) {
+							if(!piecesOverlap(chb, 7, ('H'-'A'), i, j, 'R')) {
 								check_castling.KBlack = false;
 								check_castling.BR_right = false;
 								cstl_is_enabled = true;
 								return retvalue;
 							}
 						} else if ((input[1] == 'C' && input[2] == '8') && check_castling.BR_left) {
-							if(!piecesOverlap(chb, 7, ('A'-65), i, j, 'R')) {
+							if(!piecesOverlap(chb, 7, ('A'-'A'), i, j, 'R')) {
 								check_castling.KBlack = false;
 								check_castling.BR_left = false;
 								cstl_is_enabled = true;
@@ -404,14 +406,14 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 						}
 					} else if (chb[i][j].c == WHITE && check_castling.KWhite) {
 						if ((input[1] == 'G' && input[2] == '1') && check_castling.WR_right) {
-							if(!piecesOverlap(chb, 0, ('H'-65), i, j, 'R')) {
+							if(!piecesOverlap(chb, 0, ('H'-'A'), i, j, 'R')) {
 								check_castling.KWhite = false;
 								check_castling.WR_right = false;
 								cstl_is_enabled = true;
 								return retvalue;
 							}
 						} else if ((input[1] == 'C' && input[2] == '1') && check_castling.WR_left) {
-							if(!piecesOverlap(chb, 0, ('A'-65), i, j, 'R')) {
+							if(!piecesOverlap(chb, 0, ('A'-'A'), i, j, 'R')) {
 								check_castling.KWhite = false;
 								check_castling.WR_left = false;
 								cstl_is_enabled = true;
@@ -430,7 +432,7 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 					int knightrow[] = {i-2,i-2,i-1,i-1,i+1,i+1,i+2,i+2};
 					int knightcol[] = {j-1,j+1,j-2,j+2,j-2,j+2,j-1,j+1};
 					l = input[2] - '1';
-					k = input[1] - 65;
+					k = input[1] - 'A';
 					for (count = 0; count < 8; count++) {
 						if (knightrow[count] == l && knightcol[count] == k) {
 							if (conflict == false) {
@@ -642,9 +644,9 @@ _Bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 	int startx, starty, endx, endy; /*cords for the current tile and for the tile to move the piece to*/
 
 	endx = plInput[2] - '1';
-	endy = plInput[1] - 65;
+	endy = plInput[1] - 'A';
 	startx = piece[1] - '1';
-	starty = piece[0] - 65;
+	starty = piece[0] - 'A';
 	if (!piecesOverlap(chb, startx, starty, endx, endy, plInput[0])) {
 		if (chb[endx][endy].c != color) {	/*checks whether it's a piece of the same color or not*/
 			if (chb[startx][starty].current == 'K' || chb[startx][starty].current == 'R') {
@@ -1199,30 +1201,29 @@ void date_filename(char *buf, int ln)
 
 void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
 {
-	static unsigned short c = 1;
 
 	if (!strncmp(piece, CSTL_LEFTROOK, 2)) {
 		if (round == WHITE) {
-			fprintf(logf, "Round  #%d:\tWhite moves Rook from A1 to D1 and King from E1 to C1\n", c);
+			fprintf(logf, "Round  #%d:\tWhite moves Rook from A1 to D1 and King from E1 to C1\n", rc);
 		} else {
 			fprintf(logf, "           \tBlack moves Rook from A8 to D8 and King from E8 to C8\n");
-			c++;
+			rc++;
 		}
 		return;
 	} else if (!strncmp(piece, CSTL_RIGHTROOK, 2)) {
 		if (round == WHITE)
-			fprintf(logf, "Round  #%d:\tWhite moves Rook from H1 to F1 and King from E1 to G1\n", c);
+			fprintf(logf, "Round  #%d:\tWhite moves Rook from H1 to F1 and King from E1 to G1\n", rc);
 		else {
 			fprintf(logf, "           \tBlack moves Rook from H8 to F8 and King from E8 to G8\n");
-			c++;
+			rc++;
 		}
 		return;
 	}
 	if (round == WHITE) {
-		fprintf(logf, "Round  #%d:\tWhite moves ", c);
+		fprintf(logf, "Round  #%d:\tWhite moves ", rc);
 	} else {
 		fprintf(logf, "           \tBlack moves ");
-		c++;
+		rc++;
 	}
 	if (plInput[0] == 'P') {
 		fprintf(logf, "Pawn ");
