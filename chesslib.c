@@ -1094,20 +1094,22 @@ _Bool k_domain_ctrl(const int x_p, const int y_p, const int Kx,
 
 	for (k = 0; k < 3; k++) {
 		for (l = 0; l < 3; l++) {
-			if ((k == 1 && l == 1) || KD[k][l].x < 0 || KD[k][l].y < 0 || 
-				KD[k][l].y > 7 || KD[k][l].x > 7) continue;
+			/*if ((k == 1 && l == 1) || KD[k][l].x < 0 || KD[k][l].y < 0 || 
+				KD[k][l].y > 7 || KD[k][l].x > 7) continue;*/
 			if (KD[k][l].x == x_p && KD[k][l].y == y_p) {
 				if (color == BLACK) {
 					if (flag == 'e') {
 						WKingLife[k][l] = 1;
-						retvalue = true;
+						if (k == 1 && l ==1)
+							retvalue = true;
 					}
 					else if (flag == 'f')
 						BKingLife[k][l] = 2;
 				} else {
 					if (flag == 'e') {
 						BKingLife[k][l] = 1;
-						retvalue = true;
+						if (k == 1 && l ==1 )
+							retvalue = true;
 					}
 					else if (flag == 'f')
 						WKingLife[k][l] = 2;
@@ -1131,19 +1133,19 @@ void get_king_moves(ch_template chb[][8], int Kx, int Ky, int color)
 		WKingMoves = malloc(22*sizeof(char));
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 3; j++) {
+			tempx = KD[i][j].x;
+			tempy = KD[i][j].y;
 			if (color == BLACK) {
-				if (BKingLife[i][j] == 0) {
-					tempx = KD[i][j].x;
-					tempy = KD[i][j].y;
+				if (BKingLife[i][j] == 0 || (BKingLife[i][j] == 1 && 
+					chb[tempx][tempy].occ == true && chb[tempx][tempy].current != 'K')) {
 					sprintf(&BKingMoves[str_index], "%c%c ",
 						chb[tempx][tempy].square[0],
 						chb[tempx][tempy].square[1]);
 					str_index+=3;
 				} 
 			} else {
-				if (WKingLife[i][j] == 0) {
-					tempx = KD[i][j].x;
-					tempy = KD[i][j].y;
+				if (WKingLife[i][j] == 0 || (WKingLife[i][j] == 1 && 
+					chb[tempx][tempy].occ == true && chb[tempx][tempy].current != 'K')) {
 					sprintf(&WKingMoves[str_index], "%c%c ",
 						chb[tempx][tempy].square[0],
 						chb[tempx][tempy].square[1]);
