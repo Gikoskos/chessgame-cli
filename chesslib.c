@@ -251,13 +251,13 @@ _Bool validInput(const char *input, int *errPtr)
 {
 	if (strlen(input) > 3) {
 		return false;
-	} else if (input[0] != 'R' && input[0] != 'N' && input[0] != 'B' && input[0] != 'Q' && input[0] != 'K' && input[0] != 'P') {
+	} else if (!strchr("RNBQKP", *input)) {
 		*errPtr = 5;
 		return false;
-	} else if (input[1] < 'a' || input[1] > 'h') {
+	} else if (!strchr("abcdefgh", input[1])) {
 		*errPtr = 6;
 		return false;
-	} else if (input[2] < '1' || input[2] > '8') {
+	} else if (!strchr("12345678", input[2])) {
 		*errPtr = 7;
 		return false;
 	}
