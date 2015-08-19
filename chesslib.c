@@ -607,6 +607,7 @@ extern void clear_screen(void)
 	tgetent(buf, getenv("TERM"));
 	str = tgetstr("cl", NULL);
 	fputs(str, stdout);
+	free(str);
 #else
 	system("cls");
 #endif
