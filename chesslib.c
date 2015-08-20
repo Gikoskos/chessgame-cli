@@ -1,10 +1,10 @@
-/*********************************************************************/
-/*                            chesslib.c                             */
-/* standard chess library no AI or complicated rules implemented yet */
-/*                                                                   */
-/*                    by <cyberchiller@gmail.com>                    */
-/*                                                                   */
-/*********************************************************************/
+/*********************************************************************
+ *                            chesslib.c                             *
+ * standard chess library no AI or complicated rules implemented yet *
+ *                                                                   *
+ *                    by <cyberchiller@gmail.com>                    *
+ *                                                                   *
+ *********************************************************************/
 
 #include "chesslib.h"
 

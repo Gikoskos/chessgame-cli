@@ -11,13 +11,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
-/********************************************************************/
-/*                             main.c                               */
-/*       small game making use of the chesslib.c chess library      */
-/*                                                                  */
-/*                    by <cyberchiller@gmail.com>                   */
-/*                                                                  */
-/********************************************************************/
+/********************************************************************
+ *                             main.c                               *
+ *       small game making use of the chesslib.c chess library      *
+ *                                                                  *
+ *                    by <cyberchiller@gmail.com>                   *
+ *                                                                  *
+ ********************************************************************/
 
 #include "chesslib.h"
 
