@@ -96,12 +96,12 @@ int main(int argc, char *argv[])
 				else
 					printf("Possible moves for black King: %s\n", BKingMoves);
 			}
-			if (round == BLACK) 
+			if (round == BLACK)
 				printf("It\'s black\'s turn: ");
-			else 
+			else
 				printf("It\'s white\'s turn: ");
 			playerInput = getPlayerInput();
-			
+
 			if (!playerInput) {	/*avoid segfaulting for strlen(NULL) later*/
 				loop_count++;
 				continue;
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 			loop_count++;
 		} while (validInput(playerInput, &p_err) == false);
 		playerInput[1] = (char)toupper(playerInput[1]);
-		
+
 		if (!findPiece(chess_board, playerInput, round)) {
 			p_err = 3;
 			goto LOOP;
@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
 			temp_cpiece = playerInput[0];
 			memcpy(piece_to_move, pieceConflict(attack_guard, temp_cpiece), 2);
 		}
-		
+
 		if (movePiece(chess_board, playerInput, piece_to_move, round) == false) {
 			p_err = 3;
 			goto LOOP;
