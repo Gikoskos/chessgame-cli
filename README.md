@@ -1,7 +1,7 @@
 # Chessgame
 ## Overview
 
-Chessgame is a self-explanatory, simple chess game for two players.
+Chessgame is a self-explanatory, simple console-based chess game for two players.
 
 No AI implemented yet. You type the uppercase letter of the piece you want 
 to move as you see it on the board and the coordinates of the square you want to move to 
