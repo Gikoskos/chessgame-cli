@@ -607,13 +607,12 @@ extern void clear_screen(void)
 	tgetent(buf, getenv("TERM"));
 	str = tgetstr("cl", NULL);
 	fputs(str, stdout);
-	free(str);
 #else
 	system("cls");
 #endif
 	/*puts( "\033[2J" );
 	 *clear screen using ASCII; doesn't work as well, only use it if you can't install libncurses
-	 *don't forget to delete or comment lines 492-501*/
+	 *don't forget to delete or comment lines 603-612*/
 }
 
 void setCastling(ch_template chb[][8], char *plInput, int color) 
@@ -810,57 +809,58 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 		for (j = 0; j < 8; j++) {
 			if (chb[i][j].c == BLACK) {
 				if (chb[i][j].current == 'P') {
-					if (k_domain_ctrl(i,j,WKx,WKy,chb[i][j].c, 'e') || 
-					k_domain_ctrl(i-1,j+1,WKx,WKy,chb[i][j].c, 'e') || 
-					k_domain_ctrl(i-1,j-1,WKx,WKy,chb[i][j].c, 'e'))
-						W_check_count++;
+					k_domain_ctrl(i,j,WKx,WKy,chb[i][j].c, 'e');
+					k_domain_ctrl(i-1,j+1,WKx,WKy,chb[i][j].c, 'e');
+					k_domain_ctrl(i-1,j-1,WKx,WKy,chb[i][j].c, 'e');
 					k_domain_ctrl(i,j,BKx,BKy,chb[i][j].c, 'f');
-					
 				}
 				if (chb[i][j].current == 'R' || chb[i][j].current == 'Q') {
 					if ((WKx == i) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
-						W_check_count++;
-					} else if ((WKy == j) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
-						W_check_count++;
+						*WK = check;
 					}
-					king_is_threatened(WKx, WKy, i, j, chb[i][j].current, WHITE, chb);
+					if ((WKy == j) && (piecesOverlap(chb,i,j,WKx,WKy,chb[i][j].current) == false)) {
+						*WK = check;
+					}
+					king_is_threatened(WKx, WKy, i, j, chb[i][j].current, chb[i][j].c, chb);
 				}
 				if (chb[i][j].current == 'B' || chb[i][j].current == 'Q' ||
 					chb[i][j].current == 'N' || chb[i][j].current == 'K') {
 					if (piecesOverlap(chb, i, j, WKx, WKy, chb[i][j].current) == false ||
 						chb[i][j].current == 'N') {
-						if (king_is_threatened(WKx, WKy, i, j, chb[i][j].current, WHITE, chb) == true) {
+						if (king_is_threatened(WKx, WKy, i, j, chb[i][j].current, chb[i][j].c, chb) == true) {
 							W_check_count++;
 						}
 					}
 				}
-				k_domain_ctrl(i, j, BKx, BKy, chb[i][j].c, 'f');
+				if (chb[i][j].current != 'K')
+					k_domain_ctrl(i, j, BKx, BKy, chb[i][j].c, 'f');
 			} else if (chb[i][j].c == WHITE) {
 				if (chb[i][j].current == 'P') {
-					if (k_domain_ctrl(i,j,BKx,BKy,chb[i][j].c, 'e') ||
-					k_domain_ctrl(i+1,j+1,BKx,BKy,chb[i][j].c, 'e') || 
-					k_domain_ctrl(i+1,j-1,BKx,BKy,chb[i][j].c, 'e'))
-						B_check_count++;
+					k_domain_ctrl(i,j,BKx,BKy,chb[i][j].c, 'e');
+					k_domain_ctrl(i+1,j+1,BKx,BKy,chb[i][j].c, 'e');
+					k_domain_ctrl(i+1,j-1,BKx,BKy,chb[i][j].c, 'e');
 					k_domain_ctrl(i,j,WKx,WKy,chb[i][j].c, 'f');
 				}
 				if (chb[i][j].current == 'R' || chb[i][j].current == 'Q') {
 					if ((BKx == i) && (piecesOverlap(chb,i,j,BKx,BKy,chb[i][j].current) == false)) {
-						B_check_count++;
-					} else if ((BKy == j) && (piecesOverlap(chb,i,j,BKx,BKy,chb[i][j].current) == false)) {
-						B_check_count++;
+						*BK = check;
 					}
-					king_is_threatened(BKx, BKy, i, j, chb[i][j].current, BLACK, chb);
+					if ((BKy == j) && (piecesOverlap(chb,i,j,BKx,BKy,chb[i][j].current) == false)) {
+						*BK = check;
+					}
+					king_is_threatened(BKx, BKy, i, j, chb[i][j].current, chb[i][j].c, chb);
 				}
 				if (chb[i][j].current == 'B' || chb[i][j].current == 'Q' || 
 					chb[i][j].current == 'N' || chb[i][j].current == 'K') {
 					if (piecesOverlap(chb, i, j, BKx, BKy, chb[i][j].current) == false ||
 						chb[i][j].current == 'N') {
-						if (king_is_threatened(BKx, BKy, i, j, chb[i][j].current, BLACK, chb) == true) {
+						if (king_is_threatened(BKx, BKy, i, j, chb[i][j].current, chb[i][j].c, chb) == true) {
 							B_check_count++;
 						}
 					}
 				}
-				k_domain_ctrl(i, j, WKx, WKy, chb[i][j].c, 'f');
+				if (chb[i][j].current != 'K')
+					k_domain_ctrl(i, j, WKx, WKy, chb[i][j].c, 'f');
 			}
 		}
 	}
@@ -887,19 +887,15 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 		}
 	}
 
-	if (W_check_count > 0) {
+	if (WKingLife[1][1] == 1) {
 		*WK = check;
-		WKingLife[1][1] = 1;
-	} else if (!W_check_count) {
+	} else if (WKingLife[1][1] == 0) {
 		*WK = safe;
-		WKingLife[1][1] = 0;
 	}
-	if (B_check_count > 0) {
+	if (BKingLife[1][1] == 1) {
 		*BK = check;
-		BKingLife[1][1] = 1;
-	} else if (!B_check_count) {
+	} else if (BKingLife[1][1] == 0) {
 		*BK = safe;
-		BKingLife[1][1] = 0;
 	}
 	check_mate(&WK, &BK);
 	get_king_moves(chb, WKx, WKy, WHITE);
@@ -909,7 +905,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			const int ypiece, const char c, const int color, ch_template chb[][8])
 {
-	int k, l, max, ovlap_flag = false, ovlap_once = false;
+	int k, l, max, ovlap_flag = false;
 	
 	if (c == 'R' || c == 'Q') {
 		if (ypiece > Ky) {
@@ -919,9 +915,7 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 				max = Ky;
 			for (l = ypiece-1; l >= max; l--) {
 				if (chb[xpiece][l].occ == true && l!=Ky)
-					ovlap_once = ovlap_flag = true;
-				if (l == Ky && ovlap_once == false)
-					ovlap_flag = false;
+					ovlap_flag = true;
 				if (ovlap_flag == false)
 					k_domain_ctrl(xpiece, l, Kx, Ky, color, 'e');
 			}
@@ -932,9 +926,7 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 				max = Ky;
 			for (l = ypiece+1; l <= max; l++) {
 				if (chb[xpiece][l].occ == true && l!=Ky)
-					ovlap_once = ovlap_flag = true;
-				if (l == Ky && ovlap_once == false)
-					ovlap_flag = false;
+					ovlap_flag = true;
 				if (ovlap_flag == false)
 					k_domain_ctrl(xpiece, l, Kx, Ky, color, 'e');
 			}
@@ -947,9 +939,7 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 				max = Kx;
 			for (k = xpiece-1; k >= max; k--) {
 				if (chb[k][ypiece].occ == true && k!=Kx)
-					ovlap_once = ovlap_flag = true;
-				if (k == Kx && ovlap_once == false)
-					ovlap_flag = false;
+					ovlap_flag = true;
 				if (ovlap_flag == false)
 					k_domain_ctrl(k, ypiece, Kx, Ky, color, 'e');
 			}
@@ -960,9 +950,7 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 				max = Kx;
 			for (k = xpiece+1; k <= max; k++) {
 				if (chb[k][ypiece].occ == true && k!=Kx)
-					ovlap_once = ovlap_flag = true;
-				if (k == Kx && ovlap_once == false)
-					ovlap_flag = false;
+					ovlap_flag = true;
 				if (ovlap_flag == false)
 					k_domain_ctrl(k, ypiece, Kx, Ky, color, 'e');
 			}
@@ -978,9 +966,7 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			l = ypiece + 1;
 			while ((k <= 7 && k >= 0) && (l <= 7 && l >= 0)) {
 				if (chb[k][l].occ == true && (k != Kx && l != Ky))
-					ovlap_once = ovlap_flag = true;
-				if ((k == Kx && l == Ky) && ovlap_once == false)
-					ovlap_flag = false;
+					ovlap_flag = true;
 				if (ovlap_flag == false)
 					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
 				if ((Kx > 0 && Kx < 7) && (Ky > 0 && Ky < 7)) {
@@ -1000,9 +986,7 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			l = ypiece + 1;
 			while ((k >= 0 && k <= 7) && (l <= 7 && l >= 0)) {
 				if (chb[k][l].occ == true && (k != Kx && l != Ky))
-					ovlap_once = ovlap_flag = true;
-				if ((k == Kx && l == Ky) && ovlap_once == false)
-					ovlap_flag = false;
+					ovlap_flag = true;
 				if (ovlap_flag == false)
 					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
 				if ((Kx > 0 && Kx < 7) && (Ky > 0 && Ky < 7)) {
@@ -1022,9 +1006,7 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			l = ypiece - 1;
 			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
 				if (chb[k][l].occ == true && (k != Kx && l != Ky))
-					ovlap_once = ovlap_flag = true;
-				if ((k == Kx && l == Ky) && ovlap_once == false)
-					ovlap_flag = false;
+					ovlap_flag = true;
 				if (ovlap_flag == false)
 					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
 				if ((Kx > 0 && Kx < 7) && (Ky > 0 && Ky < 7)) {
@@ -1044,9 +1026,7 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			l = ypiece - 1;
 			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
 				if (chb[k][l].occ == true && (k != Kx && l != Ky))
-					ovlap_once = ovlap_flag = true;
-				if ((k == Kx && l == Ky) && ovlap_once == false)
-					ovlap_flag = false;
+					ovlap_flag = true;
 				if (ovlap_flag == false)
 					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
 				if ((Kx > 0 && Kx < 7) && (Ky > 0 && Ky < 7)) {
