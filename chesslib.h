@@ -1,8 +1,8 @@
 /********************************************************************
  *                            chesslib.h                            *
- *                   API for the chesslib.c library                 *
+ *                  API for the chesslib.c library                  *
  *                                                                  *
- *                    by <cyberchiller@gmail.com>                   *
+ *                 (C)2015 <cyberchiller@gmail.com>                 *
  *                                                                  *
  ********************************************************************/
 
@@ -29,7 +29,10 @@
 #  define _UNICODE
 # endif
 # include <windows.h>
-#elif defined(__unix__) || defined(__gnu_linux__) || defined(__APPLE__)
+#elif defined(__FreeBSD__) \
+|| defined(__linux__) \
+|| defined(__APPLE__) \
+|| defined(__gnu_linux__)
 # define KRED  "\x1B[31m"
 # define KYEL  "\x1B[33m"
 # define RESET "\033[0m"
@@ -50,6 +53,7 @@
 #define CSTL_LEFTROOK "l"
 #define CSTL_RIGHTROOK "r"
 
+/*standard chessboard template*/
 typedef struct ch_template {
 	char current ;	/*current piece letter, e for empty square*/
 	char square[2];	/*current square on the board eg.A1,H4*/
@@ -57,20 +61,22 @@ typedef struct ch_template {
 	int c;	/*piece color, 0 if there is no piece, 1 for black, 2 for white*/
 } ch_template;
 
+/*struct of bools to check whether castling is possible for each piece*/
 typedef struct CastlingBool {
-	bool WR_left;
-	bool WR_right;
-	bool BR_left;
-	bool BR_right;
-	bool KBlack;
-	bool KWhite;
+	bool WR_left;	/*white rook at A1*/
+	bool WR_right;	/*white rook at H1*/
+	bool BR_left;	/*black rook at A8*/
+	bool BR_right;	/*black rook at H8*/
+	bool KBlack;	/*black king*/
+	bool KWhite;	/*white king*/
 } CastlingBool;
 
+/*enumerator for the possible states a King can be in*/
 typedef enum KingState {
 	check,
 	checkmate,
 	safe,	/*King is safe (not threatened in his 3x3 vicinity*/
-	safe_check	/*King is not allowed to move to certain squares*/
+	safe_check	/*King is not in check but also not allowed to move to certain squares*/
 } KingState;
 
 /*possible moves that each King can do after a check situation
@@ -78,53 +84,84 @@ typedef enum KingState {
 extern char *WKingMoves;
 extern char *BKingMoves;
 
-/*if a castling situation is possible the value of this boolean is true*/
+/*if a player chose to do castling the value of this boolean becomes true
+ *  */
 extern bool cstl_is_enabled;
 
-/*prototypes for the main library*/
-/*fill a ch_template[8][8] chess board, with chess pieces, recursively*/
-void initChessboard(ch_template[][8], unsigned, char);
 
-/*function to print the board at any given point in the game; second argument is
- *a character to determine the type of chessboard that will be printed (only works on Linux for now)*/
-void printBoard(ch_template[][8], const char);
+/******************************************
+ *function prototypes for the main library*
+ ******************************************/
 
-/*traverses the chessboard, finds and returns the piece that is capable 
- *to perform the move entered by the player if more than one piece can move
- *to the square entered by the player it finds and returns them both*/
-char *findPiece(ch_template[][8], const char*, int);
+/*fills a ch_template[8][8] chess board, with chess pieces, recursively
+ *k: should always be 0 (theoretically, it's the row the function starts filling pieces from)
+ *col: should always be 'A' (same as k except that it's the column not the row)*/
+void initChessboard(ch_template chb[][8], unsigned k, char col);
 
-/*move the piece if no other piece is in the way; also checks for pawn promotion*/
-bool movePiece(ch_template[][8], char*, char[2], int);
+/*function to print the board at any given point in the game
+ *p: character that determines the chess piece type that will be printed; 'a' is for
+ *symbolic capital letters and 'p' is for the Unicode chess pieces (doesn't work on Windows)*/
+void printBoard(ch_template chb[][8], const char p);
 
-/*checks if a move is valid based on whether the piece overlaps other pieces or not*/
-bool piecesOverlap(ch_template[][8], const int, const int, const int , const int, const char);
+/*traverses the chessboard, finds and returns the piece that is capable
+ *to perform the move entered by the player; if more than one piece can move
+ *to the square entered by the player it finds and returns them both
+ *input: string with the piece and square to be moved to, e.g. PH3 NA5 KC1
+ *color: the piece color of the current player*/
+char *findPiece(ch_template chb[][8], const char *input, int color);
 
-/*check for validity of player input*/
-bool validInput(const char*, int*);
+/*move the piece if no other piece is in the way; also checks for pawn promotion
+ *returns false if the move isn't legal
+ *plInput: string with the piece and square to be moved to, e.g. PH3 NA5 KC1
+ *piece: array of two characters for the column and row of the square 
+ *the piece is on, e.g. H3 C7*/
+bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color);
 
-/*create a string with the current date to be used as the log date_filename*/
+/*checks if a move is valid based on whether the piece overlaps other pieces or not
+ *it takes the coordinates of two pieces (the first always has to be Q, R or B),
+ *as arguments, and calculates if there are any other pieces inbetween them
+ *sx, sy: the row and column of the first piece
+ *ex, ey: the row and column of the second piece
+ *piece: the first piece's letter*/
+bool piecesOverlap(ch_template chb[][8], const int sx, const int sy, const int ex, const int ey, const char piece);
+
+/*check for validity of player input; returns false for bad input and true otherwise
+ *input: input buffer as entered by the player; check if the string is NULL first
+ *before using this function
+ *errPtr: reference to the error code integer in the main function*/
+bool validInput(const char *input, int *errPtr);
+
+/*create a string with the current date to be used as the log file's filename*/
 void date_filename(char*, int);
 
-/*write each player's moves to a log file*/
-void write_to_log(int, FILE*, char*, char[]);
+/*write each player's moves to a log file
+ *round: BLACK or WHITE
+ *logf: file descriptor of the log file
+ *plInput: input entered by the player; contains the piece and the square the piece moved into
+ *piece: the initial square the piece was into*/
+void write_to_log(int round, FILE* logf, char *plInput, char piece[2]);
 
-/*basic error printing function; writes output to stderr*/
+/*basic error printing function; writes output to stderr
+ *see implementation for possible error codes*/
 void printError(int);
 
-/*copies the input buffer to a string and return that string*/
+/*safely copies the input buffer to a string and returns that string*/
 char *getPlayerInput(void);
 
 /*handles move conflict: whether two pieces of the same kind and color 
- *are able to move in the same square at the same round*/
-char *pieceConflict(const char*, const char);
+ *are able to move in the same square at the same round
+ *piece_pos: string with 4 characters that holds the location of the two squares e.g. H6A4
+ *p: the piece to move*/
+char *pieceConflict(const char *piece_pos, const char p);
 
 /*finds and saves the state of each King for the current round; see 
  *the KingState enum for all the states a King can have*/
-void findKState(ch_template[][8], KingState*, KingState*);
+void findKState(ch_template chb[][8], KingState *WK, KingState *BK);
 
-/*takes care of all the moves that happen during castling; only call it if cstl_is_enabled is true*/
-void setCastling(ch_template[][8], char*, int);
+/*takes care of all the moves that happen during castling; only call it if cstl_is_enabled is true
+ *plInput: the castling piece that was returned by findPiece
+ *color: the piece color of the player*/
+void setCastling(ch_template chb[][8], char *plInput, int color);
 
 /*functions I created to adjust my own chess game*/
 inline void clear_screen(void);
