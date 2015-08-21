@@ -1,8 +1,8 @@
 /*********************************************************************
  *                            chesslib.c                             *
- * standard chess library no AI or complicated rules implemented yet *
+ *                standard chess game implementation                 *
  *                                                                   *
- *                    by <cyberchiller@gmail.com>                    *
+ *                 (C)2015 <cyberchiller@gmail.com>                  *
  *                                                                   *
  *********************************************************************/
 
@@ -914,8 +914,9 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			else
 				max = Ky;
 			for (l = ypiece-1; l >= max; l--) {
-				if (chb[xpiece][l].occ == true && l!=Ky)
+				if (chb[xpiece][l].occ == true && l!=Ky) {
 					ovlap_flag = true;
+				}
 				if (ovlap_flag == false)
 					k_domain_ctrl(xpiece, l, Kx, Ky, color, 'e');
 			}
@@ -925,8 +926,9 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			else
 				max = Ky;
 			for (l = ypiece+1; l <= max; l++) {
-				if (chb[xpiece][l].occ == true && l!=Ky)
+				if (chb[xpiece][l].occ == true && l!=Ky) {
 					ovlap_flag = true;
+				}
 				if (ovlap_flag == false)
 					k_domain_ctrl(xpiece, l, Kx, Ky, color, 'e');
 			}
@@ -938,8 +940,9 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			else
 				max = Kx;
 			for (k = xpiece-1; k >= max; k--) {
-				if (chb[k][ypiece].occ == true && k!=Kx)
+				if (chb[k][ypiece].occ == true && k!=Kx) {
 					ovlap_flag = true;
+				}
 				if (ovlap_flag == false)
 					k_domain_ctrl(k, ypiece, Kx, Ky, color, 'e');
 			}
@@ -949,8 +952,9 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			else
 				max = Kx;
 			for (k = xpiece+1; k <= max; k++) {
-				if (chb[k][ypiece].occ == true && k!=Kx)
+				if (chb[k][ypiece].occ == true && k!=Kx) {
 					ovlap_flag = true;
+				}
 				if (ovlap_flag == false)
 					k_domain_ctrl(k, ypiece, Kx, Ky, color, 'e');
 			}
@@ -960,13 +964,14 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 		if (Kx == xpiece || Ky == ypiece) {
 			return false;
 		}
-		ovlap_flag = false;/*reset the flag here as well, if c is Queen*/
+		ovlap_flag = false;	/*reset the flag here as well, in case c is Queen*/
 		if (Kx > xpiece && Ky > ypiece) {
 			k = xpiece + 1;
 			l = ypiece + 1;
 			while ((k <= 7 && k >= 0) && (l <= 7 && l >= 0)) {
-				if (chb[k][l].occ == true && (k != Kx && l != Ky))
+				if (chb[k][l].occ == true && (k != Kx && l != Ky)) {
 					ovlap_flag = true;
+				}
 				if (ovlap_flag == false)
 					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
 				if ((Kx > 0 && Kx < 7) && (Ky > 0 && Ky < 7)) {
@@ -985,8 +990,9 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			k = xpiece - 1;
 			l = ypiece + 1;
 			while ((k >= 0 && k <= 7) && (l <= 7 && l >= 0)) {
-				if (chb[k][l].occ == true && (k != Kx && l != Ky))
+				if (chb[k][l].occ == true && (k != Kx && l != Ky)) {
 					ovlap_flag = true;
+				}
 				if (ovlap_flag == false)
 					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
 				if ((Kx > 0 && Kx < 7) && (Ky > 0 && Ky < 7)) {
@@ -1005,8 +1011,9 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			k = xpiece + 1;
 			l = ypiece - 1;
 			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
-				if (chb[k][l].occ == true && (k != Kx && l != Ky))
+				if (chb[k][l].occ == true && (k != Kx && l != Ky)) {
 					ovlap_flag = true;
+				}
 				if (ovlap_flag == false)
 					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
 				if ((Kx > 0 && Kx < 7) && (Ky > 0 && Ky < 7)) {
@@ -1025,8 +1032,9 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			k = xpiece - 1; 
 			l = ypiece - 1;
 			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
-				if (chb[k][l].occ == true && (k != Kx && l != Ky))
+				if (chb[k][l].occ == true && (k != Kx && l != Ky)) {
 					ovlap_flag = true;
+				}
 				if (ovlap_flag == false)
 					k_domain_ctrl(k, l, Kx, Ky, color, 'e');
 				if ((Kx > 0 && Kx < 7) && (Ky > 0 && Ky < 7)) {
@@ -1078,8 +1086,6 @@ _Bool k_domain_ctrl(const int x_p, const int y_p, const int Kx,
 
 	for (k = 0; k < 3; k++) {
 		for (l = 0; l < 3; l++) {
-			/*if ((k == 1 && l == 1) || KD[k][l].x < 0 || KD[k][l].y < 0 || 
-				KD[k][l].y > 7 || KD[k][l].x > 7) continue;*/
 			if (KD[k][l].x == x_p && KD[k][l].y == y_p) {
 				if (color == BLACK) {
 					if (flag == 'e') {
@@ -1141,6 +1147,9 @@ void get_king_moves(ch_template chb[][8], int Kx, int Ky, int color)
 	if (color == BLACK && !str_index) {
 		free(BKingMoves);
 		BKingMoves = NULL;
+		/*Note: game segfaults if BKingMoves and WKingMoves aren't set
+		 *to NULL immediately after freeing; I reproduced the same situation
+		 *in a small test program and it worked just by freeing the strings*/
 	}
 	if (color == WHITE && !str_index) {
 		free(WKingMoves);
