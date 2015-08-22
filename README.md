@@ -53,7 +53,9 @@ and Windows 7 32bit, when bugs are fixed or something in the UI changes.
 
 * program a computer(AI) player (WIP)
 
-* implement a test chess game GUI using ChessLib
+* make a test GUI chess game using ChessLib
+
+* move to other files all the command line specific functions (such as printBoard) and rewrite the Makefile
 
 * port the main engine to other languages
 
