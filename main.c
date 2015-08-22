@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	KingState white_king = safe, black_king = safe;
 	FILE *logfile;
 
-	initChessboard();
+	initChessboard(chess_board);
 	date_filename(fn, s_l);
 	clear_screen();
 
