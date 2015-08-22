@@ -8,7 +8,10 @@
 
 #include "chesslib.h"
 
-/*prototypes for functions used only in here*/
+
+/********************************************
+ *prototypes for functions used only in here*
+ ********************************************/
 /*checks if the king is threatened by an enemy piece, returns true if he is*/
 static bool king_is_threatened(const int, const int, const int, const int, const char, const int, ch_template[][8]);
 
@@ -24,6 +27,8 @@ void get_king_moves(ch_template [][8], int, int, int);
 
 
 /*the energy/life of each King is measured in his free domain
+ *Note: see how the values of these variables are changed throughout
+ *the game to understand; a good debugger will help with that
  * 0 if the King can move to that square
  * 1 if an attack is imminent on that square
  * 2 if an adjacent square has a friendly sitting on it
