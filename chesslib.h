@@ -42,7 +42,7 @@
 # error Non-compatible OS or compiler
 #endif
 
-#define initChessboard() _initChessboard(chess_board, 0, 'A')
+#define initChessboard(x) _initChessboard(x, 0, 'A')
 
 #define MOS 17	/*this one controls the chess board size, don't mess with it*/
 #define WHITE 2
