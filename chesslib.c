@@ -16,7 +16,7 @@
 static bool king_is_threatened(const int, const int, const int, const int, const char, const int, ch_template[][8]);
 
 /*remove king's life if a piece can move to the domain surrounding him*/
-static _Bool k_domain_ctrl(const int, const int, const int, const int, const int, const char);
+static bool k_domain_ctrl(const int, const int, const int, const int, const int, const char);
 
 /*checks whether a king is captured in the next move, thus ending the game
  *or if he is about to be captured by moving to a certain square*/
@@ -252,7 +252,7 @@ void printBoard(ch_template chb[][8], const char p)
 #endif
 }
 
-_Bool validInput(const char *input, int *errPtr)
+bool validInput(const char *input, int *errPtr)
 {
 	if (strlen(input) > 3) {
 		return false;
@@ -647,7 +647,7 @@ void setCastling(ch_template chb[][8], char *plInput, int color)
 	/*cstl_is_enabled = false;*/
 }
 
-_Bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
+bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 {
 	int startx, starty, endx, endy; /*cords for the current tile and for the tile to move the piece to*/
 
@@ -710,7 +710,7 @@ _Bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 	return false;
 }
 
-_Bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
+bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 		const int ex, const int ey, const char piece)
 {
 	int tempx = sx, tempy = sy;
@@ -907,7 +907,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 	get_king_moves(chb, BKx, BKy, BLACK);
 }
 
-_Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
+bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			const int ypiece, const char c, const int color, ch_template chb[][8])
 {
 	int k, l, max, ovlap_flag = false;
@@ -1081,7 +1081,7 @@ _Bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 	return false;
 }
 
-_Bool k_domain_ctrl(const int x_p, const int y_p, const int Kx, 
+bool k_domain_ctrl(const int x_p, const int y_p, const int Kx, 
 				   const int Ky, const int color, const char flag)
 {
 	KingDomain KD[3][3] = {{{Kx-1, Ky-1},{Kx-1, Ky},{Kx-1, Ky+1}},
