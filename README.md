@@ -43,14 +43,6 @@ and Windows 7 32bit, when bugs are fixed or something in the UI changes.
 
 ## TODO
 
-* fix stupid bugs like this (DONE)
-
- ![Alt text](http://i.imgur.com/u7DMUjg.png)
-
-* implement that horrible piecesOverlap function (DONE)
-
-* fix bug on Windows that rejects input other than the first character after some time (DONE)
-
 * add functionality for the engine to detect checkmate and end the game (WIP)
 
 * fix this weird bug that only happens with black Pawns (DONE)
