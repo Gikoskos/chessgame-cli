@@ -15,7 +15,7 @@
  *                             main.c                               *
  *       small game making use of the chesslib.c chess library      *
  *                                                                  *
- *                    by <cyberchiller@gmail.com>                   *
+ *                 (C)2015 <cyberchiller@gmail.com>                 *
  *                                                                  *
  ********************************************************************/
 
