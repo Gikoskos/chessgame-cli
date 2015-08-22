@@ -96,8 +96,9 @@ extern bool cstl_is_enabled;
  ******************************************/
 
 /*fills a ch_template[8][8] chess board, with chess pieces, recursively
- *k: should always be 0 (theoretically, it's the row the function starts filling pieces from)
- *col: should always be 'A' (same as k except that it's the column not the row)*/
+ *only call initChessboard() if you just need to fill a standard chess board
+ *k: the row the function starts filling pieces from
+ *col: same as k except that it's the column not the row*/
 void _initChessboard(ch_template chb[][8], unsigned k, char col);
 
 /*function to print the board at any given point in the game
