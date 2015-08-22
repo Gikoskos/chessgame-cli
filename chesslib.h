@@ -42,6 +42,8 @@
 # error Non-compatible OS or compiler
 #endif
 
+#define initChessboard() _initChessboard(chess_board, 0, 'A')
+
 #define MOS 17	/*this one controls the chess board size, don't mess with it*/
 #define WHITE 2
 #define BLACK 1
@@ -96,7 +98,7 @@ extern bool cstl_is_enabled;
 /*fills a ch_template[8][8] chess board, with chess pieces, recursively
  *k: should always be 0 (theoretically, it's the row the function starts filling pieces from)
  *col: should always be 'A' (same as k except that it's the column not the row)*/
-void initChessboard(ch_template chb[][8], unsigned k, char col);
+void _initChessboard(ch_template chb[][8], unsigned k, char col);
 
 /*function to print the board at any given point in the game
  *p: character that determines the chess piece type that will be printed; 'a' is for

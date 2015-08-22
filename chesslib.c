@@ -60,7 +60,7 @@ extern void clear_buffer(void)
 	while ((clbuf=getchar()) != '\n');
 }
 
-void initChessboard(ch_template chb[][8], unsigned k, char col)	/*k is row, col is column*/
+void _initChessboard(ch_template chb[][8], unsigned k, char col)	/*k is row, col is column*/
 { 
 	if (k == 0 || k == 7) {
 		if (col == 'A' || col == 'H')
@@ -104,7 +104,7 @@ void initChessboard(ch_template chb[][8], unsigned k, char col)	/*k is row, col 
 		col = 'A';
 	}
 	if (k != 8)
-		initChessboard(chb, k, col);
+		_initChessboard(chb, k, col);
 }
 
 void printBoard(ch_template chb[][8], const char p)
