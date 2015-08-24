@@ -9,11 +9,11 @@ BLDFOLDER = build
 CHESSLIB = chesslib.c
 prefix = /usr/local
 
-chessgame: main.c chesslib.c chesslib.h
+chessgame: chessgame-cli.c chesslib.c chesslib.h
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
 	&& $(CC) $(CFLAGS) $< $(CHESSLIB) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
-chessgameWall: main.c chesslib.c chesslib.h
+chessgameWall: chessgame-cli.c chesslib.c chesslib.h
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
 	&& $(CC) $(CFLAGS) $(INC_W_LEVEL) $< $(CHESSLIB) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
@@ -29,7 +29,7 @@ dllobject: chesslib.c
 dllcompile:
 	$(CC) -shared -o $(DLL) chesslib.o -W1,--out-implib,chesslib.a
 
-exe: main.c chesslib.dll
+exe: chessgame-cli.c chesslib.dll
 	$(CC) -o chessgame.exe $<
 
 run:
