@@ -55,12 +55,6 @@ int main(int argc, char *argv[])
 				round = BLACK;
 			printf("\n\n\n\n\n");
 		}
-		if (argc > 1) {
-			if (strcmp(argv[1], "help") ==  0) {
-				printInstructions();
-			} else 
-				p_err = 1;
-		}
 
 		printf("Type 'help' and ENTER to view the instructions any time.\n");
 

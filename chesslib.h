@@ -95,15 +95,16 @@ extern bool cstl_is_enabled;
  *function prototypes for the main library*
  ******************************************/
 
-/*fills a ch_template[8][8] chess board, with chess pieces, recursively
- *only call initChessboard() if you just need to fill a standard chess board
+/*fills a ch_template[8][8] chess board with chess pieces, recursively
+ *call initChessboard() if you just need to fill a standard chess board; don't 
+ *use this function
  *k: the row the function starts filling pieces from
  *col: same as k except that it's the column not the row*/
 void _initChessboard(ch_template chb[][8], unsigned k, char col);
 
 /*function to print the board at any given point in the game
  *p: character that determines the chess piece type that will be printed; 'a' is for
- *symbolic capital letters and 'p' is for the Unicode chess pieces (doesn't work on Windows)*/
+ *capital letters and 'p' is for the Unicode chess pieces (doesn't work on Windows)*/
 void printBoard(ch_template chb[][8], const char p);
 
 /*traverses the chessboard, finds and returns the piece that is capable
@@ -116,8 +117,8 @@ char *findPiece(ch_template chb[][8], const char *input, int color);
 /*move the piece if no other piece is in the way; also checks for pawn promotion
  *returns false if the move isn't legal
  *plInput: string with the piece and square to be moved to, e.g. PH3 NA5 KC1
- *piece: array of two characters for the column and row of the square 
- *the piece is on, e.g. H3 C7*/
+ *piece: array of two characters for the column and row of the square the 
+ *piece is on, e.g. H3 C7*/
 bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color);
 
 /*checks if a move is valid based on whether the piece overlaps other pieces or not
@@ -129,8 +130,8 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color);
 bool piecesOverlap(ch_template chb[][8], const int sx, const int sy, const int ex, const int ey, const char piece);
 
 /*check for validity of player input; returns false for bad input and true otherwise
- *input: input buffer as entered by the player; check if the string is NULL first
- *before using this function
+ *input: input buffer as entered by the player; check if the string is NULL before 
+ *using this function
  *errPtr: reference to the error code integer in the main function*/
 bool validInput(const char *input, int *errPtr);
 
@@ -152,7 +153,7 @@ void printError(int);
 char *getPlayerInput(void);
 
 /*handles move conflict: whether two pieces of the same kind and color 
- *are able to move in the same square at the same round
+ *are able to move in the same square entered by the player, at the same round
  *piece_pos: string with 4 characters that holds the location of the two squares e.g. H6A4
  *p: the piece to move*/
 char *pieceConflict(const char *piece_pos, const char p);
