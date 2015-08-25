@@ -105,21 +105,21 @@ void _initChessboard(ch_template chb[][8], unsigned k, char col);
 /*function to print the board at any given point in the game
  *p: character that determines the chess piece type that will be printed; 'a' is for
  *capital letters and 'p' is for the Unicode chess pieces (doesn't work on Windows)*/
-void printBoard(ch_template chb[][8], const char p);
+void printBoard (ch_template chb[][8], const char p);
 
 /*traverses the chessboard, finds and returns the piece that is capable
  *to perform the move entered by the player; if more than one piece can move
  *to the square entered by the player it finds and returns them both
  *input: string with the piece and square to be moved to, e.g. PH3 NA5 KC1
  *color: the piece color of the current player*/
-char *findPiece(ch_template chb[][8], const char *input, int color);
+char *findPiece (ch_template chb[][8], const char *input, int color);
 
 /*move the piece if no other piece is in the way; also checks for pawn promotion
  *returns false if the move isn't legal
  *plInput: string with the piece and square to be moved to, e.g. PH3 NA5 KC1
  *piece: array of two characters for the column and row of the square the 
  *piece is on, e.g. H3 C7*/
-bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color);
+bool movePiece (ch_template chb[][8], char *plInput, char piece[2], int color);
 
 /*checks if a move is valid based on whether the piece overlaps other pieces or not
  *it takes the coordinates of two pieces (the first always has to be Q, R or B),
@@ -127,45 +127,45 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color);
  *sx, sy: the row and column of the first piece
  *ex, ey: the row and column of the second piece
  *piece: the first piece's letter*/
-bool piecesOverlap(ch_template chb[][8], const int sx, const int sy, const int ex, const int ey, const char piece);
+bool piecesOverlap (ch_template chb[][8], const int sx, const int sy, const int ex, const int ey, const char piece);
 
 /*check for validity of player input; returns false for bad input and true otherwise
  *input: input buffer as entered by the player; check if the string is NULL before 
  *using this function
  *errPtr: reference to the error code integer in the main function*/
-bool validInput(const char *input, int *errPtr);
+bool validInput (const char *input, int *errPtr);
 
 /*create a string with the current date to be used as the log file's filename*/
-void date_filename(char*, int);
+void date_filename (char*, int);
 
 /*write each player's moves to a log file
  *round: BLACK or WHITE
  *logf: file descriptor of the log file
  *plInput: input entered by the player; contains the piece and the square the piece moved into
  *piece: the initial square the piece was into*/
-void write_to_log(int round, FILE* logf, char *plInput, char piece[2]);
+void write_to_log (int round, FILE* logf, char *plInput, char piece[2]);
 
 /*basic error printing function; writes output to stderr
  *see implementation for possible error codes*/
-void printError(int);
+void printError (int);
 
 /*safely copies the input buffer to a string and returns that string*/
-char *getPlayerInput(void);
+char *getPlayerInput (void);
 
 /*handles move conflict: whether two pieces of the same kind and color 
  *are able to move in the same square entered by the player, at the same round
  *piece_pos: string with 4 characters that holds the location of the two squares e.g. H6A4
  *p: the piece to move*/
-char *pieceConflict(const char *piece_pos, const char p);
+char *pieceConflict (const char *piece_pos, const char p);
 
 /*finds and saves the state of each King for the current round; see 
  *the KingState enum for all the states a King can have*/
-void findKState(ch_template chb[][8], KingState *WK, KingState *BK);
+void findKState (ch_template chb[][8], KingState *WK, KingState *BK);
 
 /*takes care of all the moves that happen during castling; only call it if cstl_is_enabled is true
  *plInput: the castling piece that was returned by findPiece
  *color: the piece color of the player*/
-void setCastling(ch_template chb[][8], char *plInput, int color);
+void setCastling (ch_template chb[][8], char *plInput, int color);
 
 /*functions I created to adjust my own chess game*/
 inline void clear_screen(void);
