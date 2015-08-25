@@ -78,17 +78,23 @@ int main(int argc, char *argv[])
 				printf("White player wins! Thanks for playing!\n\t\t\n");
 				goto ENDGAME;
 			}
-			if (white_king == check) {
+			if (white_king == check || white_king == safe_check) {
 				if (!WKingMoves)
 					printf("White King can't move.\n");
-				else
+				else {
+					if (white_king == check)
+						printf("White King is in danger!\n");
 					printf("Possible moves for white King: %s\n", WKingMoves);
+				}
 			}
-			if (black_king == check) {
+			if (black_king == check || black_king == safe_check) {
 				if (!BKingMoves)
 					printf("Black King can't move.\n");
-				else
+				else {
+					if (black_king == check)
+						printf("Black King is in danger!\n");
 					printf("Possible moves for black King: %s\n", BKingMoves);
+				}
 			}
 			if (round == BLACK)
 				printf("It\'s black\'s turn: ");
@@ -100,16 +106,17 @@ int main(int argc, char *argv[])
 				loop_count++;
 				continue;
 			}
-			if (!strcmp(playerInput, "quit") || !strcmp(playerInput, "exit")) {
+			if (!strcmp(playerInput, "quit") || !strcmp(playerInput, "exit")
+				|| !strcmp(playerInput, "QUIT") || !strcmp(playerInput, "EXIT")) {
 				goto ENDGAME;
 			}
 			if (strlen(playerInput) > 4 || playerInput[0] == '\n') {	/*change error code for bad input*/
 #if !defined (__MINGW32__) || !defined(_WIN32)
-				if (strncmp(playerInput, "pieces", 6) == 0) {
+				if (!strcmp(playerInput, "pieces") || !strcmp(playerInput, "PIECES")) {
 					chbflag = 'p';
 					loop_count++;
 					continue;
-				} else if (strncmp(playerInput, "letters", 7) == 0) {
+				} else if (!strcmp(playerInput, "letters") || !strcmp(playerInput, "LETTERS")) {
 					chbflag = 'a';
 					loop_count++;
 					continue;
@@ -121,6 +128,7 @@ int main(int argc, char *argv[])
 			}
 			loop_count++;
 		} while (validInput(playerInput, &p_err) == false);
+		playerInput[0] = (char)toupper(playerInput[0]);
 		playerInput[1] = (char)toupper(playerInput[1]);
 
 		if (!findPiece(chess_board, playerInput, round)) {
