@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 				|| !strcmp(playerInput, "QUIT") || !strcmp(playerInput, "EXIT")) {
 				goto ENDGAME;
 			}
-			if (strlen(playerInput) > 4 || playerInput[0] == '\n') {	/*change error code for bad input*/
+			if (strlen(playerInput) > 4 || playerInput[1] == '\0') {	/*change error code for bad input*/
 #if !defined (__MINGW32__) || !defined(_WIN32)
 				if (!strcmp(playerInput, "pieces") || !strcmp(playerInput, "PIECES")) {
 					chbflag = 'p';

@@ -1283,7 +1283,6 @@ char *getPlayerInput(void)
 	}
 	if (!count) {
 		str_in[1] = '\0';
-		fflush(stdin);
 		return str_in;
 	} else
 		str_in[len] = '\0';
