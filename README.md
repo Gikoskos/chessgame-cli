@@ -1,8 +1,9 @@
 # ChessLib
 ## Overview
 
-ChessLib is a standard chess game implementation library. To test it out you can run 
-chessgame which is a console-based game running on ChessLib. Note that for now it only supports human players.
+ChessLib is a standard chess game implementation library. It's at a very early stage of development, at the moment;
+only use it for testing purposes please. To test out the engine you can run chessgame which is a console-based game 
+running on ChessLib. Note that for now it only supports human players.
 
 The thought process behind this project was for me to implement a chess engine for the first time, without seeing
 code from other projects or how implementations of chess engines are generally done.
