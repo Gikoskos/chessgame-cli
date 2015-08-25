@@ -41,11 +41,11 @@ runW:
 .PHONY: install clean  cleantxt
 clean:
 	rm -rf build \
-	rm -rf *.o
+	rm *.o
 
 cleantxt:
 	rm -rf build/*.txt \
-	rm -rf *.txt
+	rm *.txt
 
 install: chessgame
 	install -m 0755 $(BLDFOLDER)/chessgame $(prefix)/bin
