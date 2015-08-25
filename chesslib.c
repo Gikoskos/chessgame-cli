@@ -22,9 +22,9 @@ static bool k_domain_ctrl(const int, const int, const int, const int, const int,
  *or if he is about to be captured by moving to a certain square*/
 static void check_mate(KingState**, KingState**);
 
-/*is called twice with the coords of each King and stores the possible moves a King can do, during check*/
+/*is called twice in findKState with the coords of each King and stores 
+ *the possible moves a King can do, during check*/
 void get_king_moves(ch_template [][8], int, int, int);
-
 
 /*the energy/life of each King is measured in his free domain
  *Note: see how the values of these variables are changed throughout
@@ -54,6 +54,9 @@ typedef struct KingDomain {
 } KingDomain;
 
 
+/*********************************
+ *chess functions implementations*
+ *********************************/
 extern void clear_buffer(void)
 {
 	char clbuf;
@@ -257,11 +260,11 @@ bool validInput(const char *input, int *errPtr)
 	if (strlen(input) > 3) {
 		return false;
 	}
-	if (!strchr("RNBQKP", *input)) {
+	if (!strchr("rnbqkpRNBQKP", *input)) {
 		*errPtr = 5;
 		return false;
 	}
-	if (!strchr("abcdefgh", input[1])) {
+	if (!strchr("abcdefghABCDEFGH", input[1])) {
 		*errPtr = 6;
 		return false;
 	}
@@ -284,11 +287,11 @@ void printError(int i)
 		if (i == 5)
 			fprintf(stderr, "%s\n%s%s\n\t%s\n\t%s\n\t%s\n",
 			"Not a valid Chess piece entered. ",
-			"Please use only R for Rook, ", "N for Knight,", 
-			"B for Bishop,", "Q for Queen,", "K for King and P for Pawn");
+			"Please use only R/r for Rook, ", "N/n for Knight,", 
+			"B/b for Bishop,", "Q/q for Queen,", "K/k for King and P/p for Pawn");
 		else if (i == 6)
 			fprintf(stderr, "%s\n",
-			"Not a valid column letter entered. Please use only a b c d e f g or h.");
+			"Not a valid column letter entered. Legal letters are [a-h] or [A-H].");
 		else if (i == 7)
 			fprintf(stderr, "%s\n",
 			"Not a valid row entered. Please use only numbers from 1 to 8.");
@@ -300,7 +303,10 @@ void printError(int i)
 
 char *findPiece(ch_template chb[][8], const char *input, int color)
 {
-	int i, j, k, l, count, conflict = 3;	/*conflict: int to check for two pieces attacking the same piece*/
+	int i, j, k, l, count, conflict = 3;
+	/*Note: conflict is a bool to check for two pieces attacking the same piece
+	 *The chess board is scanned throughout to see if another piece that can do the same move
+	 *is found; on the first piece conflict is false, if it finds a second piece it becomes true*/
 	char *retvalue = calloc(3, sizeof(*retvalue));
 	char *temp = calloc(3, sizeof(*temp));
 
@@ -597,7 +603,7 @@ extern void printInstructions(void)
 	"x is the piece you want to move,",
 	"y is the letter of the column and",
 	"z is the number of the row.",
-	"Acceptable values for x are: R for Rook, N for Knight, B for Bishop, Q for Queen, K for King and P for Pawn.",
+	"Acceptable values for x are: R/r for Rook, N/n for Knight, B/b for Bishop, Q/q for Queen, K/k for King and P/p for Pawn.",
 	"Acceptable values for y are lowercase letters",
 	"from \'a\' to \'h\' and for z numbers from 1 to 8.",
 	"For example to move Bishop to e2 type Be2 or Pawn to a4 type Pa4.");
@@ -616,8 +622,9 @@ extern void clear_screen(void)
 	system("cls");
 #endif
 	/*puts( "\033[2J" );
-	 *clear screen using ASCII; doesn't work as well, only use it if you can't install libncurses
-	 *don't forget to delete or comment lines 603-612*/
+	 *Note: Clear screen using ASCII; doesn't work as well.
+	 *Only use it if you can't install libncurses and
+	 *don't forget to delete or comment lines 614-623*/
 }
 
 void setCastling(ch_template chb[][8], char *plInput, int color) 
@@ -649,14 +656,16 @@ void setCastling(ch_template chb[][8], char *plInput, int color)
 
 bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 {
-	int startx, starty, endx, endy; /*cords for the current tile and for the tile to move the piece to*/
+	int startx, starty, endx, endy;
 
 	endx = plInput[2] - '1';
 	endy = plInput[1] - 'A';
 	startx = piece[1] - '1';
 	starty = piece[0] - 'A';
 	if (!piecesOverlap(chb, startx, starty, endx, endy, plInput[0])) {
-		if (chb[endx][endy].c != color) {	/*checks whether it's a piece of the same color or not*/
+		/*Note: if a piece of the same color occupies the square your 
+		 *piece is about to move on, the move isn't valid and movePiece returns false*/
+		if (chb[endx][endy].c != color) {
 			if (chb[startx][starty].current == 'K' || chb[startx][starty].current == 'R') {
 				if (startx == 0) {
 					if (starty == 0)
@@ -689,13 +698,13 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 				printf("What piece do you want to promote your Pawn into? ");
 				promote_selection = getPlayerInput();
 				if (!strcmp(promote_selection, "queen") || !strcmp(promote_selection, "Q") ||
-					!strcmp(promote_selection, "Queen") || !strcmp(promote_selection, "q")) {
+					!strcmp(promote_selection, "QUEEN") || !strcmp(promote_selection, "q")) {
 					chb[endx][endy].current = 'Q';
 				} else if (!strcmp(promote_selection, "bishop") || !strcmp(promote_selection, "B") ||
-					!strcmp(promote_selection, "Bishop") || !strcmp(promote_selection, "b")) {
+					!strcmp(promote_selection, "BISHOP") || !strcmp(promote_selection, "b")) {
 					chb[endx][endy].current = 'B';
-				} else if (!strcmp(promote_selection, "Knight") || !strcmp(promote_selection, "N") ||
-					!strcmp(promote_selection, "knight") || !strcmp(promote_selection, "n")) {
+				} else if (!strcmp(promote_selection, "knight") || !strcmp(promote_selection, "N") ||
+					!strcmp(promote_selection, "KNIGHT") || !strcmp(promote_selection, "n")) {
 					chb[endx][endy].current = 'N';
 				} else {
 					free(promote_selection);
@@ -785,8 +794,9 @@ bool piecesOverlap(ch_template chb[][8], const int sx, const int sy,
 void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 {
 	int i, j, WKx = -1, WKy, BKx = -1, BKy;
-	int B_check_count = 0, W_check_count = 0;
 
+	/*Note: both Kings' domains are zeroed out after each round
+	 *to recalculate their values based on the new state of the board*/
 	memset(WKingLife, 0, 9*sizeof(short));
 	memset(BKingLife, 0, 9*sizeof(short));
 	for (i = 0; i < 8; i++) {
@@ -802,7 +812,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 			}
 		}
 	}
-	if (WKx == -1) {	/*temporary hack to end the game if the King is dead*/
+	if (WKx == -1) {	/*Note: temporary hack to end the game if the King is captured*/
 		*WK = checkmate;
 		return;
 	} else if (BKx == -1) {
@@ -830,12 +840,8 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 				}
 				if (chb[i][j].current == 'B' || chb[i][j].current == 'Q' ||
 					chb[i][j].current == 'N' || chb[i][j].current == 'K') {
-					if (piecesOverlap(chb, i, j, WKx, WKy, chb[i][j].current) == false ||
-						chb[i][j].current == 'N') {
-						if (king_is_threatened(WKx, WKy, i, j, chb[i][j].current, chb[i][j].c, chb) == true) {
-							W_check_count++;
-						}
-					}
+					if (king_is_threatened(WKx, WKy, i, j, chb[i][j].current, chb[i][j].c, chb))
+						*WK = safe_check;
 				}
 				if (chb[i][j].current != 'K')
 					k_domain_ctrl(i, j, BKx, BKy, chb[i][j].c, 'f');
@@ -847,22 +853,16 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 					k_domain_ctrl(i,j,WKx,WKy,chb[i][j].c, 'f');
 				}
 				if (chb[i][j].current == 'R' || chb[i][j].current == 'Q') {
-					if ((BKx == i) && (piecesOverlap(chb,i,j,BKx,BKy,chb[i][j].current) == false)) {
+					if ((BKx == i) && (piecesOverlap(chb,i,j,BKx,BKy,chb[i][j].current) == false))
 						*BK = check;
-					}
-					if ((BKy == j) && (piecesOverlap(chb,i,j,BKx,BKy,chb[i][j].current) == false)) {
+					if ((BKy == j) && (piecesOverlap(chb,i,j,BKx,BKy,chb[i][j].current) == false))
 						*BK = check;
-					}
 					king_is_threatened(BKx, BKy, i, j, chb[i][j].current, chb[i][j].c, chb);
 				}
 				if (chb[i][j].current == 'B' || chb[i][j].current == 'Q' || 
 					chb[i][j].current == 'N' || chb[i][j].current == 'K') {
-					if (piecesOverlap(chb, i, j, BKx, BKy, chb[i][j].current) == false ||
-						chb[i][j].current == 'N') {
-						if (king_is_threatened(BKx, BKy, i, j, chb[i][j].current, chb[i][j].c, chb) == true) {
-							B_check_count++;
-						}
-					}
+					if (king_is_threatened(BKx, BKy, i, j, chb[i][j].current, chb[i][j].c, chb) == true)
+						*BK = safe_check;
 				}
 				if (chb[i][j].current != 'K')
 					k_domain_ctrl(i, j, WKx, WKy, chb[i][j].c, 'f');
@@ -919,7 +919,9 @@ bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			else
 				max = Ky;
 			for (l = ypiece-1; l >= max; l--) {
-				if (chb[xpiece][l].occ == true && l!=Ky) {
+				if (chb[xpiece][l].occ == true && l!=Ky && ovlap_flag == false) {
+					if (chb[xpiece][l].c != color)	/*still testing this*/
+						k_domain_ctrl(xpiece, l, Kx, Ky, color, 'e');
 					ovlap_flag = true;
 				}
 				if (ovlap_flag == false)
@@ -931,7 +933,9 @@ bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			else
 				max = Ky;
 			for (l = ypiece+1; l <= max; l++) {
-				if (chb[xpiece][l].occ == true && l!=Ky) {
+				if (chb[xpiece][l].occ == true && l!=Ky && ovlap_flag == false) {
+					if (chb[xpiece][l].c != color)
+						k_domain_ctrl(xpiece, l, Kx, Ky, color, 'e');
 					ovlap_flag = true;
 				}
 				if (ovlap_flag == false)
@@ -945,7 +949,9 @@ bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			else
 				max = Kx;
 			for (k = xpiece-1; k >= max; k--) {
-				if (chb[k][ypiece].occ == true && k!=Kx) {
+				if (chb[k][ypiece].occ == true && k!=Kx && ovlap_flag == false) {
+					if (chb[k][ypiece].occ != color)
+						k_domain_ctrl(k, ypiece, Kx, Ky, color, 'e');
 					ovlap_flag = true;
 				}
 				if (ovlap_flag == false)
@@ -957,7 +963,9 @@ bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			else
 				max = Kx;
 			for (k = xpiece+1; k <= max; k++) {
-				if (chb[k][ypiece].occ == true && k!=Kx) {
+				if (chb[k][ypiece].occ == true && k!=Kx && ovlap_flag == false) {
+					if (chb[k][ypiece].occ != color)
+						k_domain_ctrl(k, ypiece, Kx, Ky, color, 'e');
 					ovlap_flag = true;
 				}
 				if (ovlap_flag == false)
@@ -974,7 +982,9 @@ bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			k = xpiece + 1;
 			l = ypiece + 1;
 			while ((k <= 7 && k >= 0) && (l <= 7 && l >= 0)) {
-				if (chb[k][l].occ == true && (k != Kx && l != Ky)) {
+				if (chb[k][l].occ == true && (k != Kx && l != Ky) && ovlap_flag == false) {
+					if (chb[k][l].c != color)
+						k_domain_ctrl(k, l, Kx, Ky, color, 'e');
 					ovlap_flag = true;
 				}
 				if (ovlap_flag == false)
@@ -995,7 +1005,9 @@ bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			k = xpiece - 1;
 			l = ypiece + 1;
 			while ((k >= 0 && k <= 7) && (l <= 7 && l >= 0)) {
-				if (chb[k][l].occ == true && (k != Kx && l != Ky)) {
+				if (chb[k][l].occ == true && (k != Kx && l != Ky) && ovlap_flag == false) {
+					if (chb[k][l].c != color)
+						k_domain_ctrl(k, l, Kx, Ky, color, 'e');
 					ovlap_flag = true;
 				}
 				if (ovlap_flag == false)
@@ -1016,7 +1028,9 @@ bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			k = xpiece + 1;
 			l = ypiece - 1;
 			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
-				if (chb[k][l].occ == true && (k != Kx && l != Ky)) {
+				if (chb[k][l].occ == true && (k != Kx && l != Ky) && ovlap_flag == false) {
+					if (chb[k][l].c != color)
+						k_domain_ctrl(k, l, Kx, Ky, color, 'e');
 					ovlap_flag = true;
 				}
 				if (ovlap_flag == false)
@@ -1037,7 +1051,9 @@ bool king_is_threatened(const int Kx, const int Ky, const int xpiece,
 			k = xpiece - 1; 
 			l = ypiece - 1;
 			while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
-				if (chb[k][l].occ == true && (k != Kx && l != Ky)) {
+				if (chb[k][l].occ == true && (k != Kx && l != Ky) && ovlap_flag == false) {
+					if (chb[k][l].c != color)
+						k_domain_ctrl(k, l, Kx, Ky, color, 'e');
 					ovlap_flag = true;
 				}
 				if (ovlap_flag == false)
@@ -1131,16 +1147,14 @@ void get_king_moves(ch_template chb[][8], int Kx, int Ky, int color)
 			tempx = KD[i][j].x;
 			tempy = KD[i][j].y;
 			if (color == BLACK) {
-				if (BKingLife[i][j] == 0 || (BKingLife[i][j] == 1 && 
-					chb[tempx][tempy].occ == true && chb[tempx][tempy].current != 'K')) {
+				if (BKingLife[i][j] == 0) {
 					sprintf(&BKingMoves[str_index], "%c%c ",
 						chb[tempx][tempy].square[0],
 						chb[tempx][tempy].square[1]);
 					str_index+=3;
 				} 
 			} else {
-				if (WKingLife[i][j] == 0 || (WKingLife[i][j] == 1 && 
-					chb[tempx][tempy].occ == true && chb[tempx][tempy].current != 'K')) {
+				if (WKingLife[i][j] == 0) {
 					sprintf(&WKingMoves[str_index], "%c%c ",
 						chb[tempx][tempy].square[0],
 						chb[tempx][tempy].square[1]);
@@ -1300,12 +1314,14 @@ char *pieceConflict(const char *piece_pos, const char p)
 	if (piece_pos[0] != piece_pos[2]) {
 		printf("%s %s %s %s?\n%s", "Did you mean to move the left",  
 				name, "or the right", name,
-				"Please specify with either 'left' or 'right': ");
+				"Please specify with either 'left'/'LEFT' or 'right'/'RIGHT': ");
 		do {
 			temp = getPlayerInput();
-		} while (strcmp(temp, "left") != 0 && strcmp(temp, "right") != 0);
-		if ((strcmp(temp, "right") == 0 && piece_pos[0] < piece_pos[2]) || 
-			(strcmp(temp, "left") == 0 && piece_pos[0] > piece_pos[2])) {
+		} while (strcmp(temp, "left") && strcmp(temp, "right")
+		&& strcmp(temp, "LEFT") && strcmp(temp, "RIGHT"));
+
+		if (((!strcmp(temp, "right") || !strcmp(temp, "RIGHT")) && piece_pos[0] < piece_pos[2]) || 
+			((!strcmp(temp, "left") || !strcmp(temp, "LEFT")) && piece_pos[0] > piece_pos[2])) {
 			fpiece[0] = piece_pos[2];
 			fpiece[1] = piece_pos[3];
 		} else {
@@ -1314,12 +1330,14 @@ char *pieceConflict(const char *piece_pos, const char p)
 	} else {
 		printf("%s %s %s %s %s\n%s", "Did you mean to move the",  
 				name, "above or the", name, "below?",
-				"Please specify with either 'up' or 'down': ");
+				"Please specify with either 'up'/'UP' or 'down'/'DOWN': ");
 		do {
 			temp = getPlayerInput();
-		} while (strcmp(temp, "up") != 0 && strcmp(temp, "down") != 0);
-		if ((strcmp(temp, "up") == 0 && piece_pos[1] > piece_pos[3]) || 
-			(strcmp(temp, "down") == 0 && piece_pos[1] < piece_pos[3])) {
+		} while (strcmp(temp, "up") && strcmp(temp, "down")
+		&& strcmp(temp, "UP") && strcmp(temp, "DOWN"));
+
+		if (((!strcmp(temp, "up") || !strcmp(temp, "UP")) && piece_pos[1] > piece_pos[3]) || 
+			((!strcmp(temp, "down") || !strcmp(temp, "DOWN")) && piece_pos[1] < piece_pos[3])) {
 			fpiece[0] = piece_pos[2];
 			fpiece[1] = piece_pos[3];
 		} else {
