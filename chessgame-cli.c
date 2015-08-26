@@ -84,7 +84,9 @@ int main(int argc, char *argv[])
 				else {
 					if (white_king == check)
 						printf("White King is in danger!\n");
+#ifdef DEBUG
 					printf("Possible moves for white King: %s\n", WKingMoves);
+#endif
 				}
 			}
 			if (black_king == check || black_king == safe_check) {
@@ -93,14 +95,22 @@ int main(int argc, char *argv[])
 				else {
 					if (black_king == check)
 						printf("Black King is in danger!\n");
+#ifdef DEBUG
 					printf("Possible moves for black King: %s\n", BKingMoves);
+#endif
 				}
 			}
-			if (round == BLACK)
+			if (round == BLACK) {
+#ifdef AI_IS_ENABLED
+				memcpy(playerInput, AImove(chess_board), 4);
+#else
 				printf("It\'s black\'s turn: ");
-			else
+				playerInput = getPlayerInput();
+#endif
+			} else {
 				printf("It\'s white\'s turn: ");
-			playerInput = getPlayerInput();
+				playerInput = getPlayerInput();
+			}
 
 			if (!playerInput) {	/*avoid segfaulting for strlen(NULL) later*/
 				loop_count++;
