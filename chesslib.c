@@ -54,9 +54,9 @@ typedef struct KingDomain {
 } KingDomain;
 
 
-/*********************************
- *chess functions implementations*
- *********************************/
+/********************
+ *ChessLib functions*
+ ********************/
 extern void clear_buffer(void)
 {
 	char clbuf;
@@ -304,9 +304,9 @@ void printError(int i)
 char *findPiece(ch_template chb[][8], const char *input, int color)
 {
 	int i, j, k, l, count, conflict = 3;
-	/*Note: conflict is a bool to check for two pieces attacking the same piece
-	 *The chess board is scanned throughout to see if another piece that can do the same move
-	 *is found; on the first piece conflict is false, if it finds a second piece it becomes true*/
+	/*Note: Conflict is a bool to check for two pieces attacking the same piece.
+	 *The chess board is scanned twice to see if another piece that can do the same move
+	 *is found; on the first piece conflict is false, if it finds a second piece it becomes true.*/
 	char *retvalue = calloc(3, sizeof(*retvalue));
 	char *temp = calloc(3, sizeof(*temp));
 
@@ -671,8 +671,8 @@ bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 	startx = piece[1] - '1';
 	starty = piece[0] - 'A';
 	if (!piecesOverlap(chb, startx, starty, endx, endy, plInput[0])) {
-		/*Note: if a piece of the same color occupies the square your 
-		 *piece is about to move on, the move isn't valid and movePiece returns false*/
+		/*Note: If a piece of the same color occupies the square your 
+		 *piece is about to move on, the move isn't valid and movePiece returns false.*/
 		if (chb[endx][endy].c != color) {
 			if (chb[startx][starty].current == 'K' || chb[startx][starty].current == 'R') {
 				if (startx == 0) {
@@ -803,8 +803,8 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 {
 	int i, j, WKx = -1, WKy, BKx = -1, BKy;
 
-	/*Note: both Kings' domains are zeroed out after each round
-	 *to recalculate their values based on the new state of the board*/
+	/*Note: Both Kings' domains are zeroed out after each round
+	 *to recalculate their values based on the new state of the board.*/
 	memset(WKingLife, 0, 9*sizeof(short));
 	memset(BKingLife, 0, 9*sizeof(short));
 	for (i = 0; i < 8; i++) {
@@ -820,7 +820,7 @@ void findKState(ch_template chb[][8], KingState *WK, KingState *BK)
 			}
 		}
 	}
-	if (WKx == -1) {	/*Note: temporary hack to end the game if the King is captured*/
+	if (WKx == -1) {	/*temporary hack to end the game if the King is captured*/
 		*WK = checkmate;
 		return;
 	} else if (BKx == -1) {
