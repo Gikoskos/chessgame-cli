@@ -1,13 +1,13 @@
-CC = gcc
-CFLAGS = -g -Wall -std=gnu99 -fgnu89-inline
-LINKER = -lncurses
-ENABLEDLL = -DBUILD_CHESSLIB_DLL
-DLL = chesslib.dll
-ELF = chessgame
-INC_W_LEVEL = -Wextra -pedantic
-BLDFOLDER = build
-CHESSLIB = chesslib.c
-prefix = /usr/local
+CC := gcc
+CFLAGS := -g -Wall -std=gnu99 -fgnu89-inline
+LINKER := -lncurses
+ENABLEDLL := -DBUILD_CHESSLIB_DLL
+DLL := chesslib.dll
+ELF := chessgame
+INC_W_LEVEL := -Wextra -pedantic
+BLDFOLDER := build
+CHESSLIB := chesslib.c
+prefix := /usr/local
 
 chessgame: chessgame-cli.c chesslib.c chesslib.h
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
