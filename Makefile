@@ -10,7 +10,7 @@ INC_W_LEVEL := -Wextra -pedantic
 BLDFOLDER := build
 TESTFOLDER := tests
 CHESSLIB := chesslib.c
-AI := computer.c
+AIC := chlib-computer.c
 prefix := /usr/local
 
 # Build Linux cli ELF with no AI #
@@ -31,9 +31,9 @@ chesslib: chesslib.c
 	rm chesslib.o
 
 # Build Linux ELF with AI tests #
-AItests: chessgame-cli.c chesslib.c computer.c chesslib.h
+AItests: chessgame-cli.c chesslib.c chlib-computer.c chesslib.h
 	if [ ! -e $(TESTFOLDER) ]; then mkdir $(TESTFOLDER); fi \
-	&& $(CC) $(CFLAGS) $(ENABLEAI) $< $(CHESSLIB) $(AI) -o $@ $(LINKER); mv $@ $(TESTFOLDER)
+	&& $(CC) $(CFLAGS) $(ENABLEAI) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(TESTFOLDER)
 
 # Build Linux ELF with no AI with debugging flag #
 debug: chessgame-cli.c chesslib.c chesslib.h
