@@ -1,7 +1,8 @@
 # ChessLib
 ## Overview
 
-ChessLib is a standard chess game implementation library. It's at a very early stage of development, at the moment;
+ChessLib is a chess game implementation in C. It can be used as a library, to simulate a simple chess game with
+almost all rules (no en passant for now). It's at a very early stage of development, at the moment;
 only use it for testing purposes please. To test out the engine you can run chessgame which is a console-based game 
 running on ChessLib. Note that for now it only supports human players.
 
@@ -46,6 +47,10 @@ or if you're using Powershell:
 To compile and run on Linux:
 
     make && make run
+    
+To compile with the random-move computer player on Linux:
+
+    make AItests && ./tests/AItests
 
 I will be releasing precompiled binaries made on Ubuntu 14.04 i386 
 and Windows 7 32bit, when bugs are fixed or something in the UI changes.
