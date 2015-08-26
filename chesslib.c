@@ -612,17 +612,25 @@ extern void printInstructions(void)
 extern void clear_screen(void)
 {
 #ifndef _WIN32
+# ifndef AI_IS_ENABLED
 	char buf[1024];
 	char *str;
 
 	tgetent(buf, getenv("TERM"));
 	str = tgetstr("cl", NULL);
 	fputs(str, stdout);
+# else
+	/*Weird stuff: I'm using system("clear") for the AI executable
+	 *because if I try to compile it with tgetent and tgetstr I get
+	 *double free corruption, which I don't get if I compile without AI.
+	 *If you know what's happening please contact me.*/
+	system("clear");
+# endif
 #else
 	system("cls");
 #endif
 	/*puts( "\033[2J" );
-	 *Note: Clear screen using ASCII; doesn't work as well.
+	 Note: Clear screen using ASCII; doesn't look that good.
 	 *Only use it if you can't install libncurses and
 	 *don't forget to delete or comment lines 614-623*/
 }
@@ -1166,9 +1174,10 @@ void get_king_moves(ch_template chb[][8], int Kx, int Ky, int color)
 	if (color == BLACK && !str_index) {
 		free(BKingMoves);
 		BKingMoves = NULL;
-		/*Note: game segfaults if BKingMoves and WKingMoves aren't set
+		/*Weird stuff: Game segfaults if BKingMoves and WKingMoves aren't set
 		 *to NULL immediately after freeing; I reproduced the same situation
-		 *in a small test program and it worked just by freeing the strings*/
+		 *in a small test program and it worked just by freeing the strings
+		 *(without setting to NULL). Again if you have an explanation contact me.*/
 	}
 	if (color == WHITE && !str_index) {
 		free(WKingMoves);
