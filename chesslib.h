@@ -172,3 +172,7 @@ inline void clear_screen(void);
 inline void clear_buffer(void);
 inline void printBanner(const char*);
 inline void printInstructions(void);
+
+#ifdef AI_IS_ENABLED
+char *AImove(ch_template chb[][8]);
+#endif
