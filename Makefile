@@ -2,7 +2,6 @@ CC := gcc
 CFLAGS := -g -Wall -std=gnu99 -fgnu89-inline
 LINKER := -lncurses
 ENABLEDLL := -DBUILD_CHESSLIB_DLL
-ENABLEAI := -DAI_IS_ENABLED
 ENABLEDEBUG := -DDEBUG
 DLL := chesslib.dll
 ELF := chessgame
@@ -13,16 +12,16 @@ CHESSLIB := chesslib.c
 AIC := chlib-computer.c
 prefix := /usr/local
 
-# Build Linux cli ELF with no AI #
-chessgame-cli: chessgame-cli.c chesslib.c chesslib.h
+# Build Linux cli ELF #
+chessgame-cli: chessgame-cli.c chlib-computer.c chesslib.c chesslib.h
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
-	&& $(CC) $(CFLAGS) $< $(CHESSLIB) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+	&& $(CC) $(CFLAGS) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 
 # Same thing just with more warnings #
-chessgameWall: chessgame-cli.c chesslib.c chesslib.h
+chessgameWall: chessgame-cli.c chlib-computer.c chesslib.c chesslib.h
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
-	&& $(CC) $(CFLAGS) $(INC_W_LEVEL) $< $(CHESSLIB) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+	&& $(CC) $(CFLAGS) $(INC_W_LEVEL) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build static library archive of ChessLib for Linux to be linked to your program at compile time #
 chesslib: chesslib.c
@@ -30,15 +29,10 @@ chesslib: chesslib.c
 	ar -cq chesslib.a chesslib.o; \
 	rm chesslib.o
 
-# Build Linux ELF with AI tests #
-AItests: chessgame-cli.c chesslib.c chlib-computer.c chesslib.h
-	if [ ! -e $(TESTFOLDER) ]; then mkdir $(TESTFOLDER); fi \
-	&& $(CC) $(CFLAGS) $(ENABLEAI) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(TESTFOLDER)
-
-# Build Linux ELF with no AI with debugging flag #
-debug: chessgame-cli.c chesslib.c chesslib.h
+# Build Linux ELF with debugging flag #
+debug: chessgame-cli.c chlib-computer.c chesslib.c chesslib.h
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
-	&& $(CC) $(CFLAGS) $(ENABLEDEBUG) $< $(CHESSLIB) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+	&& $(CC) $(CFLAGS) $(ENABLEDEBUG) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build DLL #
 dll: dllobject dllcompile
@@ -69,4 +63,4 @@ cleantxt:
 	rm *.txt
 
 install: chessgame-cli
-	install -m 0755 $(BLDFOLDER)/chessgame $(prefix)/bin
+	install -m 0755 $(BLDFOLDER)/$< $(prefix)/bin

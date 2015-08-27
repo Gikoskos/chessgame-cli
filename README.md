@@ -2,9 +2,9 @@
 ## Overview
 
 ChessLib is a chess game implementation in C. It can be used as a library, to simulate a simple chess game with
-almost all rules (no en passant for now). It's at a very early stage of development, at the moment;
-only use it for testing purposes please. To test out the engine you can run chessgame which is a console-based game 
-running on ChessLib. Note that for now it only supports human players.
+almost all rules (en passant doesn't work at the moment). Only use it for testing purposes please, since it's at a very 
+early stage of development. To test out the engine you can run chessgame which is a console-based game 
+running on ChessLib. Note that for now it only supports human players and a random-move computer player.
 
 The thought process behind this project was for me to implement a chess engine for the first time, without seeing
 code from other projects or how implementations of chess engines are generally done.
@@ -26,6 +26,10 @@ when an enemy piece is threatening a square surrounding the King. This is mainly
 since the check and checkmate features are at a very alpha stage.
 
 A log file that records all the moves that took place, is created during the game.
+
+To play against the random move generator run:
+
+    chessgame-cli -c
 
 With the Linux version if you type 'pieces'/'PIECES' you will get the Unicode chess characters 
 and if you type 'letters'/'LETTERS' it reverts back to the capital letter representation.
