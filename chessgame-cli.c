@@ -30,14 +30,20 @@ int main(int argc, char *argv[])
 	*fn: file name string with s_l length
 	*attack_guard: double pawn attack guard and temporary storage for the return of findPiece
 	*temp_cpiece: value to store the current piece name in use with the pieceConflict function*/
-	int round = 0, roundcount = 1, p_err = 0, loop_count = 1;
+	int round = 0, roundcount = 1, p_err = 0, loop_count = 1, argtmp;
 	/*round: for each player's round, 1 for black, 2 for white
 	*roundcount: total number of rounds
 	*p_err: holds the position of the error_out array
-	*loop_count: counter for LOOP*/
+	*loop_count: counter for LOOP
+	*argtmp: temporary storage for command line arguments*/
 	KingState white_king = safe, black_king = safe;
 	FILE *logfile;
 
+	do {
+		argtmp = getopt(argc, argv, "c");
+		if (argtmp == 'c')
+			break;
+	} while (argtmp != -1);
 	initChessboard(chess_board);
 	date_filename(fn, s_l);
 	clear_screen();
@@ -101,12 +107,16 @@ int main(int argc, char *argv[])
 				}
 			}
 			if (round == BLACK) {
-#ifdef AI_IS_ENABLED
-				memcpy(playerInput, AImove(chess_board), 4);
-#else
-				printf("It\'s black\'s turn: ");
-				playerInput = getPlayerInput();
+				if (AI_IS_ENABLED) {
+					memcpy(playerInput, AImove(chess_board), 4);
+#ifdef DEBUG
+					printf("%s ", playerInput);
 #endif
+				}
+				else {
+					printf("It\'s black\'s turn: ");
+					playerInput = getPlayerInput();
+				}
 			} else {
 				printf("It\'s white\'s turn: ");
 				playerInput = getPlayerInput();
@@ -121,19 +131,24 @@ int main(int argc, char *argv[])
 				goto ENDGAME;
 			}
 			if (strlen(playerInput) > 4 || playerInput[1] == '\0') {	/*change error code for bad input*/
+				loop_count++;
 #if !defined (__MINGW32__) || !defined(_WIN32)
-				if (!strcmp(playerInput, "pieces") || !strcmp(playerInput, "PIECES")) {
+				if (!strncmp(playerInput, "pieces", 7) || !strncmp(playerInput, "PIECES", 7)) {
 					chbflag = 'p';
-					loop_count++;
+					p_err = 0;
 					continue;
-				} else if (!strcmp(playerInput, "letters") || !strcmp(playerInput, "LETTERS")) {
+				}
+				if (!strncmp(playerInput, "letters", 8) || !strncmp(playerInput, "LETTERS", 8)) {
 					chbflag = 'a';
-					loop_count++;
+					p_err = 0;
 					continue;
 				}
 #endif
+				if (!strncmp(playerInput, "version", 8) || !strncmp(playerInput, "VERSION", 8)) {
+					p_err = 8;
+					continue;
+				}
 				p_err = 2;
-				loop_count++;
 				continue;
 			}
 			loop_count++;
@@ -197,6 +212,6 @@ int main(int argc, char *argv[])
 		Sleep(4000);
 #endif
 	}
-	playerInput = NULL;
+	free(playerInput);
 	return 0;
 }
