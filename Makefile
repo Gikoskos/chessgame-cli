@@ -4,7 +4,7 @@ LINKER := -lncurses
 ENABLEDLL := -DBUILD_CHESSLIB_DLL
 ENABLEDEBUG := -DDEBUG
 DLL := chesslib.dll
-ELF := chessgame
+ELF := chessgame-cli
 INC_W_LEVEL := -Wextra -pedantic
 BLDFOLDER := build
 TESTFOLDER := tests
@@ -19,7 +19,7 @@ chessgame-cli: chessgame-cli.c chlib-computer.c chesslib.c chesslib.h
 
 
 # Same thing just with more warnings #
-chessgameWall: chessgame-cli.c chlib-computer.c chesslib.c chesslib.h
+chessgame-cliWall: chessgame-cli.c chlib-computer.c chesslib.c chesslib.h
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
 	&& $(CC) $(CFLAGS) $(INC_W_LEVEL) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
