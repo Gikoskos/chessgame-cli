@@ -295,6 +295,10 @@ void printError(int i)
 		else if (i == 7)
 			fprintf(stderr, "%s\n",
 			"Not a valid row entered. Please use only numbers from 1 to 8.");
+		else if (i == 8)
+			fprintf(stdout, "%s%s\n%s %s\n", "ChessLib-", CHESSLIB_VERSION_STRING,
+				"Copyright (C) 2015 George Koskeridis",
+				"<cyberchiller@gmail.com>");
 		else
 			fprintf(stderr, "%s%d.\n",
 			"Unrecognized error number ", i);
@@ -612,7 +616,7 @@ extern void printInstructions(void)
 extern void clear_screen(void)
 {
 #ifndef _WIN32
-# ifndef AI_IS_ENABLED
+# if 0
 	char buf[1024];
 	char *str;
 
