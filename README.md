@@ -2,7 +2,7 @@
 ## Overview
 
 ChessLib is a chess game implementation in C. It can be used as a library, to simulate a simple chess game with
-almost all rules (en passant doesn't work at the moment). Only use it for testing purposes please, since it's at a very 
+almost all rules (only en passant and checkmate don't work at the moment). Only use it for testing purposes please, since it's at a very 
 early stage of development. To test out the engine you can run chessgame which is a console-based game 
 running on ChessLib. Note that for now it only supports human players and a random-move computer player.
 
