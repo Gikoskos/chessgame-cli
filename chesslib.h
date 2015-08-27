@@ -54,6 +54,17 @@
 #define ALL_CASTL_TRUE {true, true, true, true, true, true}
 #define CSTL_LEFTROOK "l"
 #define CSTL_RIGHTROOK "r"
+#define AI_IS_ENABLED argtmp=='c'?1:0
+
+/*versioning*/
+#define CHESSLIB_MAJOR 0
+#define CHESSLIB_MINOR 1
+#define CHESSLIB_PATCH 0
+
+#define SSTR(x) STR(x)
+#define STR(x) #x
+
+#define CHESSLIB_VERSION_STRING SSTR(CHESSLIB_MAJOR)"."SSTR(CHESSLIB_MINOR)"."SSTR(CHESSLIB_PATCH)
 
 /*standard chessboard template*/
 typedef struct ch_template {
@@ -172,7 +183,4 @@ inline void clear_screen(void);
 inline void clear_buffer(void);
 inline void printBanner(const char*);
 inline void printInstructions(void);
-
-#ifdef AI_IS_ENABLED
 char *AImove(ch_template chb[][8]);
-#endif
