@@ -227,5 +227,5 @@ char *AImove(ch_template chb[][8])
 	strcpy(retvalue,temp);
 	free(temp);
 	freeList(AIl);
-	return realloc(retvalue, 4);
+	return retvalue;
 }
