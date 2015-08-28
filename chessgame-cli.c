@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 				else {
 					if (white_king == check)
 						printf("White King is in danger!\n");
-#ifdef DEBUG
+#ifndef NDEBUG
 					printf("Possible moves for white King: %s\n", WKingMoves);
 #endif
 				}
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 				else {
 					if (black_king == check)
 						printf("Black King is in danger!\n");
-#ifdef DEBUG
+#ifndef NDEBUG
 					printf("Possible moves for black King: %s\n", BKingMoves);
 #endif
 				}
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 			if (round == BLACK) {
 				if (AI_IS_ENABLED) {
 					memcpy(playerInput, AImove(chess_board), 4);
-#ifdef DEBUG
+#ifndef NDEBUG
 					printf("%s ", playerInput);
 #endif
 				}

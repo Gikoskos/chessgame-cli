@@ -2,7 +2,7 @@ CC := gcc
 CFLAGS := -g -Wall -std=gnu99 -fgnu89-inline
 LINKER := -lncurses
 ENABLEDLL := -DBUILD_CHESSLIB_DLL
-ENABLEDEBUG := -DDEBUG
+NDEBUG := -DNDEBUG
 DLL := chesslib.dll
 ELF := chessgame-cli
 INC_W_LEVEL := -Wextra -pedantic
@@ -15,36 +15,36 @@ prefix := /usr/local
 # Build Linux cli ELF #
 chessgame-cli: chessgame-cli.c $(AIC) $(CHESSLIB)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
-	&& $(CC) $(CFLAGS) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+	&& $(CC) $(CFLAGS) $(NDEBUG) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 
 # Same thing just with more warnings #
 chessgame-cliWall: chessgame-cli.c $(CHESSLIB) $(AIC)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
-	&& $(CC) $(CFLAGS) $(INC_W_LEVEL) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+	&& $(CC) $(CFLAGS) $(NDEBUG) $(INC_W_LEVEL) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build static library archive of ChessLib for Linux to be linked to your program at compile time #
 chesslib: $(CHESSLIB)
-	$(CC) -c $(CFLAGS) $<; \
+	$(CC) -c $(CFLAGS) $(NDEBUG) $<; \
 	ar -cq chesslib.a chesslib.o; \
 	rm chesslib.o
 
-# Build Linux ELF with debugging flag #
+# Build Linux ELF with debugging flags enabled #
 debug: chessgame-cli.c $(CHESSLIB) $(AIC)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
-	&& $(CC) $(CFLAGS) $(ENABLEDEBUG) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+	&& $(CC) $(CFLAGS) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build DLL #
 dll: dllobject dllcompile
 dllobject: $(CHESSLIB) $(AIC)
-	$(CC) -c $(ENABLEDLL) $(CFLAGS) $^
+	$(CC) -c $(ENABLEDLL) $(NDEBUG) $(CFLAGS) $^
 	
 dllcompile:
 	$(CC) -shared -o $(DLL) chesslib.o chlib-computer.o -W1,--out-implib,chesslib.a
 
 # Build Windows ELF with the above DLL #
 exe: chessgame-cli.c $(AIC) $(DLL)
-	$(CC) -o chessgame-cli.exe $^
+	$(CC) $(NDEBUG) -o chessgame-cli.exe $^
 
 # Run the Linux executables #
 run:
