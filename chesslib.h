@@ -100,6 +100,7 @@ extern char *BKingMoves;
 /*if a player chose to do castling and castling is possible
  *for this round, the value of this boolean becomes true*/
 extern bool cstl_is_enabled;
+extern CastlingBool check_castling;
 
 
 /******************************************

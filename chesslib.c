@@ -26,7 +26,7 @@ static void check_mate(KingState**, KingState**);
  *the possible moves a King can do, during check*/
 void get_king_moves(ch_template [][8], int, int, int);
 
-/*the energy/life of each King is measured in his free domain
+/*the life of each King is measured in his free domain
  *Note: see how the values of these variables are changed throughout
  *the game to understand; a good debugger will help with that
  * 0 if the King can move to that square
@@ -41,7 +41,7 @@ static short BKingLife[3][3]; /*energy of black King*/
 char *WKingMoves = NULL;
 char *BKingMoves = NULL;
 
-static CastlingBool check_castling = ALL_CASTL_TRUE;
+CastlingBool check_castling = ALL_CASTL_TRUE;
 
 /*counter for the total of game rounds; a game round ends when Black finishes his move*/
 static unsigned short rc = 1;
@@ -634,7 +634,7 @@ extern void clear_screen(void)
 	system("cls");
 #endif
 	/*puts( "\033[2J" );
-	 Note: Clear screen using ASCII; doesn't look that good.
+	 *Note: Clear screen using ASCII; doesn't look that good.
 	 *Only use it if you can't install libncurses and
 	 *don't forget to delete or comment lines 614-623*/
 }
