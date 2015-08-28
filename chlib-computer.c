@@ -55,10 +55,11 @@ PMoveNode *getMoves(PMoveNode *AIlist, ch_template chb[][8])
 {
 	int i, j, k, l;
 	char tmp[4];
-	tmp[3] = '\0';
 	
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
+	tmp[3] = '\0';
+	i = j = 0;
+	for (; i < 8; i++) {
+		for (; j < 8; j++) {
 			if(chb[i][j].c == BLACK) {
 				tmp[0] = chb[i][j].current;
 				if (chb[i][j].current == 'P') {
@@ -129,7 +130,8 @@ PMoveNode *getMoves(PMoveNode *AIlist, ch_template chb[][8])
 				if (chb[i][j].current == 'N') {
 					int knightrow[] = {i-2,i-2,i-1,i-1,i+1,i+1,i+2,i+2};
 					int knightcol[] = {j-1,j+1,j-2,j+2,j-2,j+2,j-1,j+1};
-					for (int count = 0; count < 8; count++) {
+					int count;
+					for (count = 0; count < 8; count++) {
 						if (chb[knightrow[count]][knightcol[count]].c != chb[i][j].c) {
 							if (knightrow[count] > -1 && knightrow[count] < 8
 								&& knightcol[count] > -1 && knightcol[count] < 8) {

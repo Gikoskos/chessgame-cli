@@ -13,38 +13,38 @@ AIC := chlib-computer.c
 prefix := /usr/local
 
 # Build Linux cli ELF #
-chessgame-cli: chessgame-cli.c chlib-computer.c chesslib.c chesslib.h
+chessgame-cli: chessgame-cli.c $(AIC) $(CHESSLIB)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
 	&& $(CC) $(CFLAGS) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 
 # Same thing just with more warnings #
-chessgame-cliWall: chessgame-cli.c chlib-computer.c chesslib.c chesslib.h
+chessgame-cliWall: chessgame-cli.c $(CHESSLIB) $(AIC)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
 	&& $(CC) $(CFLAGS) $(INC_W_LEVEL) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build static library archive of ChessLib for Linux to be linked to your program at compile time #
-chesslib: chesslib.c
+chesslib: $(CHESSLIB)
 	$(CC) -c $(CFLAGS) $<; \
 	ar -cq chesslib.a chesslib.o; \
 	rm chesslib.o
 
 # Build Linux ELF with debugging flag #
-debug: chessgame-cli.c chlib-computer.c chesslib.c chesslib.h
+debug: chessgame-cli.c $(CHESSLIB) $(AIC)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
 	&& $(CC) $(CFLAGS) $(ENABLEDEBUG) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build DLL #
 dll: dllobject dllcompile
-dllobject: chesslib.c
-	$(CC) -c $(ENABLEDLL) $(CFLAGS) $<
+dllobject: $(CHESSLIB) $(AIC)
+	$(CC) -c $(ENABLEDLL) $(CFLAGS) $^
 	
 dllcompile:
-	$(CC) -shared -o $(DLL) chesslib.o -W1,--out-implib,chesslib.a
+	$(CC) -shared -o $(DLL) chesslib.o chlib-computer.o -W1,--out-implib,chesslib.a
 
 # Build Windows ELF with the above DLL #
-exe: chessgame-cli.c chesslib.dll
-	$(CC) -o chessgame.exe $<
+exe: chessgame-cli.c $(AIC) $(DLL)
+	$(CC) -o chessgame-cli.exe $^
 
 # Run the Linux executables #
 run:
