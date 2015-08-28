@@ -193,6 +193,12 @@ PMoveNode *getMoves(PMoveNode *AIlist, ch_template chb[][8])
 						}
 					}
 				}
+				if (check_castling.KBlack) {
+					if (check_castling.BR_right && !piecesOverlap(chb, 7, ('H'-'A'), 7, 4, 'R'))
+						AIlist = addMove(AIlist, "KG8");
+					if (check_castling.BR_left && !piecesOverlap(chb, 7, ('A'-'A'), 7, 4, 'R'))
+						AIlist = addMove(AIlist, "KC8");
+				}
 			}
 		}
 	}
