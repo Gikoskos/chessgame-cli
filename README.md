@@ -2,15 +2,17 @@
 ## Overview
 
 ChessLib is a chess game implementation in C. It can be used as a library, to simulate a simple chess game with
-almost all rules (only en passant and checkmate don't work at the moment). Only use it for testing purposes please, since it's at a very 
-early stage of development. To test out the engine you can run chessgame which is a console-based game 
-running on ChessLib. Note that for now it only supports human players and a random-move computer player.
+almost all rules (only en passant and checkmate don't work at the moment). To test out the engine you can run chessgame 
+which is a console-based game running on ChessLib. Note that for now it only supports human players and a computer player
+which chooses random moves.
 
 The thought process behind this project was for me to implement a chess engine for the first time, without seeing
 code from other projects or how implementations of chess engines are generally done.
 
-If you find any bugs or encounter problematic behavior, either do a pull-request or file a bug report (issues on github).
+If you find any bugs or encounter problematic behavior, either do a PR or file a bug report.
 If the above methods won't work for you try contacting me on my e-mail.
+
+Note that some features are still at a very early stage of development, such as checkmate.
 
 ## How to play
 
@@ -19,20 +21,17 @@ the coordinates of the square you want to move to (for example if you want to mo
 A3 you type Pa3 or pa3 or PA3 or pA3), and the game will find the piece you want to move
 and move it by itself.
 
-The game ends if the king has no moves to make, but it won't prevent you from moving the King to
-a square that will threaten him, so it can end after the other player directly captures the King.
-At the current version you will see possible moves the King can make when he's threatened, or
-when an enemy piece is threatening a square surrounding the King. This is mainly for debugging purposes
-since the check and checkmate features are at a very alpha stage.
+The game, sometimes, ends if the king has no moves to make and it won't prevent you from moving the King to
+a square that will threaten him, so it can end after the other player directly captures the King, as well.
 
-A log file that records all the moves that took place, is created during the game.
+At the debug version you will see possible moves the King can make when he's threatened, or
+when an enemy piece is threatening a square surrounding the King. This is mainly for debugging the check and
+checkmate features.
 
-To play against the random move generator run:
+A log file which records all the moves that took place, is created during the game.
 
-    chessgame-cli -c
-
-With the Linux version if you type 'pieces'/'PIECES' you will get the Unicode chess characters 
-and if you type 'letters'/'LETTERS' it reverts back to the capital letter representation.
+With the Linux version if you type 'pieces' or 'PIECES' you will get the Unicode chess characters 
+and if you type 'letters' or 'LETTERS' it reverts back to the capital letter representation.
 
 ## Building
 
@@ -51,17 +50,17 @@ or if you're using Powershell:
 To compile and run on Linux:
 
     make && make run
-    
-To compile with the random-move computer player on Linux:
 
-    make AItests && ./tests/AItests
+To play against the computer (chooses only random moves for now) run:
+
+    ./build/chessgame-cli -c
 
 I will be releasing precompiled binaries made on Ubuntu 14.04 i386 
 and Windows 7 32bit, when bugs are fixed or something in the UI changes.
 
 ## TODO
 
-* add versioning
+* implement versioning (DONE)
 
 * add functionality for the engine to detect checkmate and end the game (WIP)
 
@@ -71,9 +70,7 @@ and Windows 7 32bit, when bugs are fixed or something in the UI changes.
 
 * prevent the King from moving to a square that might threaten him (WIP)
 
-* program a computer(AI) player (WIP)
-
-* make a test GUI chess game using ChessLib
+* program a functional computer player (WIP)
 
 * split all the command line specific functions (such as printBoard) from the main chess engine and rewrite the Makefile accordingly
 
