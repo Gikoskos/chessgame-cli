@@ -212,6 +212,6 @@ int main(int argc, char *argv[])
 		Sleep(4000);
 #endif
 	}
-	free(playerInput);
+	playerInput = NULL;
 	return 0;
 }
