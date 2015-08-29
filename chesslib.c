@@ -666,6 +666,22 @@ void setCastling(ch_template chb[][8], char *plInput, int color)
 	/*cstl_is_enabled = false;*/
 }
 
+bool isCheckMoveValid(ch_template chb[][8], char *plInput, char piece[2], int color)
+{
+	ch_template nxt_chb[8][8];
+	KingState nxtWK = safe, nxtBK = safe;
+	int i = 0;
+	for(; i < 8; i++)
+		memcpy(&nxt_chb[i], &chb[i], sizeof(chb[i]));
+
+	if (!movePiece(nxt_chb, plInput, piece, color))
+		return false;
+	findKState(nxt_chb, &nxtWK, &nxtBK);
+	if (nxtWK != check && nxtBK != check)
+		return true;
+	return false;
+}
+
 bool movePiece(ch_template chb[][8], char *plInput, char piece[2], int color)
 {
 	int startx, starty, endx, endy;
@@ -1151,9 +1167,9 @@ void get_king_moves(ch_template chb[][8], int Kx, int Ky, int color)
 	int i, j, str_index = 0, tempx, tempy;
 	
 	if (color == BLACK)
-		BKingMoves = malloc(22*sizeof(char));
+		BKingMoves = malloc(22);
 	else
-		WKingMoves = malloc(22*sizeof(char));
+		WKingMoves = malloc(22);
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 3; j++) {
 			tempx = KD[i][j].x;
@@ -1278,7 +1294,7 @@ char *getPlayerInput(void)
 
 	if(!str_in)
 		return str_in;
-	while ((c = getchar()) != '\n') {
+	while ((c = fgetc(stdin)) != '\n') {
 		str_in[len++] = c;
 		if (len == max) {
 			max++;
