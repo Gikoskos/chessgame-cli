@@ -141,6 +141,11 @@ bool movePiece (ch_template chb[][8], char *plInput, char piece[2], int color);
  *piece: the first piece's letter*/
 bool piecesOverlap (ch_template chb[][8], const int sx, const int sy, const int ex, const int ey, const char piece);
 
+/*in case a King's domain is threatened in any way (check or safe_check) this function
+ *checks if the next move entered removes the King from a threatening situation
+ *arguments are the same as movePiece*/
+bool isCheckMoveValid(ch_template chb[][8], char *plInput, char piece[2], int color);
+
 /*check for validity of player input; returns false for bad input and true otherwise
  *input: input buffer as entered by the player; check if the string is NULL before 
  *using this function
