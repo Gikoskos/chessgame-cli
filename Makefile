@@ -26,7 +26,7 @@ chessgame-cliWall: chessgame-cli.c $(CHESSLIB) $(AIC)
 # Build static library archive of ChessLib for Linux to be linked to your program at compile time #
 chesslib: $(CHESSLIB)
 	$(CC) -c $(CFLAGS) $(NDEBUG) $<; \
-	ar -cq chesslib.a chesslib.o; \
+	ar csq libchesslib.a chesslib.o; \
 	rm chesslib.o
 
 # Build Linux ELF with debugging flags enabled #
