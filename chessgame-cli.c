@@ -179,6 +179,13 @@ int main(int argc, char *argv[])
 			memcpy(piece_to_move, pieceConflict(attack_guard, temp_cpiece), 2);
 		}
 
+		if (white_king == check  || black_king == check || 
+			(playerInput[0] == 'K' && (white_king == safe_check || black_king == safe_check))) {
+			if (!isCheckMoveValid(chess_board, playerInput, piece_to_move, round)) {
+				p_err = 3;
+				goto LOOP;
+			}
+		}
 		if (movePiece(chess_board, playerInput, piece_to_move, round) == false) {
 			p_err = 3;
 			goto LOOP;
