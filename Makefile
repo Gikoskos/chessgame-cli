@@ -56,7 +56,8 @@ runW:
 .PHONY: install clean  cleantxt
 clean:
 	rm -rf build tests \
-	rm *.o
+	rm *.o \
+	rm libchesslib.a
 
 cleantxt:
 	rm -rf build/*.txt \
