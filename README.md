@@ -21,8 +21,7 @@ the coordinates of the square you want to move to (for example if you want to mo
 A3 you type Pa3 or pa3 or PA3 or pA3), and the game will find the piece you want to move
 and move it by itself.
 
-The game, sometimes, ends if the king has no moves to make and it won't prevent you from moving the King to
-a square that will threaten him, so it can end after the other player directly captures the King, as well.
+The game at the moment doesn't detect checkmate, but it prevents you from making moves that will not unthreaten the King during check.
 
 At the debug version you will see possible moves the King can make when he's threatened, or
 when an enemy piece is threatening a square surrounding the King. This is mainly for debugging the check and
