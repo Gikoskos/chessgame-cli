@@ -40,10 +40,10 @@ dllobject: $(CHESSLIB) $(AIC)
 	$(CC) -c $(ENABLEDLL) $(NDEBUG) $(CFLAGS) $^
 	
 dllcompile:
-	$(CC) -shared -o $(DLL) chesslib.o chlib-computer.o -W1,--out-implib,chesslib.a
+	$(CC) -shared -o $(DLL) chesslib.o chlib-computer.o -Wl,--out-implib,chesslib.a
 
 # Build Windows ELF with the above DLL #
-exe: chessgame-cli.c $(AIC) $(DLL)
+exe: chessgame-cli.c $(DLL)
 	$(CC) $(NDEBUG) -o chessgame-cli.exe $^
 
 # Run the Linux executables #
