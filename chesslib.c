@@ -603,7 +603,7 @@ char *findPiece(ch_template chb[][8], const char *input, int color)
 extern void printInstructions(void)
 {
 	printf("%s%s\n%s\n%s\n%s\n%s\n%s %s\n%s\n",
-	"Please enter your move in the following format: ", "\'xyz\'", 
+	"Enter your move in the following format: ", "\'xyz\'", 
 	"x is the piece you want to move,",
 	"y is the letter of the column and",
 	"z is the number of the row.",
@@ -624,10 +624,10 @@ extern void clear_screen(void)
 	str = tgetstr("cl", NULL);
 	fputs(str, stdout);
 # else
-	/*Weird stuff: I'm using system("clear") for the AI executable
-	 *because if I try to compile it with tgetent and tgetstr I get
-	 *double free corruption, which I don't get if I compile without AI.
-	 *If you know what's happening please contact me.*/
+	/*Weird stuff: I'm using system("clear") because if I try to 
+	 *compile it with tgetent and tgetstr I get double free corruption,
+	 *which I don't get if I compile without AI. If you know 
+	 *what's happening please contact me.*/
 	system("clear");
 # endif
 #else
