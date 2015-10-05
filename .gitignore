@@ -1,2 +1,6 @@
 !*.c
-!build/
+build/
+.gdbinit
+.gdb_history
+.kateproject
+.kateproject.d/
