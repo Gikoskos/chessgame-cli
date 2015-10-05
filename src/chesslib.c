@@ -58,7 +58,6 @@ void addNode(MoveNode **llt, const char *st, const char *en)
 	curr->nxt = new;
 }
 
-#ifdef DEBUG
 void printMoveList(MoveNode *llt, FILE *fd)
 {
 	if (!llt) {
@@ -77,7 +76,6 @@ void printMoveList(MoveNode *llt, FILE *fd)
 	}
 	printf("\n");
 }
-#endif
 
 void deleteMoveList(MoveNode **llt)
 {
@@ -205,7 +203,7 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 		for (j = 0; j < 8; j++) {
 			t_st[0] = chb[i][j].square[0];
 			t_st[1] = chb[i][j].square[1];
-			if (chb[i][j].current == PAWN && chb[i][j].c == c_flag) {
+			if (chb[i][j].current == PAWN && (chb[i][j].c == c_flag || c_flag == ALL)) {
 				if (chb[i][j].c == BLACK) {
 					if (i == 1 && !(chb[i+2][j].occ) && !(chb[i+1][j].occ)) {
 						t_en[0] = chb[i+2][j].square[0];
@@ -300,7 +298,8 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					}
 				}
 			}
-			if ((chb[i][j].current == ROOK || chb[i][j].current == QUEEN) && chb[i][j].c == c_flag) {
+			if ((chb[i][j].current == ROOK || chb[i][j].current == QUEEN) && 
+				(chb[i][j].c == c_flag || c_flag == ALL)) {
 				k = i;
 				for (l = j+1; l <= 7; l++) {
 					if (chb[k][l].c == chb[i][j].c)
@@ -421,7 +420,8 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 						break;
 				}
 			}
-			if ((chb[i][j].current == BISHOP || chb[i][j].current == 'Q') && chb[i][j].c == c_flag) {
+			if ((chb[i][j].current == BISHOP || chb[i][j].current == 'Q') &&
+				(chb[i][j].c == c_flag || c_flag == ALL)) {
 				k = i - 1; 
 				l = j - 1;
 				while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
@@ -555,7 +555,7 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					l++;
 				}
 			}
-			if (chb[i][j].current == KING && chb[i][j].c == c_flag) {
+			if (chb[i][j].current == KING && (chb[i][j].c == c_flag || c_flag == ALL)) {
 				for (k = i - 1; k < i + 2; k++){
 					for (l = j - 1; l < j + 2; l++){
 						if (k > 7 || k < 0 || l > 7 || l < 0)
@@ -576,7 +576,7 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					}
 				}
 			}
-			if (chb[i][j].current == KNIGHT && chb[i][j].c == c_flag) {
+			if (chb[i][j].current == KNIGHT && (chb[i][j].c == c_flag || c_flag == ALL)) {
 				int knightrow[] = {i-2,i-2,i-1,i-1,i+1,i+1,i+2,i+2};
 				int knightcol[] = {j-1,j+1,j-2,j+2,j-2,j+2,j-1,j+1};
 				int count = 0;
@@ -702,12 +702,12 @@ void removeThreatsToKing(ch_template chb[][8], int c_flag)
 			next_chb[i][j] = chb[i][j];
 		}
 	}
-	if (c_flag == BLACK) {
+	if (c_flag == BLACK || c_flag == ALL) {
 		for (int i = 0; i < 6; i++) {
 			MoveNode *curr = b_moves[i], *prv = NULL;
 			while (curr) {
 				makeMove(next_chb, curr->start, curr->end, BLACK);
-				if (!isKingOnTheBoard(next_chb, WHITE)) {
+				if (!isKingOnTheBoard(next_chb, BLACK)) {
 					if (prv)
 						prv->nxt = curr->nxt;
 					prv = curr;
@@ -729,12 +729,13 @@ void removeThreatsToKing(ch_template chb[][8], int c_flag)
 				curr = curr->nxt;
 			}
 		}
-	} else {
+	}
+	if (c_flag == WHITE || c_flag == ALL) {
 		for (int i = 0; i < 6; i++) {
 			MoveNode *curr = w_moves[i], *prv = NULL;
 			while (curr) {
 				makeMove(next_chb, curr->start, curr->end, WHITE);
-				if (!isKingOnTheBoard(next_chb, BLACK)) {
+				if (!isKingOnTheBoard(next_chb, WHITE)) {
 					if (prv)
 						prv->nxt = curr->nxt;
 					prv = curr;

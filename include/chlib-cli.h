@@ -11,6 +11,7 @@
 
 #include <chesslib.h>
 
+#define MOS 17	/*this one controls the chess board size, don't mess with it*/
 
 /*safely copies the input buffer to a string and returns that string*/
 char *getPlayerInput (void);
@@ -30,7 +31,5 @@ bool validInput (const char *input, int *errPtr);
 inline void clear_screen(void);
 inline void clear_buffer(void);
 inline void printBanner(const char*);
-inline void printInstructions(void);
-void printError(int i);
 
 #endif

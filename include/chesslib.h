@@ -43,7 +43,7 @@
 # error Non-compatible OS or compiler
 #endif
 
-#define MOS 17	/*this one controls the chess board size, don't mess with it*/
+#define ALL 0xcfff
 #define WHITE 0xdf13
 #define BLACK 0xcdf2
 #define EMPTY 0xabcd
@@ -68,8 +68,9 @@
 
 
 #define initChessboard(x) _initChessboard(x, 0, 'A')
-#define getBlackMoves(x) _getMoveList(x, BLACK)
-#define getWhiteMoves(x) _getMoveList(x, WHITE)
+#define getBlackMoves(x)  _getMoveList(x, BLACK)
+#define getWhiteMoves(x)  _getMoveList(x, WHITE)
+#define getAllMoves(x)    _getMoveList(x, ALL)
 
 #define printBlackMoves()                                              \
 {                                                                      \

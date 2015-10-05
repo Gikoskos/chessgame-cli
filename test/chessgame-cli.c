@@ -18,7 +18,10 @@ int main(int argc, char *argv[])
 	int round = WHITE, t_moves;
 	bool pr_moves = false;
 
-
+#ifndef DEBUG
+	clear_screen();
+	printBanner("ChessLib test game");
+#endif
 	start_move[2] = '\0';
 	end_move[2] = '\0';
 	while (1) {
@@ -28,6 +31,7 @@ int main(int argc, char *argv[])
 			t_moves = getWhiteMoves(chess_board);
 		else
 			t_moves = getBlackMoves(chess_board);
+		//getAllMoves(chess_board);
 		printBoard(chess_board, 'l');
 		if (!t_moves) {
 			printf("OMG U LOST ;\(\n");

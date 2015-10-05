@@ -180,36 +180,6 @@ bool validInput(const char *input, int *errPtr)
 	return true;
 }
 
-void printError(int i)
-{
-	char *error_out[] = { "\n",
-	"Command line argument not recognized.\n", "Bad input.\n",
-	"Illegal move.\n", "Log file could not be created.\n"};
-
-	if (i < 5)
-		fprintf(stderr, "%s", error_out[i]);
-	else {
-		if (i == 5)
-			fprintf(stderr, "%s\n%s%s\n\t%s\n\t%s\n\t%s\n",
-			"Not a valid Chess piece entered. ",
-			"Please use only R/r for Rook, ", "N/n for Knight,", 
-			"B/b for Bishop,", "Q/q for Queen,", "K/k for King and P/p for Pawn");
-		else if (i == 6)
-			fprintf(stderr, "%s\n",
-			"Not a valid column letter entered. Legal letters are [a-h] or [A-H].");
-		else if (i == 7)
-			fprintf(stderr, "%s\n",
-			"Not a valid row entered. Please use only numbers from 1 to 8.");
-		else if (i == 8)
-			fprintf(stdout, "%s%s\n%s %s\n", "ChessLib-", CHESSLIB_VERSION_STRING,
-				"Copyright (C) 2015 George Koskeridis",
-				"<cyberchiller@gmail.com>");
-		else
-			fprintf(stderr, "%s%d.\n",
-			"Unrecognized error number ", i);
-	}
-}
-
 extern void printBanner(const char *banner)
 {
 	int i, j, c = 0, len = (int)strlen(banner);
@@ -271,19 +241,6 @@ char *getPlayerInput(void)
 	} else
 		str_in[len] = '\0';
 	return realloc(str_in, len);
-}
-
-extern void printInstructions(void)
-{
-	printf("%s%s\n%s\n%s\n%s\n%s\n%s %s\n%s\n",
-	"Enter your move in the following format: ", "\'xyz\'", 
-	"where x is the piece you want to move,",
-	"y is the letter of the column and",
-	"z is the number of the row.",
-	"Acceptable values for x are: R/r for Rook, N/n for Knight, B/b for Bishop, Q/q for Queen, K/k for King and P/p for Pawn.",
-	"Acceptable values for y are lowercase letters",
-	"from \'a\' to \'h\' and for z numbers from 1 to 8.",
-	"For example to move Bishop to e2 type Be2 or Pawn to a4 type Pa4.");
 }
 
 extern void clear_screen(void)
