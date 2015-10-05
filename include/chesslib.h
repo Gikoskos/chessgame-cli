@@ -74,38 +74,38 @@
 
 #define printBlackMoves()                                              \
 {                                                                      \
-	int move_list_piece_index = 0;                                     \
-	char *piece_name[6] = {"Pawn:\n", "King:\n", "Queen:\n",           \
-		"Rook:\n", "Knight:\n", "Bishop:\n"};                          \
-	while (move_list_piece_index < 6) {                                \
-		fprintf(stdout, "%s", piece_name[move_list_piece_index]);      \
-		printMoveList(b_moves[move_list_piece_index++], stdout);       \
-	}                                                                  \
+    int move_list_piece_index = 0;                                     \
+    char *piece_name[6] = {"Pawns:\n", "King:\n", "Queen:\n",          \
+        "Rooks:\n", "Knights:\n", "Bishops:\n"};                       \
+    while (move_list_piece_index < 6) {                                \
+        fprintf(stdout, "%s", piece_name[move_list_piece_index]);      \
+        printMoveList(b_moves[move_list_piece_index++], stdout);       \
+    }                                                                  \
 }
 
 #define printWhiteMoves()                                              \
 {                                                                      \
-	int move_list_piece_index = 0;                                     \
-	char *piece_name[6] = {"Pawn:\n", "King:\n", "Queen:\n",           \
-		"Rook:\n", "Knight:\n", "Bishop:\n"};                          \
-	while (move_list_piece_index < 6) {                                \
-		fprintf(stdout, "%s", piece_name[move_list_piece_index]);      \
-		printMoveList(w_moves[move_list_piece_index++], stdout);       \
-	}                                                                  \
+    int move_list_piece_index = 0;                                     \
+    char *piece_name[6] = {"Pawns:\n", "King:\n", "Queen:\n",          \
+        "Rooks:\n", "Knights:\n", "Bishops:\n"};                       \
+    while (move_list_piece_index < 6) {                                \
+        fprintf(stdout, "%s", piece_name[move_list_piece_index]);      \
+        printMoveList(w_moves[move_list_piece_index++], stdout);       \
+    }                                                                  \
 }
 
 #define deleteBlackMoves()                                             \
 {                                                                      \
-	int move_list_piece_index = 0;                                     \
-	while (move_list_piece_index < 6)                                  \
-		deleteMoveList(&b_moves[move_list_piece_index++]);             \
+    int move_list_piece_index = 0;                                     \
+    while (move_list_piece_index < 6)                                  \
+        deleteMoveList(&b_moves[move_list_piece_index++]);             \
 }
 
 #define deleteWhiteMoves()                                             \
 {                                                                      \
-	int move_list_piece_index = 0;                                     \
-	while (move_list_piece_index < 6)                                  \
-		deleteMoveList(&w_moves[move_list_piece_index++]);             \
+    int move_list_piece_index = 0;                                     \
+    while (move_list_piece_index < 6)                                  \
+        deleteMoveList(&w_moves[move_list_piece_index++]);             \
 }
 
 
