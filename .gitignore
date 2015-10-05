@@ -1,10 +1,2 @@
-!chesslib.c
-!chesslib.h
-!main.c
-!computer.c
-!Makefile
-!README.md
-!COPYING
-*.*
-*/*
-*
+!*.c
+!build/
