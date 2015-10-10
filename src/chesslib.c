@@ -37,7 +37,7 @@ bool piecesOverlap(ch_template chb[][8], const int start_x, const int start_y,
 		const int end_x, const int end_y, const char piece);
 void removeThreatsToKing(ch_template chb[][8], int c_flag);
 bool isKingOnTheBoard(ch_template chb[][8], int color);
-
+void removeMoveNode(MoveNode **llt, char *st_todel, char *en_todel);
 
 
 void addNode(MoveNode **llt, const char *st, const char *en)
@@ -75,6 +75,26 @@ void printMoveList(MoveNode *llt, FILE *fd)
 			printf("     ");
 	}
 	printf("\n");
+}
+
+void removeMoveNode(MoveNode **llt, char *st_todel, char *en_todel)
+{
+	MoveNode *curr = (*llt), *prv = NULL;
+	while (curr) {
+		if (!strncmp(st_todel, curr->start, 3) && !strncmp(en_todel, curr->end, 3)) {
+			if (prv)
+				prv->nxt = curr->nxt;
+			else
+				(*llt) = (*llt)->nxt;
+			free(curr);
+			return;
+		}
+		prv = curr;
+		curr = curr->nxt;
+	}
+#ifdef DEBUG
+	fprintf(stderr, "ERROR: %s -> %s not found\n", st_todel, en_todel);
+#endif
 }
 
 void deleteMoveList(MoveNode **llt)
@@ -607,7 +627,12 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 			}
 		}
 	}
-	removeThreatsToKing(chb, c_flag);
+	if (c_flag != ALL)
+		removeThreatsToKing(chb, c_flag);
+	else {
+		removeThreatsToKing(chb, WHITE);
+		removeThreatsToKing(chb, BLACK);
+	}
 	return move_count;
 }
 
@@ -702,60 +727,27 @@ void removeThreatsToKing(ch_template chb[][8], int c_flag)
 			next_chb[i][j] = chb[i][j];
 		}
 	}
-	if (c_flag == BLACK || c_flag == ALL) {
-		for (int i = 0; i < 6; i++) {
-			MoveNode *curr = b_moves[i], *prv = NULL;
-			while (curr) {
-				makeMove(next_chb, curr->start, curr->end, BLACK);
-				if (!isKingOnTheBoard(next_chb, BLACK)) {
-					if (prv)
-						prv->nxt = curr->nxt;
-					prv = curr;
-					curr = curr->nxt;
-					free(curr);
-					for (int y = 0; y < 8; y++) {
-						for (int z = 0; z < 8; z++) {
-							next_chb[y][z] = chb[y][z];
-						}
-					}
-					continue;
-				}
+
+	for (int i = 0; i < 6; i++) {
+		MoveNode *curr = NULL;
+		curr = (c_flag == BLACK)?b_moves[i]:w_moves[i];
+		while (curr) {
+			makeMove(next_chb, curr->start, curr->end, c_flag);
+			if (!isKingOnTheBoard(next_chb, c_flag)) {
+				removeMoveNode((c_flag == BLACK)?&b_moves[i]:&w_moves[i], curr->start, curr->end);
 				for (int y = 0; y < 8; y++) {
 					for (int z = 0; z < 8; z++) {
 						next_chb[y][z] = chb[y][z];
 					}
 				}
-				prv = curr;
-				curr = curr->nxt;
+				continue;
 			}
-		}
-	}
-	if (c_flag == WHITE || c_flag == ALL) {
-		for (int i = 0; i < 6; i++) {
-			MoveNode *curr = w_moves[i], *prv = NULL;
-			while (curr) {
-				makeMove(next_chb, curr->start, curr->end, WHITE);
-				if (!isKingOnTheBoard(next_chb, WHITE)) {
-					if (prv)
-						prv->nxt = curr->nxt;
-					prv = curr;
-					curr = curr->nxt;
-					free(curr);
-					for (int y = 0; y < 8; y++) {
-						for (int z = 0; z < 8; z++) {
-							next_chb[y][z] = chb[y][z];
-						}
-					}
-					continue;
+			for (int y = 0; y < 8; y++) {
+				for (int z = 0; z < 8; z++) {
+					next_chb[y][z] = chb[y][z];
 				}
-				for (int y = 0; y < 8; y++) {
-					for (int z = 0; z < 8; z++) {
-						next_chb[y][z] = chb[y][z];
-					}
-				}
-				prv = curr;
-				curr = curr->nxt;
 			}
+			curr = curr->nxt;
 		}
 	}
 }

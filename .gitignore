@@ -4,3 +4,4 @@ build/
 .gdb_history
 .kateproject
 .kateproject.d/
+src/.chesslib.c.kate-swp
