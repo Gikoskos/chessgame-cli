@@ -23,32 +23,13 @@
 # else
 #  define CHESSLIB_DLL __declspec(dllimport)
 # endif
-# ifndef UNICODE
-#  define UNICODE
-# endif
-# ifndef _UNICODE
-#  define _UNICODE
-# endif
 # include <windows.h>
-#elif defined(__FreeBSD__) \
-|| defined(__linux__) \
-|| defined(__APPLE__) \
-|| defined(__gnu_linux__)
-# define KRED  "\x1B[31m"
-# define KYEL  "\x1B[33m"
-# define RESET "\033[0m"
-# include <termcap.h>
-# include <alloca.h>
-#else
-# error Non-compatible OS or compiler
 #endif
 
-#define ALL 0xcfff
-#define WHITE 0xdf13
-#define BLACK 0xcdf2
-#define EMPTY 0xabcd
-#define BANNER_SPEED 100 - R_SPEED
-#define R_SPEED 80	/*speed of the animated banner, bigger value bigger speed; maximum value is 99*/
+#define ALL 0x1eae          /*7854*/
+#define WHITE 0x1eaf        /*7855*/
+#define BLACK 0x1eb0        /*7856*/
+#define EMPTY 0x1eb1        /*7857*/
 #define s_l 26	/*length of the filename string*/
 #define CSTL_LEFTROOK "l"
 #define CSTL_RIGHTROOK "r"
@@ -58,9 +39,10 @@
 #define BISHOP 'B'
 #define KNIGHT 'N'
 #define ROOK 'R'
+
 /*versioning*/
 #define CHESSLIB_MAJOR 0
-#define CHESSLIB_MINOR 1
+#define CHESSLIB_MINOR 2
 #define CHESSLIB_PATCH 0
 #define SSTR(x) STR(x)
 #define STR(x) #x
@@ -68,9 +50,7 @@
 
 
 #define initChessboard(x) _initChessboard(x, 0, 'A')
-#define getBlackMoves(x)  _getMoveList(x, BLACK)
-#define getWhiteMoves(x)  _getMoveList(x, WHITE)
-#define getAllMoves(x)    _getMoveList(x, ALL)
+#define getAllMoves(x, y)    _getMoveList(x, y)
 
 #define printBlackMoves()                                              \
 {                                                                      \

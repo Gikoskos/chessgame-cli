@@ -22,6 +22,7 @@ static bool __attribute__((unused)) enpassant = false;
 static CastlingBool check_castling = {true, true, true, true, true, true};
 static unsigned rc = 0;
 
+
 unsigned black_move_count;
 unsigned white_move_count;
 
@@ -35,12 +36,12 @@ MoveNode *w_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 
 bool piecesOverlap(ch_template chb[][8], const int start_x, const int start_y,
 		const int end_x, const int end_y, const char piece);
-void removeThreatsToKing(ch_template chb[][8], int c_flag);
 bool isKingOnTheBoard(ch_template chb[][8], int color);
-void removeMoveNode(MoveNode **llt, char *st_todel, char *en_todel);
+void removeMove(MoveNode **llt, char *st_todel, char *en_todel);
+void removeBadKingMoves(ch_template chb[][8], int color);
+void removeThreatsToKing(ch_template chb[][8], int color);
 
-
-void addNode(MoveNode **llt, const char *st, const char *en)
+void addMove(MoveNode **llt, const char *st, const char *en)
 {
 	if (!*llt) {
 		*llt = malloc(sizeof(MoveNode));
@@ -77,7 +78,7 @@ void printMoveList(MoveNode *llt, FILE *fd)
 	printf("\n");
 }
 
-void removeMoveNode(MoveNode **llt, char *st_todel, char *en_todel)
+void removeMove(MoveNode **llt, char *st_todel, char *en_todel)
 {
 	MoveNode *curr = (*llt), *prv = NULL;
 	while (curr) {
@@ -223,50 +224,50 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 		for (j = 0; j < 8; j++) {
 			t_st[0] = chb[i][j].square[0];
 			t_st[1] = chb[i][j].square[1];
-			if (chb[i][j].current == PAWN && (chb[i][j].c == c_flag || c_flag == ALL)) {
+			if (chb[i][j].current == PAWN) {
 				if (chb[i][j].c == BLACK) {
 					if (i == 1 && !(chb[i+2][j].occ) && !(chb[i+1][j].occ)) {
 						t_en[0] = chb[i+2][j].square[0];
 						t_en[1] = chb[i+2][j].square[1];
-						addNode(&b_moves[0], t_st, t_en);
+						addMove(&b_moves[0], t_st, t_en);
 						black_move_count++;
 						move_count++;
 					}
 					/*if (i == 3) {
 						if (w_enpassant_round_left) {
-							//if (chb[i][j+1].current == 'P' && chb[i][j+1].c == WHITE) {
+							if (chb[i][j+1].current == 'P' && chb[i][j+1].c == WHITE) {
 								t_en[0] = chb[i+1][j+1].square[0];
 								t_en[1] = chb[i+1][j+1].square[1];
-								addNode(&b_moves[0], t_st, t_en);
+								addMove(&b_moves[0], t_st, t_en);
 								black_move_count++;
 								move_count++;
-							//}
+							}
 						} else if (w_enpassant_round_right) {
-							//if (chb[i][j-1].current == 'P' && chb[i][j-1].c == WHITE) {
+							if (chb[i][j-1].current == 'P' && chb[i][j-1].c == WHITE) {
 								t_en[0] = chb[i+1][j-1].square[0];
 								t_en[1] = chb[i+1][j-1].square[1];
-								addNode(&b_moves[0], t_st, t_en);
+								addMove(&b_moves[0], t_st, t_en);
 								black_move_count++;
 								move_count++;
-							//}
+							}
 						}
 					}*/
-					t_en[0] = chb[i+1][j].square[0];
+					t_en[1] = chb[i+1][j].square[1];
 					if (chb[i+1][j].occ == false) {
-						t_en[1] = chb[i+1][j].square[1];
-						addNode(&b_moves[0], t_st, t_en);
+						t_en[0] = chb[i+1][j].square[0];
+						addMove(&b_moves[0], t_st, t_en);
 						black_move_count++;
 						move_count++;
 					}
 					if (chb[i+1][j+1].c == WHITE) {
-						t_en[1] = chb[i+1][j+1].square[1];
-						addNode(&b_moves[0], t_st, t_en);
+						t_en[0] = chb[i+1][j+1].square[0];
+						addMove(&b_moves[0], t_st, t_en);
 						black_move_count++;
 						move_count++;
 					} 
 					if (chb[i+1][j-1].c == WHITE) {
-						t_en[1] = chb[i+1][j-1].square[1];
-						addNode(&b_moves[0], t_st, t_en);
+						t_en[0] = chb[i+1][j-1].square[0];
+						addMove(&b_moves[0], t_st, t_en);
 						black_move_count++;
 						move_count++;
 					}
@@ -274,52 +275,51 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					if (i == 6 && !(chb[i-2][j].occ) && !(chb[i-1][j].occ)) {
 						t_en[0] = chb[i-2][j].square[0];
 						t_en[1] = chb[i-2][j].square[1];
-						addNode(&w_moves[0], t_st, t_en);
+						addMove(&w_moves[0], t_st, t_en);
 						white_move_count++;
 						move_count++;
 					}
 					/*if (i == 4) {
 						if (b_enpassant_round_left) {
-							//if (chb[i][j+1].current == 'P' && chb[i][j+1].c == BLACK) {
+							if (chb[i][j+1].current == 'P' && chb[i][j+1].c == BLACK) {
 								t_en[0] = chb[i-1][j+1].square[0];
 								t_en[1] = chb[i-1][j+1].square[1];
-								addNode(&w_moves[0], t_st, t_en);
+								addMove(&w_moves[0], t_st, t_en);
 								white_move_count++;
 								move_count++;
-							//}
+							}
 						} else if (b_enpassant_round_right) {
-							//if (chb[i][j-1].current == 'P' && chb[i][j-1].c == BLACK) {
+							if (chb[i][j-1].current == 'P' && chb[i][j-1].c == BLACK) {
 								t_en[0] = chb[i-1][j-1].square[0];
 								t_en[1] = chb[i-1][j-1].square[1];
-								addNode(&w_moves[0], t_st, t_en);
+								addMove(&w_moves[0], t_st, t_en);
 								white_move_count++;
 								move_count++;
-							//}
+							}
 						}
 					}*/
-					t_en[0] = chb[i-1][j].square[0];
+					t_en[1] = chb[i-1][j].square[1];
 					if (chb[i-1][j].occ == false) {
-						t_en[1] = chb[i-1][j].square[1];
-						addNode(&w_moves[0], t_st, t_en);
+						t_en[0] = chb[i-1][j].square[0];
+						addMove(&w_moves[0], t_st, t_en);
 						white_move_count++;
 						move_count++;
 					}
 					if (chb[i-1][j+1].c == BLACK) {
-						t_en[1] = chb[i-1][j+1].square[1];
-						addNode(&w_moves[0], t_st, t_en);
+						t_en[0] = chb[i-1][j+1].square[0];
+						addMove(&w_moves[0], t_st, t_en);
 						white_move_count++;
 						move_count++;
 					} 
 					if (chb[i-1][j-1].c == BLACK) {
-						t_en[1] = chb[i-1][j-1].square[1];
-						addNode(&w_moves[0], t_st, t_en);
+						t_en[0] = chb[i-1][j-1].square[0];
+						addMove(&w_moves[0], t_st, t_en);
 						white_move_count++;
 						move_count++;
 					}
 				}
 			}
-			if ((chb[i][j].current == ROOK || chb[i][j].current == QUEEN) && 
-				(chb[i][j].c == c_flag || c_flag == ALL)) {
+			if (chb[i][j].current == ROOK || chb[i][j].current == QUEEN) {
 				k = i;
 				for (l = j+1; l <= 7; l++) {
 					if (chb[k][l].c == chb[i][j].c)
@@ -327,22 +327,22 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					t_en[0] = chb[k][l].square[0];
 					t_en[1] = chb[k][l].square[1];
 					if (chb[i][j].c == BLACK) {
-						if (chb[i][j].current == 'R') {
-							addNode(&b_moves[3], t_st, t_en);
+						if (chb[i][j].current == ROOK) {
+							addMove(&b_moves[3], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						} else {
-							addNode(&b_moves[2], t_st, t_en);
+							addMove(&b_moves[2], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						}
 					} else {
-						if (chb[i][j].current == 'R') {
-							addNode(&w_moves[3], t_st, t_en);
+						if (chb[i][j].current == ROOK) {
+							addMove(&w_moves[3], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						} else {
-							addNode(&b_moves[2], t_st, t_en);
+							addMove(&w_moves[2], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						}
@@ -356,22 +356,22 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					t_en[0] = chb[k][l].square[0];
 					t_en[1] = chb[k][l].square[1];
 					if (chb[i][j].c == BLACK) {
-						if (chb[i][j].current == 'R') {
-							addNode(&b_moves[3], t_st, t_en);
+						if (chb[i][j].current == ROOK) {
+							addMove(&b_moves[3], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						} else {
-							addNode(&b_moves[2], t_st, t_en);
+							addMove(&b_moves[2], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						}
 					} else {
-						if (chb[i][j].current == 'R') {
-							addNode(&w_moves[3], t_st, t_en);
+						if (chb[i][j].current == ROOK) {
+							addMove(&w_moves[3], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						} else {
-							addNode(&b_moves[2], t_st, t_en);
+							addMove(&w_moves[2], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						}
@@ -387,22 +387,22 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					t_en[0] = chb[k][l].square[0];
 					t_en[1] = chb[k][l].square[1];
 					if (chb[i][j].c == BLACK) {
-						if (chb[i][j].current == 'R') {
-							addNode(&b_moves[3], t_st, t_en);
+						if (chb[i][j].current == ROOK) {
+							addMove(&b_moves[3], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						} else {
-							addNode(&b_moves[2], t_st, t_en);
+							addMove(&b_moves[2], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						}
 					} else {
-						if (chb[i][j].current == 'R') {
-							addNode(&w_moves[3], t_st, t_en);
+						if (chb[i][j].current == ROOK) {
+							addMove(&w_moves[3], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						} else {
-							addNode(&b_moves[2], t_st, t_en);
+							addMove(&w_moves[2], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						}
@@ -416,22 +416,22 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					t_en[0] = chb[k][l].square[0];
 					t_en[1] = chb[k][l].square[1];
 					if (chb[i][j].c == BLACK) {
-						if (chb[i][j].current == 'R') {
-							addNode(&b_moves[3], t_st, t_en);
+						if (chb[i][j].current == ROOK) {
+							addMove(&b_moves[3], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						} else {
-							addNode(&b_moves[2], t_st, t_en);
+							addMove(&b_moves[2], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						}
 					} else {
-						if (chb[i][j].current == 'R') {
-							addNode(&w_moves[3], t_st, t_en);
+						if (chb[i][j].current == ROOK) {
+							addMove(&w_moves[3], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						} else {
-							addNode(&b_moves[2], t_st, t_en);
+							addMove(&w_moves[2], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						}
@@ -440,8 +440,7 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 						break;
 				}
 			}
-			if ((chb[i][j].current == BISHOP || chb[i][j].current == 'Q') &&
-				(chb[i][j].c == c_flag || c_flag == ALL)) {
+			if (chb[i][j].current == BISHOP || chb[i][j].current == QUEEN) {
 				k = i - 1; 
 				l = j - 1;
 				while ((k <= 7 && k >= 0) && (l >= 0 && l <= 7)) {
@@ -449,22 +448,22 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 						t_en[0] = chb[k][l].square[0];
 						t_en[1] = chb[k][l].square[1];
 						if (chb[i][j].c == BLACK) {
-							if (chb[i][j].current == 'B') {
-								addNode(&b_moves[5], t_st, t_en);
+							if (chb[i][j].current == BISHOP) {
+								addMove(&b_moves[5], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							} else {
-								addNode(&b_moves[2], t_st, t_en);
+								addMove(&b_moves[2], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							}
 						} else {
-							if (chb[i][j].current == 'B') {
-								addNode(&w_moves[5], t_st, t_en);
+							if (chb[i][j].current == BISHOP) {
+								addMove(&w_moves[5], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							} else {
-								addNode(&b_moves[2], t_st, t_en);
+								addMove(&w_moves[2], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							}
@@ -482,22 +481,22 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 						t_en[0] = chb[k][l].square[0];
 						t_en[1] = chb[k][l].square[1];
 						if (chb[i][j].c == BLACK) {
-							if (chb[i][j].current == 'B') {
-								addNode(&b_moves[5], t_st, t_en);
+							if (chb[i][j].current == BISHOP) {
+								addMove(&b_moves[5], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							} else {
-								addNode(&b_moves[2], t_st, t_en);
+								addMove(&b_moves[2], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							}
 						} else {
-							if (chb[i][j].current == 'B') {
-								addNode(&w_moves[5], t_st, t_en);
+							if (chb[i][j].current == BISHOP) {
+								addMove(&w_moves[5], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							} else {
-								addNode(&b_moves[2], t_st, t_en);
+								addMove(&w_moves[2], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							}
@@ -515,22 +514,22 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 						t_en[0] = chb[k][l].square[0];
 						t_en[1] = chb[k][l].square[1];
 						if (chb[i][j].c == BLACK) {
-							if (chb[i][j].current == 'B') {
-								addNode(&b_moves[5], t_st, t_en);
+							if (chb[i][j].current == BISHOP) {
+								addMove(&b_moves[5], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							} else {
-								addNode(&b_moves[2], t_st, t_en);
+								addMove(&b_moves[2], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							}
 						} else {
-							if (chb[i][j].current == 'B') {
-								addNode(&w_moves[5], t_st, t_en);
+							if (chb[i][j].current == BISHOP) {
+								addMove(&w_moves[5], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							} else {
-								addNode(&b_moves[2], t_st, t_en);
+								addMove(&w_moves[2], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							}
@@ -548,22 +547,22 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 						t_en[0] = chb[k][l].square[0];
 						t_en[1] = chb[k][l].square[1];
 						if (chb[i][j].c == BLACK) {
-							if (chb[i][j].current == 'B') {
-								addNode(&b_moves[5], t_st, t_en);
+							if (chb[i][j].current == BISHOP) {
+								addMove(&b_moves[5], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							} else {
-								addNode(&b_moves[2], t_st, t_en);
+								addMove(&b_moves[2], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							}
 						} else {
-							if (chb[i][j].current == 'B') {
-								addNode(&w_moves[5], t_st, t_en);
+							if (chb[i][j].current == BISHOP) {
+								addMove(&w_moves[5], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							} else {
-								addNode(&b_moves[2], t_st, t_en);
+								addMove(&w_moves[2], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							}
@@ -575,7 +574,7 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					l++;
 				}
 			}
-			if (chb[i][j].current == KING && (chb[i][j].c == c_flag || c_flag == ALL)) {
+			if (chb[i][j].current == KING) {
 				for (k = i - 1; k < i + 2; k++){
 					for (l = j - 1; l < j + 2; l++){
 						if (k > 7 || k < 0 || l > 7 || l < 0)
@@ -585,18 +584,18 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 						t_en[0] = chb[k][l].square[0];
 						t_en[1] = chb[k][l].square[1];
 						if (chb[i][j].c == BLACK) {
-							addNode(&b_moves[1], t_st, t_en);
+							addMove(&b_moves[1], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						} else {
-							addNode(&w_moves[1], t_st, t_en);
+							addMove(&w_moves[1], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						}
 					}
 				}
 			}
-			if (chb[i][j].current == KNIGHT && (chb[i][j].c == c_flag || c_flag == ALL)) {
+			if (chb[i][j].current == KNIGHT) {
 				int knightrow[] = {i-2,i-2,i-1,i-1,i+1,i+1,i+2,i+2};
 				int knightcol[] = {j-1,j+1,j-2,j+2,j-2,j+2,j-1,j+1};
 				int count = 0;
@@ -607,11 +606,11 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 							t_en[0] = chb[knightrow[count]][knightcol[count]].square[0];
 							t_en[1] = chb[knightrow[count]][knightcol[count]].square[1];
 							if (chb[i][j].c == BLACK) {
-								addNode(&b_moves[4], t_st, t_en);
+								addMove(&b_moves[4], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							} else {
-								addNode(&w_moves[4], t_st, t_en);
+								addMove(&w_moves[4], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							}
@@ -619,20 +618,18 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					}
 				}
 			}
-			if (check_castling.KBlack) {
+			/*if (check_castling.KBlack) {
 				if (check_castling.BR_right && !piecesOverlap(chb, 7, ('H'-'A'), 7, 4, 'R')) {
 				}
 				if (check_castling.BR_left && !piecesOverlap(chb, 7, ('A'-'A'), 7, 4, 'R')) {
 				}
-			}
+			}*/
 		}
 	}
-	if (c_flag != ALL)
-		removeThreatsToKing(chb, c_flag);
-	else {
-		removeThreatsToKing(chb, WHITE);
-		removeThreatsToKing(chb, BLACK);
-	}
+	removeThreatsToKing(chb, (c_flag == BLACK)?WHITE:BLACK);
+	removeThreatsToKing(chb, c_flag);
+	removeBadKingMoves(chb, (c_flag == BLACK)?WHITE:BLACK);
+	removeBadKingMoves(chb, c_flag);
 	return move_count;
 }
 
@@ -715,13 +712,14 @@ bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int colo
 	chb[starty][startx].occ = false;
 	chb[starty][startx].c = EMPTY;
 	chb[starty][startx].current = 'e';
+
 	return true;
 }
 
-void removeThreatsToKing(ch_template chb[][8], int c_flag)
+void removeThreatsToKing(ch_template chb[][8], const int color)
 {
 	ch_template next_chb[8][8];
-	
+	int ccolor = (color == BLACK)?WHITE:BLACK;
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			next_chb[i][j] = chb[i][j];
@@ -730,21 +728,41 @@ void removeThreatsToKing(ch_template chb[][8], int c_flag)
 
 	for (int i = 0; i < 6; i++) {
 		MoveNode *curr = NULL;
-		curr = (c_flag == BLACK)?b_moves[i]:w_moves[i];
+		curr = (color == BLACK)?b_moves[i]:w_moves[i];
 		while (curr) {
-			makeMove(next_chb, curr->start, curr->end, c_flag);
-			if (!isKingOnTheBoard(next_chb, c_flag)) {
-				removeMoveNode((c_flag == BLACK)?&b_moves[i]:&w_moves[i], curr->start, curr->end);
-				for (int y = 0; y < 8; y++) {
-					for (int z = 0; z < 8; z++) {
-						next_chb[y][z] = chb[y][z];
+			makeMove(next_chb, curr->start, curr->end, color);
+			if (!isKingOnTheBoard(next_chb, ccolor)) {
+				for (int z = 0; z < 6; z++) {
+					MoveNode *curr_nextPlayer = NULL;
+					curr_nextPlayer = (color == BLACK)?w_moves[z]:b_moves[z];
+					for (int k = 0; k < 8; k++) {
+						for (int l = 0; l < 8; l++) {
+							next_chb[k][l] = chb[k][l];
+						}
 					}
+					if (!curr_nextPlayer) continue;
+					do {
+						makeMove(next_chb, curr_nextPlayer->start, curr_nextPlayer->end, ccolor);
+						makeMove(next_chb, curr->start, curr->end, color);
+						if (!isKingOnTheBoard(next_chb, ccolor)) {
+							removeMove((color == BLACK)?&w_moves[z]:&b_moves[z], curr_nextPlayer->start, curr_nextPlayer->end);
+							if (ccolor == WHITE)
+								white_move_count--;
+							else
+								black_move_count--;
+						}
+						for (int k = 0; k < 8; k++) {
+							for (int l = 0; l < 8; l++) {
+								next_chb[k][l] = chb[k][l];
+							}
+						}
+						curr_nextPlayer = curr_nextPlayer->nxt;
+					} while (curr_nextPlayer);
 				}
-				continue;
 			}
-			for (int y = 0; y < 8; y++) {
-				for (int z = 0; z < 8; z++) {
-					next_chb[y][z] = chb[y][z];
+			for (int k = 0; k < 8; k++) {
+				for (int l = 0; l < 8; l++) {
+					next_chb[k][l] = chb[k][l];
 				}
 			}
 			curr = curr->nxt;
@@ -752,7 +770,59 @@ void removeThreatsToKing(ch_template chb[][8], int c_flag)
 	}
 }
 
-bool isKingOnTheBoard(ch_template chb[][8], int color)
+void removeBadKingMoves(ch_template chb[][8], int color)
+{
+	MoveNode *KingMoves = (color == BLACK)?b_moves[1]:w_moves[1];
+
+	if (!KingMoves)
+		return;
+
+	ch_template temp_chb[8][8];
+	int ccolor = (color == BLACK)?WHITE:BLACK;
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			temp_chb[i][j] = chb[i][j];
+		}
+	}
+
+	while (KingMoves) {
+		makeMove(temp_chb, KingMoves->start, KingMoves->end, color);
+		for (int i = 0; i < 6; i++) {
+			ch_template next_chb[8][8];
+			MoveNode *curr = NULL;
+			curr = (ccolor == BLACK)?b_moves[i]:w_moves[i];
+			for (int k = 0; k < 8; k++) {
+				for (int l = 0; l < 8; l++) {
+					next_chb[k][l] = temp_chb[k][l];
+				}
+			}
+			while (curr) {
+				makeMove(next_chb, curr->start, curr->end, ccolor);
+				if (!isKingOnTheBoard(next_chb, color)) {
+					removeMove((color == BLACK)?&b_moves[1]:&w_moves[1], KingMoves->start, KingMoves->end);
+					if (color == WHITE)
+						white_move_count--;
+					else
+						black_move_count--;
+				}
+				for (int k = 0; k < 8; k++) {
+					for (int l = 0; l < 8; l++) {
+						next_chb[k][l] = temp_chb[k][l];
+					}
+				}
+				curr = curr->nxt;
+			}
+		}
+		for (int k = 0; k < 8; k++) {
+			for (int l = 0; l < 8; l++) {
+				temp_chb[k][l] = chb[k][l];
+			}
+		}
+		KingMoves = KingMoves->nxt;
+	}
+}
+
+bool isKingOnTheBoard(ch_template chb[][8], const int color)
 {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
@@ -836,7 +906,6 @@ bool piecesOverlap(ch_template chb[][8], const int start_x, const int start_y,
 	return false;
 }
 
-#ifdef DEBUG
 void date_filename(char *buf, int ln)
 {
 	time_t t_epc = time(NULL);
@@ -887,4 +956,3 @@ void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
 	}
 	fprintf(logf, "from %c%c to %c%c\n", piece[0], piece[1], plInput[1], plInput[2]);
 }
-#endif
