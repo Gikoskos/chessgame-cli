@@ -30,9 +30,11 @@ int main(void)
 #endif
 	start_move[2] = '\0';
 	end_move[2] = '\0';
-	do {
+	while (1) {
 		deleteMoves();
 		getAllMoves(chess_board, round);
+		if (!black_move_count || !white_move_count)
+			break;
 		if (total_rounds > SCHOLARS_ROUNDS) {
 			clear_screen();
 			printf("\nWHITE_MOVE_COUNT = %u\t BLACK_MOVE_COUNT = %u\n", white_move_count, black_move_count);
@@ -85,7 +87,7 @@ int main(void)
 		}
 		free(playerInput);
 		playerInput = NULL;
-	} while (black_move_count && white_move_count);
+	}
 	if (!black_move_count)
 		printf("White wins!\n");
 	else if (!white_move_count)
