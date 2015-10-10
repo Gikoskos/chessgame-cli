@@ -11,7 +11,21 @@
 
 #include <chesslib.h>
 
+#if defined(__FreeBSD__) \
+|| defined(__linux__) \
+|| defined(__APPLE__) \
+|| defined(__gnu_linux__)
+# define KRED  "\x1B[31m"
+# define KYEL  "\x1B[33m"
+# define RESET "\033[0m"
+# include <alloca.h>
+#endif
+
+
 #define MOS 17	/*this one controls the chess board size, don't mess with it*/
+#define BANNER_SPEED 100 - R_SPEED
+#define R_SPEED 80	/*speed of the animated banner, bigger value bigger speed; maximum value is 99*/
+
 
 /*safely copies the input buffer to a string and returns that string*/
 char *getPlayerInput (void);
