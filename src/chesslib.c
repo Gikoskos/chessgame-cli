@@ -21,10 +21,15 @@ static bool __attribute__((unused)) enpassant = false;
 
 static CastlingBool check_castling = {true, true, true, true, true, true};
 static unsigned rc = 0;
+static unsigned white_removed_moves;
+static unsigned black_removed_moves;
 
 
 unsigned black_move_count;
 unsigned white_move_count;
+
+
+KingState WhiteKing = safe, BlackKing = safe;
 
 MoveNode *b_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 MoveNode *w_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
@@ -34,14 +39,17 @@ MoveNode *w_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
  *prototypes for functions used only in here*
  ********************************************/
 
-bool piecesOverlap(ch_template chb[][8], const int start_x, const int start_y,
+bool _piecesOverlap(ch_template chb[][8], const int start_x, const int start_y,
 		const int end_x, const int end_y, const char piece);
-bool isKingOnTheBoard(ch_template chb[][8], int color);
-void removeMove(MoveNode **llt, char *st_todel, char *en_todel);
-void removeBadKingMoves(ch_template chb[][8], int color);
-void removeThreatsToKing(ch_template chb[][8], int color);
+bool _isKingOnTheBoard(ch_template chb[][8], int color);
+void _removeMove(MoveNode **llt, char *st_todel, char *en_todel);
+void _removeBadKingMoves(ch_template chb[][8], int color);
+void _removeThreatsToKing(ch_template chb[][8], int color);
+bool _isOnList(const char *start_move, const char *end_move, const char piece, const int color);
+void _addMove(MoveNode **llt, const char *st, const char *en);
+int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag);
 
-void addMove(MoveNode **llt, const char *st, const char *en)
+void _addMove(MoveNode **llt, const char *st, const char *en)
 {
 	if (!*llt) {
 		*llt = malloc(sizeof(MoveNode));
@@ -78,7 +86,7 @@ void printMoveList(MoveNode *llt, FILE *fd)
 	printf("\n");
 }
 
-void removeMove(MoveNode **llt, char *st_todel, char *en_todel)
+void _removeMove(MoveNode **llt, char *st_todel, char *en_todel)
 {
 	MoveNode *curr = (*llt), *prv = NULL;
 	while (curr) {
@@ -108,7 +116,7 @@ void deleteMoveList(MoveNode **llt)
 	}
 }
 
-bool isOnList(const char *start_move, const char *end_move, const char piece, const int color)
+bool _isOnList(const char *start_move, const char *end_move, const char piece, const int color)
 {
 	unsigned short idx;
 	MoveNode *curr;
@@ -212,10 +220,46 @@ void _initChessboard(ch_template chb[][8], unsigned k, char col)	/*k is row, col
 		_initChessboard(chb, k, col);
 }
 
-int _getMoveList(ch_template chb[][8], int c_flag)
+int getAllMoves(ch_template chb[][8], int c_flag)
+{
+	int total_move_count = _fillMoveLists(chb, NULL, ALL);
+	unsigned b_tmp = black_move_count, w_tmp = white_move_count;
+
+	white_removed_moves = 0;
+	black_removed_moves = 0;
+
+	_removeThreatsToKing(chb, (c_flag == BLACK)?WHITE:BLACK);
+	_removeThreatsToKing(chb, c_flag);
+	_removeBadKingMoves(chb, (c_flag == BLACK)?WHITE:BLACK);
+	_removeBadKingMoves(chb, c_flag);
+
+	b_tmp -= black_removed_moves;
+	w_tmp -= white_removed_moves;
+	black_move_count = b_tmp;
+	white_move_count = w_tmp;
+	if (!black_move_count)
+		BlackKing = checkmate;
+	if (!white_move_count)
+		WhiteKing = checkmate;
+	return total_move_count;
+}
+
+int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 {
 	int i, j, k, l, move_count = 0;
 	char t_st[3], t_en[3];
+	MoveNode **black_m, **white_m;
+
+	if (flag == ALL) {
+		black_m = b_moves;
+		white_m = w_moves;
+	} else {
+		if (flag == BLACK) {
+			black_m = *move_array;
+		} else {
+			white_m = *move_array;
+		}
+	}
 
 	black_move_count = 0;
 	white_move_count = 0;
@@ -225,11 +269,11 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 			t_st[0] = chb[i][j].square[0];
 			t_st[1] = chb[i][j].square[1];
 			if (chb[i][j].current == PAWN) {
-				if (chb[i][j].c == BLACK) {
+				if (chb[i][j].c == BLACK && (flag == ALL || flag == BLACK)) {
 					if (i == 1 && !(chb[i+2][j].occ) && !(chb[i+1][j].occ)) {
 						t_en[0] = chb[i+2][j].square[0];
 						t_en[1] = chb[i+2][j].square[1];
-						addMove(&b_moves[0], t_st, t_en);
+						_addMove(&black_m[0], t_st, t_en);
 						black_move_count++;
 						move_count++;
 					}
@@ -238,7 +282,7 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 							if (chb[i][j+1].current == 'P' && chb[i][j+1].c == WHITE) {
 								t_en[0] = chb[i+1][j+1].square[0];
 								t_en[1] = chb[i+1][j+1].square[1];
-								addMove(&b_moves[0], t_st, t_en);
+								_addMove(&black_m[0], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							}
@@ -246,7 +290,7 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 							if (chb[i][j-1].current == 'P' && chb[i][j-1].c == WHITE) {
 								t_en[0] = chb[i+1][j-1].square[0];
 								t_en[1] = chb[i+1][j-1].square[1];
-								addMove(&b_moves[0], t_st, t_en);
+								_addMove(&black_m[0], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							}
@@ -255,27 +299,27 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					t_en[1] = chb[i+1][j].square[1];
 					if (chb[i+1][j].occ == false) {
 						t_en[0] = chb[i+1][j].square[0];
-						addMove(&b_moves[0], t_st, t_en);
+						_addMove(&black_m[0], t_st, t_en);
 						black_move_count++;
 						move_count++;
 					}
 					if (chb[i+1][j+1].c == WHITE) {
 						t_en[0] = chb[i+1][j+1].square[0];
-						addMove(&b_moves[0], t_st, t_en);
+						_addMove(&black_m[0], t_st, t_en);
 						black_move_count++;
 						move_count++;
 					} 
 					if (chb[i+1][j-1].c == WHITE) {
 						t_en[0] = chb[i+1][j-1].square[0];
-						addMove(&b_moves[0], t_st, t_en);
+						_addMove(&black_m[0], t_st, t_en);
 						black_move_count++;
 						move_count++;
 					}
-				} else {
+				} else if (flag == ALL || flag == WHITE) {
 					if (i == 6 && !(chb[i-2][j].occ) && !(chb[i-1][j].occ)) {
 						t_en[0] = chb[i-2][j].square[0];
 						t_en[1] = chb[i-2][j].square[1];
-						addMove(&w_moves[0], t_st, t_en);
+						_addMove(&white_m[0], t_st, t_en);
 						white_move_count++;
 						move_count++;
 					}
@@ -284,7 +328,7 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 							if (chb[i][j+1].current == 'P' && chb[i][j+1].c == BLACK) {
 								t_en[0] = chb[i-1][j+1].square[0];
 								t_en[1] = chb[i-1][j+1].square[1];
-								addMove(&w_moves[0], t_st, t_en);
+								_addMove(&white_m[0], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							}
@@ -292,7 +336,7 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 							if (chb[i][j-1].current == 'P' && chb[i][j-1].c == BLACK) {
 								t_en[0] = chb[i-1][j-1].square[0];
 								t_en[1] = chb[i-1][j-1].square[1];
-								addMove(&w_moves[0], t_st, t_en);
+								_addMove(&white_m[0], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							}
@@ -301,19 +345,19 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					t_en[1] = chb[i-1][j].square[1];
 					if (chb[i-1][j].occ == false) {
 						t_en[0] = chb[i-1][j].square[0];
-						addMove(&w_moves[0], t_st, t_en);
+						_addMove(&white_m[0], t_st, t_en);
 						white_move_count++;
 						move_count++;
 					}
 					if (chb[i-1][j+1].c == BLACK) {
 						t_en[0] = chb[i-1][j+1].square[0];
-						addMove(&w_moves[0], t_st, t_en);
+						_addMove(&white_m[0], t_st, t_en);
 						white_move_count++;
 						move_count++;
 					} 
 					if (chb[i-1][j-1].c == BLACK) {
 						t_en[0] = chb[i-1][j-1].square[0];
-						addMove(&w_moves[0], t_st, t_en);
+						_addMove(&white_m[0], t_st, t_en);
 						white_move_count++;
 						move_count++;
 					}
@@ -326,23 +370,23 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 						break;
 					t_en[0] = chb[k][l].square[0];
 					t_en[1] = chb[k][l].square[1];
-					if (chb[i][j].c == BLACK) {
+					if (chb[i][j].c == BLACK && (flag == ALL || flag == BLACK)) {
 						if (chb[i][j].current == ROOK) {
-							addMove(&b_moves[3], t_st, t_en);
+							_addMove(&black_m[3], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						} else {
-							addMove(&b_moves[2], t_st, t_en);
+							_addMove(&black_m[2], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						}
-					} else {
+					} else if (flag == ALL || flag == WHITE) {
 						if (chb[i][j].current == ROOK) {
-							addMove(&w_moves[3], t_st, t_en);
+							_addMove(&white_m[3], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						} else {
-							addMove(&w_moves[2], t_st, t_en);
+							_addMove(&white_m[2], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						}
@@ -355,23 +399,23 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 						break;
 					t_en[0] = chb[k][l].square[0];
 					t_en[1] = chb[k][l].square[1];
-					if (chb[i][j].c == BLACK) {
+					if (chb[i][j].c == BLACK && (flag == ALL || flag == BLACK)) {
 						if (chb[i][j].current == ROOK) {
-							addMove(&b_moves[3], t_st, t_en);
+							_addMove(&black_m[3], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						} else {
-							addMove(&b_moves[2], t_st, t_en);
+							_addMove(&black_m[2], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						}
-					} else {
+					} else if (flag == ALL || flag == WHITE) {
 						if (chb[i][j].current == ROOK) {
-							addMove(&w_moves[3], t_st, t_en);
+							_addMove(&white_m[3], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						} else {
-							addMove(&w_moves[2], t_st, t_en);
+							_addMove(&white_m[2], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						}
@@ -386,23 +430,23 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 						break;
 					t_en[0] = chb[k][l].square[0];
 					t_en[1] = chb[k][l].square[1];
-					if (chb[i][j].c == BLACK) {
+					if (chb[i][j].c == BLACK && (flag == ALL || flag == BLACK)) {
 						if (chb[i][j].current == ROOK) {
-							addMove(&b_moves[3], t_st, t_en);
+							_addMove(&black_m[3], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						} else {
-							addMove(&b_moves[2], t_st, t_en);
+							_addMove(&black_m[2], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						}
-					} else {
+					} else if (flag == ALL || flag == WHITE) {
 						if (chb[i][j].current == ROOK) {
-							addMove(&w_moves[3], t_st, t_en);
+							_addMove(&white_m[3], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						} else {
-							addMove(&w_moves[2], t_st, t_en);
+							_addMove(&white_m[2], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						}
@@ -415,23 +459,23 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 						break;
 					t_en[0] = chb[k][l].square[0];
 					t_en[1] = chb[k][l].square[1];
-					if (chb[i][j].c == BLACK) {
+					if (chb[i][j].c == BLACK && (flag == ALL || flag == BLACK)) {
 						if (chb[i][j].current == ROOK) {
-							addMove(&b_moves[3], t_st, t_en);
+							_addMove(&black_m[3], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						} else {
-							addMove(&b_moves[2], t_st, t_en);
+							_addMove(&black_m[2], t_st, t_en);
 							black_move_count++;
 							move_count++;
 						}
-					} else {
+					} else if (flag == ALL || flag == WHITE) {
 						if (chb[i][j].current == ROOK) {
-							addMove(&w_moves[3], t_st, t_en);
+							_addMove(&white_m[3], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						} else {
-							addMove(&w_moves[2], t_st, t_en);
+							_addMove(&white_m[2], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						}
@@ -447,23 +491,23 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					if (chb[k][l].c != chb[i][j].c) {
 						t_en[0] = chb[k][l].square[0];
 						t_en[1] = chb[k][l].square[1];
-						if (chb[i][j].c == BLACK) {
+						if (chb[i][j].c == BLACK && (flag == ALL || flag == BLACK)) {
 							if (chb[i][j].current == BISHOP) {
-								addMove(&b_moves[5], t_st, t_en);
+								_addMove(&black_m[5], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							} else {
-								addMove(&b_moves[2], t_st, t_en);
+								_addMove(&black_m[2], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							}
-						} else {
+						} else if (flag == ALL || flag == WHITE) {
 							if (chb[i][j].current == BISHOP) {
-								addMove(&w_moves[5], t_st, t_en);
+								_addMove(&white_m[5], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							} else {
-								addMove(&w_moves[2], t_st, t_en);
+								_addMove(&white_m[2], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							}
@@ -480,23 +524,23 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					if (chb[k][l].c != chb[i][j].c) {
 						t_en[0] = chb[k][l].square[0];
 						t_en[1] = chb[k][l].square[1];
-						if (chb[i][j].c == BLACK) {
+						if (chb[i][j].c == BLACK && (flag == ALL || flag == BLACK)) {
 							if (chb[i][j].current == BISHOP) {
-								addMove(&b_moves[5], t_st, t_en);
+								_addMove(&black_m[5], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							} else {
-								addMove(&b_moves[2], t_st, t_en);
+								_addMove(&black_m[2], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							}
-						} else {
+						} else if (flag == ALL || flag == WHITE) {
 							if (chb[i][j].current == BISHOP) {
-								addMove(&w_moves[5], t_st, t_en);
+								_addMove(&white_m[5], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							} else {
-								addMove(&w_moves[2], t_st, t_en);
+								_addMove(&white_m[2], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							}
@@ -513,23 +557,23 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					if (chb[k][l].c != chb[i][j].c) {
 						t_en[0] = chb[k][l].square[0];
 						t_en[1] = chb[k][l].square[1];
-						if (chb[i][j].c == BLACK) {
+						if (chb[i][j].c == BLACK && (flag == ALL || flag == BLACK)) {
 							if (chb[i][j].current == BISHOP) {
-								addMove(&b_moves[5], t_st, t_en);
+								_addMove(&black_m[5], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							} else {
-								addMove(&b_moves[2], t_st, t_en);
+								_addMove(&black_m[2], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							}
-						} else {
+						} else if (flag == ALL || flag == WHITE) {
 							if (chb[i][j].current == BISHOP) {
-								addMove(&w_moves[5], t_st, t_en);
+								_addMove(&white_m[5], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							} else {
-								addMove(&w_moves[2], t_st, t_en);
+								_addMove(&white_m[2], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							}
@@ -546,23 +590,23 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 					if (chb[k][l].c != chb[i][j].c) {
 						t_en[0] = chb[k][l].square[0];
 						t_en[1] = chb[k][l].square[1];
-						if (chb[i][j].c == BLACK) {
+						if (chb[i][j].c == BLACK && (flag == ALL || flag == BLACK)) {
 							if (chb[i][j].current == BISHOP) {
-								addMove(&b_moves[5], t_st, t_en);
+								_addMove(&black_m[5], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							} else {
-								addMove(&b_moves[2], t_st, t_en);
+								_addMove(&black_m[2], t_st, t_en);
 								black_move_count++;
 								move_count++;
 							}
-						} else {
+						} else if (flag == ALL || flag == WHITE) {
 							if (chb[i][j].current == BISHOP) {
-								addMove(&w_moves[5], t_st, t_en);
+								_addMove(&white_m[5], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							} else {
-								addMove(&w_moves[2], t_st, t_en);
+								_addMove(&white_m[2], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							}
@@ -583,12 +627,12 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 							continue;
 						t_en[0] = chb[k][l].square[0];
 						t_en[1] = chb[k][l].square[1];
-						if (chb[i][j].c == BLACK) {
-							addMove(&b_moves[1], t_st, t_en);
+						if (chb[i][j].c == BLACK && (flag == ALL || flag == BLACK)) {
+							_addMove(&black_m[1], t_st, t_en);
 							black_move_count++;
 							move_count++;
-						} else {
-							addMove(&w_moves[1], t_st, t_en);
+						} else if (flag == ALL || flag == WHITE) {
+							_addMove(&white_m[1], t_st, t_en);
 							white_move_count++;
 							move_count++;
 						}
@@ -605,12 +649,12 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 						if (chb[knightrow[count]][knightcol[count]].c != chb[i][j].c) {
 							t_en[0] = chb[knightrow[count]][knightcol[count]].square[0];
 							t_en[1] = chb[knightrow[count]][knightcol[count]].square[1];
-							if (chb[i][j].c == BLACK) {
-								addMove(&b_moves[4], t_st, t_en);
+							if (chb[i][j].c == BLACK && (flag == ALL || flag == BLACK)) {
+								_addMove(&black_m[4], t_st, t_en);
 								black_move_count++;
 								move_count++;
-							} else {
-								addMove(&w_moves[4], t_st, t_en);
+							} else if (flag == ALL || flag == WHITE) {
+								_addMove(&white_m[4], t_st, t_en);
 								white_move_count++;
 								move_count++;
 							}
@@ -619,17 +663,13 @@ int _getMoveList(ch_template chb[][8], int c_flag)
 				}
 			}
 			/*if (check_castling.KBlack) {
-				if (check_castling.BR_right && !piecesOverlap(chb, 7, ('H'-'A'), 7, 4, 'R')) {
+				if (check_castling.BR_right && !_piecesOverlap(chb, 7, ('H'-'A'), 7, 4, 'R')) {
 				}
-				if (check_castling.BR_left && !piecesOverlap(chb, 7, ('A'-'A'), 7, 4, 'R')) {
+				if (check_castling.BR_left && !_piecesOverlap(chb, 7, ('A'-'A'), 7, 4, 'R')) {
 				}
 			}*/
 		}
 	}
-	removeThreatsToKing(chb, (c_flag == BLACK)?WHITE:BLACK);
-	removeThreatsToKing(chb, c_flag);
-	removeBadKingMoves(chb, (c_flag == BLACK)?WHITE:BLACK);
-	removeBadKingMoves(chb, c_flag);
 	return move_count;
 }
 
@@ -648,10 +688,10 @@ bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int colo
 	if (piece == 'e')
 		return false;
 
-	if (!isOnList(st_move, en_move, piece, color))
+	if (!_isOnList(st_move, en_move, piece, color))
 		return false;
 
-	if (piecesOverlap(chb, startx, starty, endx, endy, piece) || chb[endy][endx].c == color)
+	if (_piecesOverlap(chb, startx, starty, endx, endy, piece) || chb[endy][endx].c == color)
 		return false;
 	
 	if (piece == ROOK) {
@@ -716,14 +756,21 @@ bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int colo
 	return true;
 }
 
-void removeThreatsToKing(ch_template chb[][8], const int color)
+void _removeThreatsToKing(ch_template chb[][8], const int color)
 {
 	ch_template next_chb[8][8];
 	int ccolor = (color == BLACK)?WHITE:BLACK;
+
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			next_chb[i][j] = chb[i][j];
 		}
+	}
+
+	if (ccolor == BLACK) {
+		BlackKing = safe;
+	} else {
+		WhiteKing = safe;
 	}
 
 	for (int i = 0; i < 6; i++) {
@@ -731,7 +778,11 @@ void removeThreatsToKing(ch_template chb[][8], const int color)
 		curr = (color == BLACK)?b_moves[i]:w_moves[i];
 		while (curr) {
 			makeMove(next_chb, curr->start, curr->end, color);
-			if (!isKingOnTheBoard(next_chb, ccolor)) {
+			if (!_isKingOnTheBoard(next_chb, ccolor)) {
+				if (ccolor == BLACK)
+					BlackKing = check;
+				else
+					WhiteKing = check;
 				for (int z = 0; z < 6; z++) {
 					MoveNode *curr_nextPlayer = NULL;
 					curr_nextPlayer = (color == BLACK)?w_moves[z]:b_moves[z];
@@ -744,12 +795,12 @@ void removeThreatsToKing(ch_template chb[][8], const int color)
 					do {
 						makeMove(next_chb, curr_nextPlayer->start, curr_nextPlayer->end, ccolor);
 						makeMove(next_chb, curr->start, curr->end, color);
-						if (!isKingOnTheBoard(next_chb, ccolor)) {
-							removeMove((color == BLACK)?&w_moves[z]:&b_moves[z], curr_nextPlayer->start, curr_nextPlayer->end);
+						if (!_isKingOnTheBoard(next_chb, ccolor)) {
+							_removeMove((color == BLACK)?&w_moves[z]:&b_moves[z], curr_nextPlayer->start, curr_nextPlayer->end);
 							if (ccolor == WHITE)
-								white_move_count--;
+								white_removed_moves++;
 							else
-								black_move_count--;
+								black_removed_moves++;
 						}
 						for (int k = 0; k < 8; k++) {
 							for (int l = 0; l < 8; l++) {
@@ -770,7 +821,7 @@ void removeThreatsToKing(ch_template chb[][8], const int color)
 	}
 }
 
-void removeBadKingMoves(ch_template chb[][8], int color)
+void _removeBadKingMoves(ch_template chb[][8], int color)
 {
 	MoveNode *KingMoves = (color == BLACK)?b_moves[1]:w_moves[1];
 
@@ -787,42 +838,55 @@ void removeBadKingMoves(ch_template chb[][8], int color)
 
 	while (KingMoves) {
 		makeMove(temp_chb, KingMoves->start, KingMoves->end, color);
+		MoveNode **temp_moves = malloc(6*sizeof(MoveNode));
+		for (int k = 0; k < 6; k++) {
+			temp_moves[k] = NULL;
+		}
+		_fillMoveLists(temp_chb, &temp_moves, ccolor);
+		MoveNode *curr[6] = {temp_moves[0], temp_moves[1], temp_moves[2], 
+			temp_moves[3], temp_moves[4], temp_moves[5]};
+		printMoves(curr);
 		for (int i = 0; i < 6; i++) {
 			ch_template next_chb[8][8];
-			MoveNode *curr = NULL;
-			curr = (ccolor == BLACK)?b_moves[i]:w_moves[i];
 			for (int k = 0; k < 8; k++) {
 				for (int l = 0; l < 8; l++) {
 					next_chb[k][l] = temp_chb[k][l];
 				}
 			}
-			while (curr) {
-				makeMove(next_chb, curr->start, curr->end, ccolor);
-				if (!isKingOnTheBoard(next_chb, color)) {
-					removeMove((color == BLACK)?&b_moves[1]:&w_moves[1], KingMoves->start, KingMoves->end);
-					if (color == WHITE)
-						white_move_count--;
+			while (curr[i]) {
+				makeMove(next_chb, curr[i]->start, curr[i]->end, ccolor);
+				if (!_isKingOnTheBoard(next_chb, color)) {
+					if (color == BLACK)
+						BlackKing = check;
 					else
-						black_move_count--;
+						WhiteKing = check;
+					_removeMove((color == BLACK)?&b_moves[1]:&w_moves[1], KingMoves->start, KingMoves->end);
+					if (color == WHITE)
+						white_removed_moves++;
+					else
+						black_removed_moves++;
 				}
 				for (int k = 0; k < 8; k++) {
 					for (int l = 0; l < 8; l++) {
 						next_chb[k][l] = temp_chb[k][l];
 					}
 				}
-				curr = curr->nxt;
+				curr[i] = curr[i]->nxt;
 			}
 		}
 		for (int k = 0; k < 8; k++) {
 			for (int l = 0; l < 8; l++) {
 				temp_chb[k][l] = chb[k][l];
 			}
+			if (k < 6)
+				deleteMoveList(&temp_moves[k]);
 		}
+		free(temp_moves);
 		KingMoves = KingMoves->nxt;
 	}
 }
 
-bool isKingOnTheBoard(ch_template chb[][8], const int color)
+bool _isKingOnTheBoard(ch_template chb[][8], const int color)
 {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
@@ -834,7 +898,7 @@ bool isKingOnTheBoard(ch_template chb[][8], const int color)
 	return false;
 }
 
-bool piecesOverlap(ch_template chb[][8], const int start_x, const int start_y,
+bool _piecesOverlap(ch_template chb[][8], const int start_x, const int start_y,
 		const int end_x, const int end_y, const char piece)
 {
 	int temp_y = start_y, temp_x = start_x;

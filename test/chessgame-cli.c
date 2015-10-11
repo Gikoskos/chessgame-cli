@@ -10,7 +10,7 @@
 #include <chlib-cli.h>
 #include <assert.h>
 
-#define SCHOLARS_ROUNDS 7
+#define SCHOLARS_ROUNDS 6
 #define FOOLS_ROUNDS 4
 
 
@@ -40,9 +40,9 @@ int main(void)
 			printf("\nWHITE_MOVE_COUNT = %u\t BLACK_MOVE_COUNT = %u\n", white_move_count, black_move_count);
 			printBoard(chess_board, 'l');
 			if (pr_moves) {
-				printf("\n\t\t\t***WHITE MOVES***\n");
+				printf("\t\t\t***WHITE MOVES***\n");
 				printWhiteMoves();
-				printf("\t\t\t***BLACK MOVES***\n");
+				printf("\n\t\t\t***BLACK MOVES***\n");
 				printBlackMoves();
 				pr_moves = false;
 			}

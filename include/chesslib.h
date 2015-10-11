@@ -50,27 +50,19 @@
 
 
 #define initChessboard(x) _initChessboard(x, 0, 'A')
-#define getAllMoves(x, y)    _getMoveList(x, y)
+#define printWhiteMoves() printMoves(w_moves)
+#define printBlackMoves() printMoves(b_moves)
 
-#define printBlackMoves()                                              \
+
+
+#define printMoves(x)                                                  \
 {                                                                      \
     int move_list_piece_index = 0;                                     \
     char *piece_name[6] = {"Pawns:\n", "King:\n", "Queen:\n",          \
         "Rooks:\n", "Knights:\n", "Bishops:\n"};                       \
     while (move_list_piece_index < 6) {                                \
         fprintf(stdout, "%s", piece_name[move_list_piece_index]);      \
-        printMoveList(b_moves[move_list_piece_index++], stdout);       \
-    }                                                                  \
-}
-
-#define printWhiteMoves()                                              \
-{                                                                      \
-    int move_list_piece_index = 0;                                     \
-    char *piece_name[6] = {"Pawns:\n", "King:\n", "Queen:\n",          \
-        "Rooks:\n", "Knights:\n", "Bishops:\n"};                       \
-    while (move_list_piece_index < 6) {                                \
-        fprintf(stdout, "%s", piece_name[move_list_piece_index]);      \
-        printMoveList(w_moves[move_list_piece_index++], stdout);       \
+        printMoveList(x[move_list_piece_index++], stdout);             \
     }                                                                  \
 }
 
@@ -107,6 +99,12 @@ typedef struct CastlingBool {
 	bool KWhite;	/*white king*/
 } CastlingBool;
 
+typedef enum KingState {
+	check,
+	checkmate,
+	safe,	/*King is safe (not threatened in his 3x3 vicinity*/
+} KingState;
+
 /*node template for the move list*/
 typedef struct MoveNode {
 	char start[3];	/*string for the square the piece is on*/
@@ -125,6 +123,8 @@ extern MoveNode *w_moves[6];
 extern unsigned black_move_count;
 extern unsigned white_move_count;
 
+extern KingState WhiteKing, BlackKing;
+
 /******************************************
  *function prototypes for the main library*
  ******************************************/
@@ -136,7 +136,7 @@ extern unsigned white_move_count;
  *col: same as k except that it's the column not the row*/
 void _initChessboard (ch_template chb[][8], unsigned k, char col);
 
-int _getMoveList(ch_template chb[][8], int c_flag);
+int getAllMoves(ch_template chb[][8], int c_flag);
 
 void printMoveList(MoveNode *llt, FILE *fd);
 
@@ -147,5 +147,9 @@ __attribute__((destructor)) void deleteMoves();
 int findOnMoveList(MoveNode *llt, char *tofind);
 
 bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color);
+
+void write_to_log(int round, FILE* logf, char *plInput, char piece[2]);
+
+void date_filename(char *buf, int ln);
 
 #endif
