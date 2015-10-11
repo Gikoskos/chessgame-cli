@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -g2 -Wall -std=gnu11 -fgnu89-inline
+CFLAGS := -g3 -Wall -std=gnu11 -fgnu89-inline
 LINKER := -lncurses
 ENABLEDLL := -DBUILD_CHESSLIB_DLL
 DEBUG := -DDEBUG
