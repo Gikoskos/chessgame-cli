@@ -10,7 +10,7 @@
 #include <chlib-cli.h>
 #include <assert.h>
 
-#define SCHOLARS_ROUNDS 6
+#define SCHOLARS_ROUNDS 7
 #define FOOLS_ROUNDS 4
 
 
@@ -36,6 +36,7 @@ int main(void)
 		if (!black_move_count || !white_move_count)
 			break;
 		if (total_rounds > SCHOLARS_ROUNDS) {
+			//break;
 			clear_screen();
 			printf("\nWHITE_MOVE_COUNT = %u\t BLACK_MOVE_COUNT = %u\n", white_move_count, black_move_count);
 			printBoard(chess_board, 'l');

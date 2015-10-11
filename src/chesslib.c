@@ -6,7 +6,8 @@
  *                                                                   *
  *********************************************************************/
 
-#include "chesslib.h"
+#include <chesslib.h>
+#include <chlib-cli.h>
 
 
 /*********
@@ -163,7 +164,7 @@ bool _isOnList(const char *start_move, const char *end_move, const char piece, c
 	return false;
 }
 
-__attribute__((destructor)) void deleteMoves()
+void deleteMoves()
 {
 	deleteBlackMoves();
 	deleteWhiteMoves();
@@ -842,10 +843,16 @@ void _removeBadKingMoves(ch_template chb[][8], int color)
 		for (int k = 0; k < 6; k++) {
 			temp_moves[k] = NULL;
 		}
+		//printf("King's MOVES:\n\n");
+		printMoveList(KingMoves, stdout);
+		printBoard(temp_chb, 'l');
 		_fillMoveLists(temp_chb, &temp_moves, ccolor);
 		MoveNode *curr[6] = {temp_moves[0], temp_moves[1], temp_moves[2], 
 			temp_moves[3], temp_moves[4], temp_moves[5]};
-		printMoves(curr);
+		/*printMoves(curr);
+		putchar('\n');
+		putchar('\n');
+		putchar('\n');*/
 		for (int i = 0; i < 6; i++) {
 			ch_template next_chb[8][8];
 			for (int k = 0; k < 8; k++) {
