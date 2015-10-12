@@ -10,6 +10,8 @@
 #define CHLIB_CLI_H
 
 #include <chesslib.h>
+#include <time.h>
+#include <unistd.h>
 
 #if defined(__FreeBSD__) \
 || defined(__linux__) \

@@ -14,8 +14,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
-#include <time.h>
-#include <unistd.h>
 
 #if defined(__MINGW32__) || defined(_WIN32)
 # ifdef BUILD_CHESSLIB_DLL
@@ -31,14 +29,14 @@
 #define BLACK 0x1eb0        /*7856*/
 #define EMPTY 0x1eb1        /*7857*/
 #define s_l 26	/*length of the filename string*/
-#define CSTL_LEFTROOK "l"
-#define CSTL_RIGHTROOK "r"
+
 #define PAWN 'P'
 #define KING 'K'
 #define QUEEN 'Q'
 #define BISHOP 'B'
 #define KNIGHT 'N'
 #define ROOK 'R'
+#define NOPIECE 'e'
 
 /*versioning*/
 #define CHESSLIB_MAJOR 0
@@ -86,16 +84,6 @@ typedef struct ch_template {
 	bool occ;	/*flag to check if square is occupied*/
 	int c;	/*piece color, see the BLACK, WHITE and EMPTY macros*/
 } ch_template;
-
-/*struct of bools to check whether castling is possible for each piece*/
-typedef struct CastlingBool {
-	bool WR_left;	/*white rook at A1*/
-	bool WR_right;	/*white rook at H1*/
-	bool BR_left;	/*black rook at A8*/
-	bool BR_right;	/*black rook at H8*/
-	bool KBlack;	/*black king*/
-	bool KWhite;	/*white king*/
-} CastlingBool;
 
 typedef enum KingState {
 	check,

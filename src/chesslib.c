@@ -10,6 +10,16 @@
 #include <chlib-cli.h>
 
 
+/*struct of bools to check whether castling is possible for each piece*/
+typedef struct CastlingBool {
+	bool WR_left;	/*white rook at A1*/
+	bool WR_right;	/*white rook at H1*/
+	bool BR_left;	/*black rook at A8*/
+	bool BR_right;	/*black rook at H8*/
+	bool KBlack;	/*black king*/
+	bool KWhite;	/*white king*/
+} CastlingBool;
+
 /*********
  *globals*
  *********/
@@ -21,6 +31,7 @@ static unsigned b_enpassant_round_right = 0;
 static bool enpassant = false;
 
 static CastlingBool check_castling = {true, true, true, true, true, true};
+
 static unsigned rc = 1;
 static unsigned white_removed_moves;
 static unsigned black_removed_moves;
@@ -40,15 +51,15 @@ MoveNode *w_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
  *prototypes for functions used only in here*
  ********************************************/
 
-void _initChessboard (ch_template chb[][8], unsigned k, char col);
 bool _piecesOverlap(ch_template chb[][8], const int start_x, const int start_y,
 		const int end_x, const int end_y, const char piece);
+void _initChessboard (ch_template chb[][8], unsigned k, char col);
 bool _isKingOnTheBoard(ch_template chb[][8], int color);
 void _removeMove(MoveNode **llt, char *st_todel, char *en_todel);
 void _removeThreatsToKing(ch_template chb[][8], int color);
 bool _isOnList(const char *start_move, const char *end_move, const char piece, const int color);
 void _addMove(MoveNode **llt, const char *st, const char *en);
-int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag);
+int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, const int flag);
 bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color, const bool ListCheck);
 
 void _addMove(MoveNode **llt, const char *st, const char *en)
@@ -664,12 +675,34 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 					}
 				}
 			}
-			/*if (check_castling.KBlack) {
-				if (check_castling.BR_right && !_piecesOverlap(chb, 7, ('H'-'A'), 7, 4, 'R')) {
+		}
+	}
+	if (flag == ALL || flag == BLACK) {
+		if (check_castling.KBlack && BlackKing != check) {
+			if (check_castling.BR_left) {
+				if (!chb[0][1].occ && !chb[0][2].occ && !chb[0][3].occ) {
+					_addMove(&black_m[1], "E8", "C8");
 				}
-				if (check_castling.BR_left && !_piecesOverlap(chb, 7, ('A'-'A'), 7, 4, 'R')) {
+			}
+			if (check_castling.BR_right) {
+				if (!chb[0][5].occ && !chb[0][6].occ) {
+					_addMove(&black_m[1], "E8", "G8");
 				}
-			}*/
+			}
+		}
+	}
+	if (flag == ALL || flag == WHITE) {
+		if (check_castling.KWhite && WhiteKing != check) {
+			if (check_castling.WR_left) {
+				if (!chb[7][1].occ && !chb[7][2].occ && !chb[7][3].occ) {
+					_addMove(&white_m[1], "E1", "C1");
+				}
+			}
+			if (check_castling.WR_right) {
+				if (!chb[7][5].occ && !chb[7][6].occ) {
+					_addMove(&white_m[1], "E1", "C1");
+				}
+			}
 		}
 	}
 	return move_count;
@@ -680,14 +713,23 @@ bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int col
 	if (!en_move || !st_move)
 		return false;
 
+	if (islower(st_move[0]) || islower(en_move[0]) 
+		|| islower(st_move[2]) || islower(en_move[2])) {
+		st_move[0] = (char)toupper(st_move[0]);
+		en_move[0] = (char)toupper(en_move[0]);
+		st_move[2] = (char)toupper(st_move[2]);
+		en_move[2] = (char)toupper(en_move[0]);
+	}
+
 	unsigned short startx, starty, endx, endy;
+
 	startx = st_move[0] - 'A';
 	starty = '8' - st_move[1];
 	endx = en_move[0] - 'A';
 	endy = '8' - en_move[1];
 
 	char piece = chb[starty][startx].current;
-	if (piece == 'e')
+	if (piece == NOPIECE)
 		return false;
 
 	if (ListCheck) {
@@ -697,27 +739,6 @@ bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int col
 
 	if (_piecesOverlap(chb, startx, starty, endx, endy, piece) || chb[endy][endx].c == color)
 		return false;
-	
-	if (piece == ROOK) {
-		if (startx == 0) {
-			if (starty == 0)
-				check_castling.BR_left = false;
-			else if (starty == 7)
-				check_castling.BR_right = false;
-		} else if (startx == 7) {
-			if (starty == 0)
-				check_castling.WR_left = false;
-			else if (starty == 7)
-				check_castling.WR_right = false;
-		}
-	}
-
-	if (piece == KING) {
-		if (color == BLACK)
-			check_castling.KBlack = false;
-		else
-			check_castling.KWhite = false;
-	}
 
 	b_enpassant_round_left = 0;
 	b_enpassant_round_right = 0;
@@ -750,14 +771,64 @@ bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int col
 		}
 	}
 
-	if (ListCheck)
-		rc++;
+	if (piece == ROOK) {
+		if (startx == 0) {
+			if (starty == 0)
+				check_castling.BR_left = false;
+			else if (starty == 7)
+				check_castling.BR_right = false;
+		} else if (startx == 7) {
+			if (starty == 0)
+				check_castling.WR_left = false;
+			else if (starty == 7)
+				check_castling.WR_right = false;
+		}
+	}
+
+	if (piece == KING) {
+		if (color == BLACK) {
+			check_castling.KBlack = false;
+			if (startx == 4 && endx == 2) {
+				chb[0][3].occ = true;
+				chb[0][3].current = ROOK;
+				chb[0][3].c = BLACK;
+				chb[0][0].occ = false;
+				chb[0][0].c = EMPTY;
+				chb[0][0].current = NOPIECE;
+			} else if (startx == 4 && endx == 6) {
+				chb[0][5].occ = true;
+				chb[0][5].current = ROOK;
+				chb[0][5].c = BLACK;
+				chb[0][7].occ = false;
+				chb[0][7].c = EMPTY;
+				chb[0][7].current = NOPIECE;
+			}
+		} else {
+			check_castling.KWhite = false;
+			if (startx == 4 && endx == 2) {
+				chb[7][3].occ = true;
+				chb[7][3].current = ROOK;
+				chb[7][3].c = WHITE;
+				chb[7][0].occ = false;
+				chb[7][0].c = EMPTY;
+				chb[7][0].current = NOPIECE;
+			} else if (startx == 4 && endx == 6) {
+				chb[7][5].occ = true;
+				chb[7][5].current = ROOK;
+				chb[7][5].c = WHITE;
+				chb[7][7].occ = false;
+				chb[7][7].c = EMPTY;
+				chb[7][7].current = NOPIECE;
+			}
+		}
+	}
+
 	chb[endy][endx].occ = true;
 	chb[endy][endx].current = chb[starty][startx].current;
 	chb[endy][endx].c = color;
 	chb[starty][startx].occ = false;
 	chb[starty][startx].c = EMPTY;
-	chb[starty][startx].current = 'e';
+	chb[starty][startx].current = NOPIECE;
 
 	return true;
 }
@@ -775,6 +846,7 @@ void _removeThreatsToKing(ch_template chb[][8], const int color)
 	ch_template next_chb[8][8];
 	int ccolor = (color == BLACK)?WHITE:BLACK;
 	bool removed = false;
+	CastlingBool tempCstl = check_castling;
 
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
@@ -806,16 +878,10 @@ void _removeThreatsToKing(ch_template chb[][8], const int color)
 			_fillMoveLists(next_chb, &temp_moves, ccolor);
 			MoveNode *curr_nextPlayer[6] = {temp_moves[0], temp_moves[1], temp_moves[2], 
 				temp_moves[3], temp_moves[4], temp_moves[5]};
-			/*if(rc > 12) {
-				printBoard(next_chb, 'l');
-				printMoves(curr_nextPlayer);
-			}
-			usleep(100000);*/
 			for (int z = 0; z < 6; z++) {
 				while (curr_nextPlayer[z]) {
 					_makeMove(next_chb, curr_nextPlayer[z]->start, curr_nextPlayer[z]->end, ccolor, false);
 					if (!_isKingOnTheBoard(next_chb, color)) {
-						//printf("Bad MOVE %s -> %s removed\n", curr->start, curr->end);
 						_removeMove((color == WHITE)?&w_moves[i]:&b_moves[i], curr->start, curr->end);
 						removed = true;
 						if (color == WHITE)
@@ -847,6 +913,7 @@ void _removeThreatsToKing(ch_template chb[][8], const int color)
 			curr = curr->nxt;
 		}
 	}
+	check_castling = tempCstl;
 }
 
 bool _isKingOnTheBoard(ch_template chb[][8], const int color)
@@ -933,53 +1000,3 @@ bool _piecesOverlap(ch_template chb[][8], const int start_x, const int start_y,
 	return false;
 }
 
-void date_filename(char *buf, int ln)
-{
-	time_t t_epc = time(NULL);
-	struct tm t;
-
-	t = *localtime(&t_epc);
-	strftime(buf, ln, "%a %Y-%m-%d %H%M%S.txt", &t);
-}
-
-void write_to_log(int round, FILE* logf, char *plInput, char piece[2])
-{
-
-	if (!strncmp(piece, CSTL_LEFTROOK, 2)) {
-		if (round == WHITE) {
-			fprintf(logf, "Round  #%d:\tWhite moves Rook from A1 to D1 and King from E1 to C1\n", rc);
-		} else {
-			fprintf(logf, "           \tBlack moves Rook from A8 to D8 and King from E8 to C8\n");
-			rc++;
-		}
-		return;
-	} else if (!strncmp(piece, CSTL_RIGHTROOK, 2)) {
-		if (round == WHITE)
-			fprintf(logf, "Round  #%d:\tWhite moves Rook from H1 to F1 and King from E1 to G1\n", rc);
-		else {
-			fprintf(logf, "           \tBlack moves Rook from H8 to F8 and King from E8 to G8\n");
-			rc++;
-		}
-		return;
-	}
-	if (round == WHITE) {
-		fprintf(logf, "Round  #%d:\tWhite moves ", rc);
-	} else {
-		fprintf(logf, "           \tBlack moves ");
-		rc++;
-	}
-	if (plInput[0] == 'P') {
-		fprintf(logf, "Pawn ");
-	} else if (plInput[0] == 'R') {
-		fprintf(logf, "Rook ");
-	} else if (plInput[0] == 'N') {
-		fprintf(logf, "Knight ");
-	} else if (plInput[0] == 'B') {
-		fprintf(logf, "Bishop ");
-	} else if (plInput[0] == 'Q') {
-		fprintf(logf, "Queen ");
-	} else if (plInput[0] == 'K') {
-		fprintf(logf, "King ");
-	}
-	fprintf(logf, "from %c%c to %c%c\n", piece[0], piece[1], plInput[1], plInput[2]);
-}
