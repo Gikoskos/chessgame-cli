@@ -1,8 +1,8 @@
 CC := gcc
-CFLAGS := -g3 -Wall -std=gnu11 -fgnu89-inline
+CFLAGS := -Wall -std=gnu11 -fgnu89-inline
 LINKER := -lncurses
 ENABLEDLL := -DBUILD_CHESSLIB_DLL
-DEBUG := -DDEBUG
+DEBUG := -g3 -DDEBUG
 DLL := chesslib.dll
 ELF := chessgame-cli
 INC_W_LEVEL := -Wextra -pedantic
@@ -27,7 +27,7 @@ chessgame-cliWall: $(CLISRC) $(CHESSLIB) $(AIC) $(CLILIB)
 	&& $(CC) $(CFLAGS) $(INC) $(INC_W_LEVEL) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build static library archive of ChessLib for Linux to be linked to your program at compile time #
-chesslib: $(CHESSLIB)
+chesslib: $(CHESSLIB) $(AIC)
 	$(CC) -c $(CFLAGS) $(INC) $(NDEBUG) $<; \
 	ar csq libchesslib.a chesslib.o; \
 	rm chesslib.o
@@ -36,6 +36,16 @@ chesslib: $(CHESSLIB)
 debug: $(CLISRC) $(CHESSLIB) $(AIC) $(CLILIB)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
 	&& $(CC) $(CFLAGS) $(INC) $(DEBUG) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+
+# Build a game that simulates fool's mate
+fools: test/foolsmate.c $(CHESSLIB) $(AIC) $(CLILIB)
+	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
+	&& $(CC) $(CFLAGS) $(INC) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+
+# Build a game that simulates scholar's mate
+scholars: test/scholarsmate.c $(CHESSLIB) $(AIC) $(CLILIB)
+	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
+	&& $(CC) $(CFLAGS) $(INC) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build DLL #
 dll: dllobject dllcompile
