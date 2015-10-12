@@ -21,7 +21,7 @@ static unsigned __attribute__((unused)) b_enpassant_round_right = 0;
 static bool __attribute__((unused)) enpassant = false;
 
 static CastlingBool check_castling = {true, true, true, true, true, true};
-static unsigned rc = 0;
+static unsigned rc = 1;
 static unsigned white_removed_moves;
 static unsigned black_removed_moves;
 
@@ -44,7 +44,6 @@ bool _piecesOverlap(ch_template chb[][8], const int start_x, const int start_y,
 		const int end_x, const int end_y, const char piece);
 bool _isKingOnTheBoard(ch_template chb[][8], int color);
 void _removeMove(MoveNode **llt, char *st_todel, char *en_todel);
-void _removeBadKingMoves(ch_template chb[][8], int color);
 void _removeThreatsToKing(ch_template chb[][8], int color);
 bool _isOnList(const char *start_move, const char *end_move, const char piece, const int color);
 void _addMove(MoveNode **llt, const char *st, const char *en);
@@ -229,10 +228,7 @@ int getAllMoves(ch_template chb[][8], int c_flag)
 	white_removed_moves = 0;
 	black_removed_moves = 0;
 
-	_removeThreatsToKing(chb, (c_flag == BLACK)?WHITE:BLACK);
 	_removeThreatsToKing(chb, c_flag);
-	_removeBadKingMoves(chb, (c_flag == BLACK)?WHITE:BLACK);
-	_removeBadKingMoves(chb, c_flag);
 
 	b_tmp -= black_removed_moves;
 	w_tmp -= white_removed_moves;
@@ -316,7 +312,7 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 						black_move_count++;
 						move_count++;
 					}
-				} else if (flag == ALL || flag == WHITE) {
+				} else if (chb[i][j].c == WHITE && (flag == ALL || flag == WHITE)) {
 					if (i == 6 && !(chb[i-2][j].occ) && !(chb[i-1][j].occ)) {
 						t_en[0] = chb[i-2][j].square[0];
 						t_en[1] = chb[i-2][j].square[1];
@@ -381,7 +377,7 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 							black_move_count++;
 							move_count++;
 						}
-					} else if (flag == ALL || flag == WHITE) {
+					} else if (chb[i][j].c == WHITE && (flag == ALL || flag == WHITE)) {
 						if (chb[i][j].current == ROOK) {
 							_addMove(&white_m[3], t_st, t_en);
 							white_move_count++;
@@ -410,7 +406,7 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 							black_move_count++;
 							move_count++;
 						}
-					} else if (flag == ALL || flag == WHITE) {
+					} else if (chb[i][j].c == WHITE && (flag == ALL || flag == WHITE)) {
 						if (chb[i][j].current == ROOK) {
 							_addMove(&white_m[3], t_st, t_en);
 							white_move_count++;
@@ -441,7 +437,7 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 							black_move_count++;
 							move_count++;
 						}
-					} else if (flag == ALL || flag == WHITE) {
+					} else if (chb[i][j].c == WHITE && (flag == ALL || flag == WHITE)) {
 						if (chb[i][j].current == ROOK) {
 							_addMove(&white_m[3], t_st, t_en);
 							white_move_count++;
@@ -470,7 +466,7 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 							black_move_count++;
 							move_count++;
 						}
-					} else if (flag == ALL || flag == WHITE) {
+					} else if (chb[i][j].c == WHITE && (flag == ALL || flag == WHITE)) {
 						if (chb[i][j].current == ROOK) {
 							_addMove(&white_m[3], t_st, t_en);
 							white_move_count++;
@@ -502,7 +498,7 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 								black_move_count++;
 								move_count++;
 							}
-						} else if (flag == ALL || flag == WHITE) {
+						} else if (chb[i][j].c == WHITE && (flag == ALL || flag == WHITE)) {
 							if (chb[i][j].current == BISHOP) {
 								_addMove(&white_m[5], t_st, t_en);
 								white_move_count++;
@@ -535,7 +531,7 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 								black_move_count++;
 								move_count++;
 							}
-						} else if (flag == ALL || flag == WHITE) {
+						} else if (chb[i][j].c == WHITE && (flag == ALL || flag == WHITE)) {
 							if (chb[i][j].current == BISHOP) {
 								_addMove(&white_m[5], t_st, t_en);
 								white_move_count++;
@@ -568,7 +564,7 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 								black_move_count++;
 								move_count++;
 							}
-						} else if (flag == ALL || flag == WHITE) {
+						} else if (chb[i][j].c == WHITE && (flag == ALL || flag == WHITE)) {
 							if (chb[i][j].current == BISHOP) {
 								_addMove(&white_m[5], t_st, t_en);
 								white_move_count++;
@@ -601,7 +597,7 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 								black_move_count++;
 								move_count++;
 							}
-						} else if (flag == ALL || flag == WHITE) {
+						} else if (chb[i][j].c == WHITE && (flag == ALL || flag == WHITE)) {
 							if (chb[i][j].current == BISHOP) {
 								_addMove(&white_m[5], t_st, t_en);
 								white_move_count++;
@@ -632,7 +628,7 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 							_addMove(&black_m[1], t_st, t_en);
 							black_move_count++;
 							move_count++;
-						} else if (flag == ALL || flag == WHITE) {
+						} else if (chb[i][j].c == WHITE && (flag == ALL || flag == WHITE)) {
 							_addMove(&white_m[1], t_st, t_en);
 							white_move_count++;
 							move_count++;
@@ -654,7 +650,7 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 								_addMove(&black_m[4], t_st, t_en);
 								black_move_count++;
 								move_count++;
-							} else if (flag == ALL || flag == WHITE) {
+							} else if (chb[i][j].c == WHITE && (flag == ALL || flag == WHITE)) {
 								_addMove(&white_m[4], t_st, t_en);
 								white_move_count++;
 								move_count++;
@@ -674,7 +670,7 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 	return move_count;
 }
 
-bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color)
+bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color, const bool ListCheck)
 {
 	if (!en_move || !st_move)
 		return false;
@@ -689,8 +685,10 @@ bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int colo
 	if (piece == 'e')
 		return false;
 
-	if (!_isOnList(st_move, en_move, piece, color))
-		return false;
+	if (ListCheck) {
+		if (!_isOnList(st_move, en_move, piece, color))
+			return false;
+	}
 
 	if (_piecesOverlap(chb, startx, starty, endx, endy, piece) || chb[endy][endx].c == color)
 		return false;
@@ -753,6 +751,8 @@ bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int colo
 	chb[starty][startx].occ = false;
 	chb[starty][startx].c = EMPTY;
 	chb[starty][startx].current = 'e';
+	
+	rc++;
 
 	return true;
 }
@@ -761,6 +761,7 @@ void _removeThreatsToKing(ch_template chb[][8], const int color)
 {
 	ch_template next_chb[8][8];
 	int ccolor = (color == BLACK)?WHITE:BLACK;
+	bool removed = false;
 
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
@@ -768,7 +769,7 @@ void _removeThreatsToKing(ch_template chb[][8], const int color)
 		}
 	}
 
-	if (ccolor == BLACK) {
+	if (color == BLACK) {
 		BlackKing = safe;
 	} else {
 		WhiteKing = safe;
@@ -776,120 +777,62 @@ void _removeThreatsToKing(ch_template chb[][8], const int color)
 
 	for (int i = 0; i < 6; i++) {
 		MoveNode *curr = NULL;
-		curr = (color == BLACK)?b_moves[i]:w_moves[i];
+		curr = (color == WHITE)?w_moves[i]:b_moves[i];
 		while (curr) {
-			makeMove(next_chb, curr->start, curr->end, color);
-			if (!_isKingOnTheBoard(next_chb, ccolor)) {
-				if (ccolor == BLACK)
-					BlackKing = check;
-				else
-					WhiteKing = check;
-				for (int z = 0; z < 6; z++) {
-					MoveNode *curr_nextPlayer = NULL;
-					curr_nextPlayer = (color == BLACK)?w_moves[z]:b_moves[z];
+			makeMove(next_chb, curr->start, curr->end, color, true);
+			ch_template temp_chb[8][8];
+			for (int k = 0; k < 8; k++) {
+				for (int l = 0; l < 8; l++) {
+					temp_chb[k][l] = next_chb[k][l];
+				}
+			}
+			MoveNode **temp_moves = malloc(6*sizeof(MoveNode));
+			for (int k = 0; k < 6; k++) {
+				temp_moves[k] = NULL;
+			}
+			_fillMoveLists(next_chb, &temp_moves, ccolor);
+			MoveNode *curr_nextPlayer[6] = {temp_moves[0], temp_moves[1], temp_moves[2], 
+				temp_moves[3], temp_moves[4], temp_moves[5]};
+			/*if(rc > 12) {
+				printBoard(next_chb, 'l');
+				printMoves(curr_nextPlayer);
+			}
+			usleep(100000);*/
+			for (int z = 0; z < 6; z++) {
+				while (curr_nextPlayer[z]) {
+					makeMove(next_chb, curr_nextPlayer[z]->start, curr_nextPlayer[z]->end, ccolor, false);
+					if (!_isKingOnTheBoard(next_chb, color)) {
+						//printf("Bad MOVE %s -> %s removed\n", curr->start, curr->end);
+						_removeMove((color == WHITE)?&w_moves[i]:&b_moves[i], curr->start, curr->end);
+						removed = true;
+						if (color == WHITE)
+							white_removed_moves++;
+						else
+							black_removed_moves++;
+						break;
+					}
 					for (int k = 0; k < 8; k++) {
 						for (int l = 0; l < 8; l++) {
-							next_chb[k][l] = chb[k][l];
+							next_chb[k][l] = temp_chb[k][l];
 						}
 					}
-					if (!curr_nextPlayer) continue;
-					do {
-						makeMove(next_chb, curr_nextPlayer->start, curr_nextPlayer->end, ccolor);
-						makeMove(next_chb, curr->start, curr->end, color);
-						if (!_isKingOnTheBoard(next_chb, ccolor)) {
-							_removeMove((color == BLACK)?&w_moves[z]:&b_moves[z], curr_nextPlayer->start, curr_nextPlayer->end);
-							if (ccolor == WHITE)
-								white_removed_moves++;
-							else
-								black_removed_moves++;
-						}
-						for (int k = 0; k < 8; k++) {
-							for (int l = 0; l < 8; l++) {
-								next_chb[k][l] = chb[k][l];
-							}
-						}
-						curr_nextPlayer = curr_nextPlayer->nxt;
-					} while (curr_nextPlayer);
+					curr_nextPlayer[z] = curr_nextPlayer[z]->nxt;
+				}
+				if (removed) {
+					removed = false;
+					break;
 				}
 			}
 			for (int k = 0; k < 8; k++) {
 				for (int l = 0; l < 8; l++) {
 					next_chb[k][l] = chb[k][l];
 				}
+				if (k < 6)
+					deleteMoveList(&temp_moves[k]);
 			}
+			free(temp_moves);
 			curr = curr->nxt;
 		}
-	}
-}
-
-void _removeBadKingMoves(ch_template chb[][8], int color)
-{
-	MoveNode *KingMoves = (color == BLACK)?b_moves[1]:w_moves[1];
-
-	if (!KingMoves)
-		return;
-
-	ch_template temp_chb[8][8];
-	int ccolor = (color == BLACK)?WHITE:BLACK;
-	for (int i = 0; i < 8; i++) {
-		for (int j = 0; j < 8; j++) {
-			temp_chb[i][j] = chb[i][j];
-		}
-	}
-
-	while (KingMoves) {
-		makeMove(temp_chb, KingMoves->start, KingMoves->end, color);
-		MoveNode **temp_moves = malloc(6*sizeof(MoveNode));
-		for (int k = 0; k < 6; k++) {
-			temp_moves[k] = NULL;
-		}
-		//printf("King's MOVES:\n\n");
-		printMoveList(KingMoves, stdout);
-		printBoard(temp_chb, 'l');
-		_fillMoveLists(temp_chb, &temp_moves, ccolor);
-		MoveNode *curr[6] = {temp_moves[0], temp_moves[1], temp_moves[2], 
-			temp_moves[3], temp_moves[4], temp_moves[5]};
-		/*printMoves(curr);
-		putchar('\n');
-		putchar('\n');
-		putchar('\n');*/
-		for (int i = 0; i < 6; i++) {
-			ch_template next_chb[8][8];
-			for (int k = 0; k < 8; k++) {
-				for (int l = 0; l < 8; l++) {
-					next_chb[k][l] = temp_chb[k][l];
-				}
-			}
-			while (curr[i]) {
-				makeMove(next_chb, curr[i]->start, curr[i]->end, ccolor);
-				if (!_isKingOnTheBoard(next_chb, color)) {
-					if (color == BLACK)
-						BlackKing = check;
-					else
-						WhiteKing = check;
-					_removeMove((color == BLACK)?&b_moves[1]:&w_moves[1], KingMoves->start, KingMoves->end);
-					if (color == WHITE)
-						white_removed_moves++;
-					else
-						black_removed_moves++;
-				}
-				for (int k = 0; k < 8; k++) {
-					for (int l = 0; l < 8; l++) {
-						next_chb[k][l] = temp_chb[k][l];
-					}
-				}
-				curr[i] = curr[i]->nxt;
-			}
-		}
-		for (int k = 0; k < 8; k++) {
-			for (int l = 0; l < 8; l++) {
-				temp_chb[k][l] = chb[k][l];
-			}
-			if (k < 6)
-				deleteMoveList(&temp_moves[k]);
-		}
-		free(temp_moves);
-		KingMoves = KingMoves->nxt;
 	}
 }
 

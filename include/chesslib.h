@@ -102,6 +102,7 @@ typedef struct CastlingBool {
 typedef enum KingState {
 	check,
 	checkmate,
+	stalemate,
 	safe,	/*King is safe (not threatened in his 3x3 vicinity*/
 } KingState;
 
@@ -146,7 +147,7 @@ __attribute__((destructor)) void deleteMoves();
 
 int findOnMoveList(MoveNode *llt, char *tofind);
 
-bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color);
+bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color, const bool ListCheck);
 
 void write_to_log(int round, FILE* logf, char *plInput, char piece[2]);
 
