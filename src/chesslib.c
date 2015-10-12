@@ -14,11 +14,11 @@
  *globals*
  *********/
 
-static unsigned __attribute__((unused)) w_enpassant_round_left = 0;
-static unsigned __attribute__((unused)) w_enpassant_round_right = 0;
-static unsigned __attribute__((unused)) b_enpassant_round_left = 0;
-static unsigned __attribute__((unused)) b_enpassant_round_right = 0;
-static bool __attribute__((unused)) enpassant = false;
+static unsigned w_enpassant_round_left = 0;
+static unsigned w_enpassant_round_right = 0;
+static unsigned b_enpassant_round_left = 0;
+static unsigned b_enpassant_round_right = 0;
+static bool enpassant = false;
 
 static CastlingBool check_castling = {true, true, true, true, true, true};
 static unsigned rc = 1;
@@ -40,6 +40,7 @@ MoveNode *w_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
  *prototypes for functions used only in here*
  ********************************************/
 
+void _initChessboard (ch_template chb[][8], unsigned k, char col);
 bool _piecesOverlap(ch_template chb[][8], const int start_x, const int start_y,
 		const int end_x, const int end_y, const char piece);
 bool _isKingOnTheBoard(ch_template chb[][8], int color);
@@ -48,6 +49,7 @@ void _removeThreatsToKing(ch_template chb[][8], int color);
 bool _isOnList(const char *start_move, const char *end_move, const char piece, const int color);
 void _addMove(MoveNode **llt, const char *st, const char *en);
 int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag);
+bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color, const bool ListCheck);
 
 void _addMove(MoveNode **llt, const char *st, const char *en)
 {
@@ -101,9 +103,7 @@ void _removeMove(MoveNode **llt, char *st_todel, char *en_todel)
 		prv = curr;
 		curr = curr->nxt;
 	}
-#ifdef DEBUG
 	fprintf(stderr, "ERROR: %s -> %s not found\n", st_todel, en_todel);
-#endif
 }
 
 void deleteMoveList(MoveNode **llt)
@@ -217,7 +217,12 @@ void _initChessboard(ch_template chb[][8], unsigned k, char col)	/*k is row, col
 		col = 'A';
 	}
 	if (k != 8)
-		_initChessboard(chb, k, col);
+		return _initChessboard(chb, k, col);
+}
+
+void initChessboard(ch_template chb[][8])
+{
+	return _initChessboard(chb, 0, 'A');
 }
 
 int getAllMoves(ch_template chb[][8], int c_flag)
@@ -670,7 +675,7 @@ int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag)
 	return move_count;
 }
 
-bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color, const bool ListCheck)
+bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color, const bool ListCheck)
 {
 	if (!en_move || !st_move)
 		return false;
@@ -714,11 +719,11 @@ bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int colo
 			check_castling.KWhite = false;
 	}
 
-	if (color == WHITE) rc++;
-	/*b_enpassant_round_left = 0;
+	b_enpassant_round_left = 0;
 	b_enpassant_round_right = 0;
 	w_enpassant_round_left = 0;
 	w_enpassant_round_right = 0;
+	enpassant = false;
 	if (piece == PAWN) {
 		if (color == BLACK) {
 			if (starty == 1 && endy == 3) {
@@ -743,18 +748,26 @@ bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int colo
 				}
 			}
 		}
-	}*/
+	}
 
+	if (ListCheck)
+		rc++;
 	chb[endy][endx].occ = true;
 	chb[endy][endx].current = chb[starty][startx].current;
 	chb[endy][endx].c = color;
 	chb[starty][startx].occ = false;
 	chb[starty][startx].c = EMPTY;
 	chb[starty][startx].current = 'e';
-	
-	rc++;
 
 	return true;
+}
+
+bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color)
+{
+	if ( _makeMove(chb, st_move, en_move, color, true))
+		return true;
+	else
+		return false;
 }
 
 void _removeThreatsToKing(ch_template chb[][8], const int color)
@@ -779,7 +792,7 @@ void _removeThreatsToKing(ch_template chb[][8], const int color)
 		MoveNode *curr = NULL;
 		curr = (color == WHITE)?w_moves[i]:b_moves[i];
 		while (curr) {
-			makeMove(next_chb, curr->start, curr->end, color, true);
+			_makeMove(next_chb, curr->start, curr->end, color, false);
 			ch_template temp_chb[8][8];
 			for (int k = 0; k < 8; k++) {
 				for (int l = 0; l < 8; l++) {
@@ -800,7 +813,7 @@ void _removeThreatsToKing(ch_template chb[][8], const int color)
 			usleep(100000);*/
 			for (int z = 0; z < 6; z++) {
 				while (curr_nextPlayer[z]) {
-					makeMove(next_chb, curr_nextPlayer[z]->start, curr_nextPlayer[z]->end, ccolor, false);
+					_makeMove(next_chb, curr_nextPlayer[z]->start, curr_nextPlayer[z]->end, ccolor, false);
 					if (!_isKingOnTheBoard(next_chb, color)) {
 						//printf("Bad MOVE %s -> %s removed\n", curr->start, curr->end);
 						_removeMove((color == WHITE)?&w_moves[i]:&b_moves[i], curr->start, curr->end);

@@ -49,10 +49,8 @@
 #define CHESSLIB_VERSION_STRING SSTR(CHESSLIB_MAJOR)"."SSTR(CHESSLIB_MINOR)"."SSTR(CHESSLIB_PATCH)
 
 
-#define initChessboard(x) _initChessboard(x, 0, 'A')
 #define printWhiteMoves() printMoves(w_moves)
 #define printBlackMoves() printMoves(b_moves)
-
 
 
 #define printMoves(x)                                                  \
@@ -102,7 +100,6 @@ typedef struct CastlingBool {
 typedef enum KingState {
 	check,
 	checkmate,
-	stalemate,
 	safe,	/*King is safe (not threatened in his 3x3 vicinity*/
 } KingState;
 
@@ -130,12 +127,7 @@ extern KingState WhiteKing, BlackKing;
  *function prototypes for the main library*
  ******************************************/
 
-/*fills a ch_template[8][8] chess board with chess pieces, recursively
- *call initChessboard() if you just need to fill a standard chess board; don't 
- *use this function
- *k: the row the function starts filling pieces from
- *col: same as k except that it's the column not the row*/
-void _initChessboard (ch_template chb[][8], unsigned k, char col);
+void initChessboard(ch_template chb[][8]);
 
 int getAllMoves(ch_template chb[][8], int c_flag);
 
@@ -143,11 +135,11 @@ void printMoveList(MoveNode *llt, FILE *fd);
 
 void deleteMoveList(MoveNode **llt);
 
+bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color);
+
 __attribute__((destructor)) void deleteMoves();
 
 int findOnMoveList(MoveNode *llt, char *tofind);
-
-bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color, const bool ListCheck);
 
 void write_to_log(int round, FILE* logf, char *plInput, char piece[2]);
 
