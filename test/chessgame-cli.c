@@ -8,10 +8,8 @@
 
 #include <chesslib.h>
 #include <chlib-cli.h>
-#include <assert.h>
 
-#define SCHOLARS_ROUNDS 7
-#define FOOLS_ROUNDS 4
+#define TEST_ROUNDS 10
 
 
 int main(void)
@@ -21,8 +19,7 @@ int main(void)
 	initChessboard(chess_board);
 	int round = WHITE, total_rounds = 1;
 	bool pr_moves = false;
-	char *scholars_mate[]__attribute__((unused)) = {"e2e4", "e7e5", "f1c4", "g8f6", "d1h5", "b8c6", "h5f7"};
-	char *fools_mate[]__attribute__((unused)) = {"f2f3", "e7e5", "g2g4", "d8h4"};
+	char *test_moves[] = {"b1c3", "b8c6", "a2a3", "d7d6", "b2b3", "e7e6", "h2h3", "c8d7", "f2f3", "d8e7"};
 
 	start_move[2] = '\0';
 	end_move[2] = '\0';
@@ -31,7 +28,7 @@ int main(void)
 		getAllMoves(chess_board, round);
 		if (!black_move_count || !white_move_count)
 			break;
-		if (total_rounds > SCHOLARS_ROUNDS) {
+		if (total_rounds > TEST_ROUNDS) {
 			clear_screen();
 			printf("\nWHITE_MOVE_COUNT = %u\t BLACK_MOVE_COUNT = %u\n", white_move_count, black_move_count);
 			printBoard(chess_board, 'l');
@@ -66,23 +63,18 @@ int main(void)
 				playerInput = NULL;
 				continue;
 			}
-			start_move[0] = (char)toupper(playerInput[0]);
-			start_move[1] = (char)toupper(playerInput[1]);
-			end_move[0] = (char)toupper(playerInput[2]);
-			end_move[1] = (char)toupper(playerInput[3]);
+			start_move[0] = playerInput[0];
+			start_move[1] = playerInput[1];
+			end_move[0] = playerInput[2];
+			end_move[1] = playerInput[3];
 		} else {
-			clear_screen();
-			printf("\t\t\t***WHITE MOVES***\n");
-			printWhiteMoves();
-			printf("\n\t\t\t***BLACK MOVES***\n");
-			printBlackMoves();
-			pr_moves = false;
-			start_move[0] = (char)toupper(scholars_mate[total_rounds-1][0]);
-			start_move[1] = (char)toupper(scholars_mate[total_rounds-1][1]);
-			end_move[0] = (char)toupper(scholars_mate[total_rounds-1][2]);
-			end_move[1] = (char)toupper(scholars_mate[total_rounds-1][3]);
+			printBoard(chess_board, 'l');
+			start_move[0] = test_moves[total_rounds-1][0];
+			start_move[1] = test_moves[total_rounds-1][1];
+			end_move[0] = test_moves[total_rounds-1][2];
+			end_move[1] = test_moves[total_rounds-1][3];
 		}
-		if (makeMove(chess_board, start_move, end_move, round, true)) {
+		if (makeMove(chess_board, start_move, end_move, round)) {
 			round = (round == BLACK)?WHITE:BLACK;
 			total_rounds++;
 		}
@@ -90,10 +82,7 @@ int main(void)
 		playerInput = NULL;
 	}
 	clear_screen();
-	printf("\t\t\t***WHITE MOVES***\n");
-	printWhiteMoves();
-	printf("\n\t\t\t***BLACK MOVES***\n");
-	printBlackMoves();
+	printBoard(chess_board, 'l');
 	pr_moves = false;
 	if (!black_move_count)
 		printf("White wins!\n");
