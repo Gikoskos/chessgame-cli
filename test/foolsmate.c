@@ -26,10 +26,10 @@ int main(void)
 		getAllMoves(chess_board, round);
 		if (BlackKing == checkmate || WhiteKing == checkmate)
 			break;
-		start_move[0] = (char)toupper(fools_mate[total_rounds-1][0]);
-		start_move[1] = (char)toupper(fools_mate[total_rounds-1][1]);
-		end_move[0] = (char)toupper(fools_mate[total_rounds-1][2]);
-		end_move[1] = (char)toupper(fools_mate[total_rounds-1][3]);
+		start_move[0] = fools_mate[total_rounds-1][0];
+		start_move[1] = fools_mate[total_rounds-1][1];
+		end_move[0] = fools_mate[total_rounds-1][2];
+		end_move[1] = fools_mate[total_rounds-1][3];
 
 		if (makeMove(chess_board, start_move, end_move, round)) {
 			round = (round == BLACK)?WHITE:BLACK;
