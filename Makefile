@@ -38,12 +38,17 @@ debug: $(CLISRC) $(CHESSLIB) $(AIC) $(CLILIB)
 	&& $(CC) $(CFLAGS) $(INC) $(DEBUG) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build a game that simulates fool's mate
-fools: test/foolsmate.c $(CHESSLIB) $(AIC) $(CLILIB)
+fools: test/rule_tests/foolsmate.c $(CHESSLIB) $(AIC) $(CLILIB)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
 	&& $(CC) $(CFLAGS) $(INC) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build a game that simulates scholar's mate
-scholars: test/scholarsmate.c $(CHESSLIB) $(AIC) $(CLILIB)
+scholars: test/rule_tests/scholarsmate.c $(CHESSLIB) $(AIC) $(CLILIB)
+	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
+	&& $(CC) $(CFLAGS) $(INC) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+
+# Build tree tests
+tree: test/ai_tests/tree.c $(CHESSLIB) $(AIC) $(CLILIB)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
 	&& $(CC) $(CFLAGS) $(INC) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
