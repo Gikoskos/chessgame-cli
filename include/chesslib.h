@@ -2,7 +2,7 @@
  *                            chesslib.h                            *
  *                  API for the chesslib.c library                  *
  *                                                                  *
- *                 (C)2015 <cyberchiller@gmail.com>                 *
+ *               (C)2015 <georgekoskerid@outlook.com>               *
  *                                                                  *
  ********************************************************************/
 
@@ -132,5 +132,7 @@ int findOnMoveList(MoveNode *llt, char *tofind);
 void write_to_log(int round, FILE* logf, char *plInput, char piece[2]);
 
 void date_filename(char *buf, int ln);
+
+void copyBoard(ch_template to[][8], ch_template from[][8]);
 
 #endif
