@@ -8,16 +8,18 @@
 
 #include <chesslib.h>
 
-/*typedef struct AItree {
+typedef struct AItree {
 	char start[3];
 	char end[3];
+	int player;
+	int score;
 	unsigned int depth;
-	struct AItree *child[50] = {NULL};
+	struct AItree *child[50];
 } AItree;
 
-static unsigned int max_depth;
+static unsigned int __attribute__((unused)) max_depth;
 
-void getAImove(ch_template chb[][8], const int color)
+/*void getAImove(ch_template chb[][8], const int color)
 {
 	if (!max_depth)
 		return;
@@ -48,6 +50,4 @@ void getAImove(ch_template chb[][8], const int color)
 void setAIDepth(unsigned int depth)
 {
 	max_depth = depth;
-}
-
-void deleteTree*/
+}*/

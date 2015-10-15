@@ -40,7 +40,7 @@
 
 /*versioning*/
 #define CHESSLIB_MAJOR 0
-#define CHESSLIB_MINOR 2
+#define CHESSLIB_MINOR 5
 #define CHESSLIB_PATCH 0
 #define SSTR(x) STR(x)
 #define STR(x) #x
@@ -110,6 +110,9 @@ extern unsigned black_move_count;
 extern unsigned white_move_count;
 
 extern KingState WhiteKing, BlackKing;
+
+extern MoveNode *b_moves[6];
+extern MoveNode *w_moves[6];
 
 /******************************************
  *function prototypes for the main library*
