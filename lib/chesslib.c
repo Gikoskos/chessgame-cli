@@ -53,7 +53,7 @@ MoveNode *w_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 
 bool _piecesOverlap(ch_template chb[][8], const int start_x, const int start_y,
 		const int end_x, const int end_y, const char piece);
-void _initChessboard (ch_template chb[][8], unsigned k, char col);
+void _initChessboard(ch_template chb[][8], unsigned k, char col);
 bool _isKingOnTheBoard(ch_template chb[][8], int color);
 void _removeMove(MoveNode **llt, char *st_todel, char *en_todel);
 void _removeThreatsToKing(ch_template chb[][8], int color);

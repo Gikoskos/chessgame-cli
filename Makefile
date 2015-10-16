@@ -71,7 +71,9 @@ run:
 runW:
 	@exec ./$(BLDFOLDER)/$(ELF)Wall
 
-.PHONY: install clean cleantxt
+.PHONY: all install clean cleantxt
+all: chessgame-cli chesslib debug fools scholars tree
+
 cleanall: clean cleantxt
 
 clean:

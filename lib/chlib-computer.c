@@ -8,28 +8,38 @@
 
 #include <chesslib.h>
 
-typedef struct AItree {
-	char start[3];
-	char end[3];
-	int player;
-	int score;
-	unsigned int depth;
-	struct AItree *child[50];
-} AItree;
+int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, int flag);
 
-static unsigned int __attribute__((unused)) max_depth;
+#define NULL50(x)                    \
+{                                    \
+    for (int g = 0; g < 50; g++) {   \
+        x[g] = NULL;                 \
+    }                                \
+}
 
-/*void getAImove(ch_template chb[][8], const int color)
+typedef struct TreeNode {
+	char start[3], end[3];
+	int player, score;
+	unsigned short depth;
+	struct TreeNode *child[50];
+} TreeNode;
+
+static unsigned short max_depth;
+
+void getAImove(ch_template chb[][8], const int color, const unsigned short depth)
 {
+	max_depth = depth;
 	if (!max_depth)
 		return;
 
-	MoveNode *currMove[6];
-	AItree *top = malloc(sizeof(AItree));
-	top->depth = 0;
-	AItree *currAILeaf = top;
-	ch_template next_chb[][8];
 	unsigned int depth_count = 0;
+
+	MoveNode **currMove;
+	TreeNode *top = malloc(sizeof(TreeNode));
+	top->depth = 0;
+	NULL50(top->child);
+	TreeNode *currAILeaf = top;
+	ch_template next_chb[8][8];
 
 	if (color == BLACK)
 		currMove = b_moves;
@@ -37,17 +47,6 @@ static unsigned int __attribute__((unused)) max_depth;
 		currMove = w_moves;
 
 	while (currAILeaf->depth != max_depth) {
-		copyBoard(next_chb, chb);
-		if (depth_count)
-			gett
-		for (int i = 0; i < 6; i++) {
-			
-		}
 	}
-	
+	max_depth = 0;
 }
-
-void setAIDepth(unsigned int depth)
-{
-	max_depth = depth;
-}*/

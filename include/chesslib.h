@@ -111,9 +111,6 @@ extern unsigned white_move_count;
 
 extern KingState WhiteKing, BlackKing;
 
-extern MoveNode *b_moves[6];
-extern MoveNode *w_moves[6];
-
 /******************************************
  *function prototypes for the main library*
  ******************************************/
