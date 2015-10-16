@@ -16,10 +16,13 @@ int main(void)
 	char start_move[3], end_move[3];
 	int round = WHITE, total_rounds = 1;
 	char *fools_mate[] = {"f2f3", "e7e5", "g2g4", "d8h4"};
+	clock_t start, stop;
+	double total_cpu_time;
 
 	start_move[2] = '\0';
 	end_move[2] = '\0';
 
+	start = clock();
 	initChessboard(chess_board);
 	while (1) {
 		deleteMoves();
@@ -36,6 +39,9 @@ int main(void)
 			total_rounds++;
 		}
 	}
+	stop = clock();
+	total_cpu_time = ((double)(stop - start))/CLOCKS_PER_SEC;
+	printf("CPU TIME ELAPSED:%lf\n", total_cpu_time);
 	printBoard(chess_board, 'l');
 	printf("\t\t\t***WHITE MOVES***\n");
 	printWhiteMoves();
