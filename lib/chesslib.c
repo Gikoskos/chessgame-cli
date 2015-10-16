@@ -9,17 +9,6 @@
 #include <chesslib.h>
 #include <chlib-cli.h>
 
-
-/*struct of bools to check whether castling is possible for each piece*/
-typedef struct CastlingBool {
-	bool WR_left;	/*white rook at A1*/
-	bool WR_right;	/*white rook at H1*/
-	bool BR_left;	/*black rook at A8*/
-	bool BR_right;	/*black rook at H8*/
-	bool KBlack;	/*black king*/
-	bool KWhite;	/*white king*/
-} CastlingBool;
-
 /*********
  *globals*
  *********/
@@ -30,16 +19,15 @@ static unsigned b_enpassant_round_left = 0;
 static unsigned b_enpassant_round_right = 0;
 static bool enpassant = false;
 
-static CastlingBool check_castling = {true, true, true, true, true, true};
-
 static unsigned rc = 1;
 static unsigned white_removed_moves;
 static unsigned black_removed_moves;
 
 
+CastlingBool check_castling = {true, true, true, true, true, true};
+
 unsigned black_move_count;
 unsigned white_move_count;
-
 
 KingState WhiteKing = safe, BlackKing = safe;
 
@@ -47,20 +35,26 @@ MoveNode *b_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 MoveNode *w_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 
 
-/********************************************
- *prototypes for functions used only in here*
- ********************************************/
+/**************************************************
+ *prototypes for functions used only in chesslib.c*
+ **************************************************/
 
-bool _piecesOverlap(ch_template chb[][8], const int start_x, const int start_y,
-		const int end_x, const int end_y, const char piece);
 void _initChessboard(ch_template chb[][8], unsigned k, char col);
+bool _isOnList(const char *start_move, const char *end_move, const char piece, const int color);
+
+
+/***********************************************************************
+ *prototypes for functions used only in chesslib.c and chlib-computer.c*
+ ***********************************************************************/
+
 bool _isKingOnTheBoard(ch_template chb[][8], int color);
 void _removeMove(MoveNode **llt, char *st_todel, char *en_todel);
 void _removeThreatsToKing(ch_template chb[][8], int color);
-bool _isOnList(const char *start_move, const char *end_move, const char piece, const int color);
 void _addMove(MoveNode **llt, const char *st, const char *en);
 int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, const int flag);
 bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color, const bool ListCheck);
+void _copyBoard(ch_template to[][8], ch_template from[][8]);
+
 
 void _addMove(MoveNode **llt, const char *st, const char *en)
 {
@@ -745,22 +739,22 @@ bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int col
 	if (piece == PAWN) {
 		if (color == BLACK) {
 			if (starty == 1 && endy == 3) {
-				if (chb[endy][endx+1].current == 'P' && chb[endy][endx+1].c == WHITE) {
+				if (chb[endy][endx+1].current == PAWN && chb[endy][endx+1].c == WHITE) {
 					b_enpassant_round_right = rc;
 					enpassant = true;
 				}
-				if (chb[endy][endx-1].current == 'P' && chb[endy][endx-1].c == WHITE) {
+				if (chb[endy][endx-1].current == PAWN && chb[endy][endx-1].c == WHITE) {
 					b_enpassant_round_left = rc;
 					enpassant = true;
 				}
 			}
 		} else {
 			if (starty == 6 && endy == 4) {
-				if (chb[endy][endx+1].current == 'P' && chb[endy][endx+1].c == BLACK) {
+				if (chb[endy][endx+1].current == PAWN && chb[endy][endx+1].c == BLACK) {
 					w_enpassant_round_right = rc;
 					enpassant = true;
 				}
-				if (chb[endy][endx-1].current == 'P' && chb[endy][endx-1].c == BLACK) {
+				if (chb[endy][endx-1].current == PAWN && chb[endy][endx-1].c == BLACK) {
 					w_enpassant_round_left = rc;
 					enpassant = true;
 				}
@@ -858,12 +852,11 @@ void _removeThreatsToKing(ch_template chb[][8], const int color)
 	}
 
 	for (int i = 0; i < 6; i++) {
-		MoveNode *curr = NULL;
-		curr = (color == WHITE)?w_moves[i]:b_moves[i];
+		MoveNode *curr = (color == WHITE)?w_moves[i]:b_moves[i];
 		while (curr) {
 			_makeMove(next_chb, curr->start, curr->end, color, false);
 			ch_template temp_chb[8][8];
-			copyBoard(temp_chb, next_chb);
+			_copyBoard(temp_chb, next_chb);
 			MoveNode **temp_moves = malloc(6*sizeof(MoveNode));
 			for (int k = 0; k < 6; k++) {
 				temp_moves[k] = NULL;
@@ -883,7 +876,7 @@ void _removeThreatsToKing(ch_template chb[][8], const int color)
 							black_removed_moves++;
 						break;
 					}
-					copyBoard(next_chb, temp_chb);
+					_copyBoard(next_chb, temp_chb);
 					curr_nextPlayer[z] = curr_nextPlayer[z]->nxt;
 				}
 				if (removed) {
@@ -917,7 +910,7 @@ bool _isKingOnTheBoard(ch_template chb[][8], const int color)
 	return false;
 }
 
-void copyBoard(ch_template to[][8], ch_template from[][8])
+void _copyBoard(ch_template to[][8], ch_template from[][8])
 {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {

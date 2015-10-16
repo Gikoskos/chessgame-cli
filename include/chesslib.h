@@ -98,6 +98,17 @@ typedef struct MoveNode {
 	struct MoveNode *nxt;
 } MoveNode;
 
+/*struct of bools to check whether castling is possible for each piece*/
+typedef struct CastlingBool {
+	bool WR_left;	/*white rook at A1*/
+	bool WR_right;	/*white rook at H1*/
+	bool BR_left;	/*black rook at A8*/
+	bool BR_right;	/*black rook at H8*/
+	bool KBlack;	/*black king*/
+	bool KWhite;	/*white king*/
+} CastlingBool;
+
+
 /*global list array that store the possible moves for each piece on each
  *round, for both players; each index of the array refers to each piece like so:
  *0 is Pawn (P), 1 is King (K), 2 is Queen (Q), 3 is Rook (R), 4 is Knight (N), 5 is Bishop (B)*/
@@ -110,6 +121,8 @@ extern unsigned black_move_count;
 extern unsigned white_move_count;
 
 extern KingState WhiteKing, BlackKing;
+
+extern CastlingBool check_castling;
 
 /******************************************
  *function prototypes for the main library*
@@ -132,7 +145,5 @@ int findOnMoveList(MoveNode *llt, char *tofind);
 void write_to_log(int round, FILE* logf, char *plInput, char piece[2]);
 
 void date_filename(char *buf, int ln);
-
-void copyBoard(ch_template to[][8], ch_template from[][8]);
 
 #endif
