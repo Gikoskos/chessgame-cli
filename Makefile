@@ -47,6 +47,11 @@ scholars: test/rule_tests/scholarsmate.c $(CHESSLIB) $(AIC) $(CLILIB)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
 	&& $(CC) $(CFLAGS) $(INC) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
+# Build a game that simulates the Blackburne-Shilling mate
+blackburne: test/rule_tests/blackburnemate.c $(CHESSLIB) $(AIC) $(CLILIB)
+	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
+	&& $(CC) $(CFLAGS) $(INC) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+
 # Build tree tests
 tree: test/ai_tests/tree.c $(CHESSLIB) $(AIC) $(CLILIB)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
