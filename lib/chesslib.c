@@ -24,15 +24,14 @@ static unsigned white_removed_moves;
 static unsigned black_removed_moves;
 
 
-CastlingBool check_castling = {true, true, true, true, true, true};
+extern CastlingBool check_castling = {true, true, true, true, true, true};
 
-unsigned black_move_count;
-unsigned white_move_count;
+extern unsigned black_move_count, white_move_count;
 
-KingState WhiteKing = safe, BlackKing = safe;
+extern KingState WhiteKing = safe, BlackKing = safe;
 
-MoveNode *b_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
-MoveNode *w_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+extern MoveNode *b_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+extern MoveNode *w_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 
 
 /**************************************************

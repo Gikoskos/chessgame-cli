@@ -9,7 +9,7 @@
 #include <chesslib.h>
 #include <chlib-cli.h>
 
-#define TEST_ROUNDS 10
+#define TEST_ROUNDS 0
 
 
 int main(void)

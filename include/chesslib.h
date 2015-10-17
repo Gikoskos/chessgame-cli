@@ -112,17 +112,16 @@ typedef struct CastlingBool {
 /*global list array that store the possible moves for each piece on each
  *round, for both players; each index of the array refers to each piece like so:
  *0 is Pawn (P), 1 is King (K), 2 is Queen (Q), 3 is Rook (R), 4 is Knight (N), 5 is Bishop (B)*/
-extern MoveNode *b_moves[6];
-extern MoveNode *w_moves[6];
+MoveNode *b_moves[6];
+MoveNode *w_moves[6];
 
 /*counters for all the moves a player can do
  *they are initialized after every getMoveList() call*/
-extern unsigned black_move_count;
-extern unsigned white_move_count;
+unsigned black_move_count, white_move_count;
 
-extern KingState WhiteKing, BlackKing;
+KingState WhiteKing, BlackKing;
 
-extern CastlingBool check_castling;
+CastlingBool check_castling;
 
 /******************************************
  *function prototypes for the main library*
