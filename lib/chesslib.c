@@ -2,7 +2,7 @@
  *                            chesslib.c                             *
  *                standard chess game implementation                 *
  *                                                                   *
- *               (C)2015 <georgekoskerid@outlook.com>                *
+ *                 (C)2015 <cyberchiller@gmail.com>                  *
  *                                                                   *
  *********************************************************************/
 
@@ -24,14 +24,14 @@ static unsigned white_removed_moves;
 static unsigned black_removed_moves;
 
 
-extern CastlingBool check_castling = {true, true, true, true, true, true};
+CastlingBool check_castling = {true, true, true, true, true, true};
 
-extern unsigned black_move_count, white_move_count;
+unsigned black_move_count, white_move_count;
 
-extern KingState WhiteKing = safe, BlackKing = safe;
+KingState WhiteKing = safe, BlackKing = safe;
 
-extern MoveNode *b_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
-extern MoveNode *w_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+MoveNode *b_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+MoveNode *w_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 
 
 /**************************************************
@@ -231,6 +231,7 @@ void initChessboard(ch_template chb[][8])
 
 int getAllMoves(ch_template chb[][8], int c_flag)
 {
+	deleteMoves();
 	int total_move_count = _fillMoveLists(chb, NULL, ALL);
 	unsigned b_tmp = black_move_count, w_tmp = white_move_count;
 
