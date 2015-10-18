@@ -47,6 +47,7 @@ bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int col
  ********************************************************/
 
 void _createAIMoveTree(TreeNode **curr_leaf, ch_template chb[][8], const int color, unsigned short depth_count);
+void _printAIMoveTree(TreeNode *curr_leaf, const int color);
 
 
 char *getAImove(ch_template chb[][8], const int color, const unsigned short depth)
@@ -58,18 +59,29 @@ char *getAImove(ch_template chb[][8], const int color, const unsigned short dept
 	TreeNode *top = NULL;
 	char *retvalue = NULL;
 	_createAIMoveTree(&top, chb, color, 0);
+#ifdef DEBUG
+	_printAIMoveTree(top, color);
+#endif
 
 
 	max_depth = 0;
 	return retvalue;
 }
 
-/*void _printAIMoveTree(TreeNode *curr_leaf, unsigned short depth_count)
+void _printAIMoveTree(TreeNode *curr_leaf, const int color)
 {
+	if (!curr_leaf)
+		return;
 	for (int i = 0; i < MOVE_COUNT; i++) {
-		
+		if (curr_leaf->depth > max_depth || (!curr_leaf->child[i]))
+			return;
+		if (!(curr_leaf->depth)) 
+			printf("At depth %d, initial moves for %s are: %s->%s\n", curr_leaf->depth, (color == BLACK)?"Black":"White", curr_leaf->child[i]->start, curr_leaf->child[i]->end);
+		else
+			printf("At depth %d, for %s move %s->%s: %s->%s\n", curr_leaf->depth, (color == BLACK)?"Black's":"White's", curr_leaf->start, curr_leaf->end, curr_leaf->child[i]->start, curr_leaf->child[i]->end);
+		_printAIMoveTree(curr_leaf->child[i], (color == WHITE)?BLACK:WHITE);
 	}
-}*/
+}
 
 void _createAIMoveTree(TreeNode **curr_leaf, ch_template chb[][8], const int color, unsigned short depth_count)
 {
@@ -87,7 +99,9 @@ void _createAIMoveTree(TreeNode **curr_leaf, ch_template chb[][8], const int col
 		(*curr_leaf)->parent = NULL;
 	}
 	for (int i = 0; i < MOVE_COUNT; i++) {
-		if (!temp_moves[move_list_count]) move_list_count++;
+		while (!temp_moves[move_list_count]) {
+			move_list_count++;
+		}
 		if (move_list_count > 5) {
 			(*curr_leaf)->child[i] = NULL;
 		} else {
@@ -95,8 +109,12 @@ void _createAIMoveTree(TreeNode **curr_leaf, ch_template chb[][8], const int col
 			(*curr_leaf)->child[i]->parent = (*curr_leaf);
 			(*curr_leaf)->child[i]->color = color;
 			(*curr_leaf)->child[i]->depth = depth_count+1;
-			memcpy((*curr_leaf)->child[i]->start, temp_moves[move_list_count]->start, 3);
-			memcpy((*curr_leaf)->child[i]->end, temp_moves[move_list_count]->end, 3);
+			(*curr_leaf)->child[i]->start[0] = temp_moves[move_list_count]->start[0];
+			(*curr_leaf)->child[i]->start[1] = temp_moves[move_list_count]->start[1];
+			(*curr_leaf)->child[i]->start[2] = '\0';
+			(*curr_leaf)->child[i]->end[0] = temp_moves[move_list_count]->end[0];
+			(*curr_leaf)->child[i]->end[1] = temp_moves[move_list_count]->end[1];
+			(*curr_leaf)->child[i]->end[2] = '\0';
 			temp_moves[move_list_count] = temp_moves[move_list_count]->nxt;
 		}
 	}

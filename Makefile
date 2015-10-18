@@ -1,6 +1,6 @@
 CC := gcc
 CFLAGS := -Wall -std=gnu11 -fgnu89-inline
-LINKER := -lncurses
+LINKER := 
 ENABLEDLL := -DBUILD_CHESSLIB_DLL
 DEBUG := -g3 -DDEBUG
 DLL := chesslib.dll
@@ -14,17 +14,6 @@ CLISRC := test/chessgame-cli.c
 INCLUDE_FOLDER := include/
 INC := -I$(INCLUDE_FOLDER)
 prefix := /usr/local/
-
-# Build Linux cli ELF #
-chessgame-cli: $(CLISRC) $(AIC) $(CHESSLIB) $(CLILIB)
-	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
-	&& $(CC) $(CFLAGS) $(INC) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
-
-
-# Same thing just with more warnings #
-chessgame-cliWall: $(CLISRC) $(CHESSLIB) $(AIC) $(CLILIB)
-	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
-	&& $(CC) $(CFLAGS) $(INC) $(INC_W_LEVEL) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build static library archive of ChessLib for Linux to be linked to your program at compile time #
 chesslib: $(CHESSLIB) $(AIC)
@@ -40,22 +29,22 @@ debug: $(CLISRC) $(CHESSLIB) $(AIC) $(CLILIB)
 # Build a game that simulates fool's mate
 fools: test/rule_tests/foolsmate.c $(CHESSLIB) $(AIC) $(CLILIB)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
-	&& $(CC) $(CFLAGS) $(INC) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+	&& $(CC) $(CFLAGS) $(INC) $(DEBUG) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build a game that simulates scholar's mate
 scholars: test/rule_tests/scholarsmate.c $(CHESSLIB) $(AIC) $(CLILIB)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
-	&& $(CC) $(CFLAGS) $(INC) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+	&& $(CC) $(CFLAGS) $(INC) $(DEBUG) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build a game that simulates the Blackburne-Shilling mate
 blackburne: test/rule_tests/blackburnemate.c $(CHESSLIB) $(AIC) $(CLILIB)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
-	&& $(CC) $(CFLAGS) $(INC) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+	&& $(CC) $(CFLAGS) $(INC) $(DEBUG) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build tree tests
 tree: test/ai_tests/tree.c $(CHESSLIB) $(AIC) $(CLILIB)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
-	&& $(CC) $(CFLAGS) $(INC) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
+	&& $(CC) $(CFLAGS) $(INC) $(DEBUG) $^ -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
 # Build DLL #
 dll: dllobject dllcompile

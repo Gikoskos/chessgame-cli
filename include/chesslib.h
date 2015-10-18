@@ -145,4 +145,6 @@ void write_to_log(int round, FILE* logf, char *plInput, char piece[2]);
 
 void date_filename(char *buf, int ln);
 
+char *getAImove(ch_template chb[][8], const int color, const unsigned short depth);
+
 #endif
