@@ -25,7 +25,6 @@ int main(void)
 	start = clock();
 	initChessboard(chess_board);
 	while (1) {
-		deleteMoves();
 		getAllMoves(chess_board, round);
 		if (BlackKing == checkmate || WhiteKing == checkmate)
 			break;

@@ -1,6 +1,6 @@
 /********************************************************************
  *                              tree.c                              *
- *               various tests for the tree functions               *
+ *          various tests for the AI move tree functions            *
  *                                                                  *
  *                 (C)2015 <cyberchiller@gmail.com>                 *
  *                                                                  *
@@ -12,5 +12,5 @@
 
 int main(void)
 {
-
+	
 }
