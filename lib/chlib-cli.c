@@ -2,7 +2,7 @@
  *                            chlib-cli.c                            *
  *               functions for command-line chess game               *
  *                                                                   *
- *                 (C)2015 <cyberchiller@gmail.com>                  *
+ *                  (C)2015 <cyberchiller@gmail.com>                 *
  *                                                                   *
  *********************************************************************/
 
