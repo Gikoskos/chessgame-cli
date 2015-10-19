@@ -18,13 +18,13 @@
 }
 
 /*struct for each node/leaf of the AI move tree; the number of children is statically allocated*/
-typedef struct TreeNode {
+typedef struct MoveTreeNode {
 	char start[3], end[3];
 	int color, score;
 	unsigned short depth;
-	struct TreeNode *child[MOVE_COUNT];
-	struct TreeNode *parent;
-} TreeNode;
+	struct MoveTreeNode *child[MOVE_COUNT];
+	struct MoveTreeNode *parent;
+} MoveTreeNode;
 
 
 /*********
@@ -32,6 +32,7 @@ typedef struct TreeNode {
  *********/
 
 static unsigned short max_depth;
+static int CPU_PLAYER;
 unsigned short __attribute__((unused)) total_black_pieces;
 unsigned short __attribute__((unused)) total_white_pieces;
 
@@ -48,18 +49,19 @@ bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int col
  *prototypes for functions used in chlib-computer.c*
  ***************************************************/
 
-void _createAIMoveTree(TreeNode **curr_leaf, ch_template chb[][8], const int color, const unsigned short depth_count);
-void _printAIMoveTree(TreeNode *curr_leaf, const int color);
+void _createAIMoveTree(MoveTreeNode **curr_leaf, ch_template chb[][8], const int color, const unsigned short depth_count);
+void _printAIMoveTree(MoveTreeNode *curr_leaf, const int color);
 int _Evaluate(ch_template chb[][8], const int color);
 
 
 char *getAImove(ch_template chb[][8], const int color, const unsigned short depth)
 {
-	if (!depth)
+	if (!depth || (color != BLACK && color != WHITE))
 		return NULL;
 
+	CPU_PLAYER = color;
 	max_depth = depth;
-	TreeNode *top = NULL;
+	MoveTreeNode *top = NULL;
 	char *retvalue = NULL;
 	_createAIMoveTree(&top, chb, color, 0);
 #ifdef DEBUG
@@ -71,7 +73,7 @@ char *getAImove(ch_template chb[][8], const int color, const unsigned short dept
 	return retvalue;
 }
 
-void _printAIMoveTree(TreeNode *curr_leaf, const int color)
+void _printAIMoveTree(MoveTreeNode *curr_leaf, const int color)
 {
 	if (!curr_leaf)
 		return;
@@ -86,18 +88,26 @@ void _printAIMoveTree(TreeNode *curr_leaf, const int color)
 	}
 }
 
-void _createAIMoveTree(TreeNode **curr_leaf, ch_template chb[][8], const int color, const unsigned short depth_count)
+void _createAIMoveTree(MoveTreeNode **curr_leaf, ch_template chb[][8], const int color, const unsigned short depth_count)
 {
 	ch_template next_chb[8][8];
 	int move_list_count = 0;
+	unsigned short no_move_count = 0;
 
 	MoveNode *temp_moves[6];
 	getAllMoves(chb, color);
 	for (int i = 0; i < 6; i++) {
 		temp_moves[i] = (color == BLACK)?b_moves[i]:w_moves[i];
+		if (!temp_moves[i]) no_move_count++;
 	}
+
+	/*moves that lead to checkmate for given cpu player are not added to the tree*/
+	if (!no_move_count && CPU_PLAYER == color) {
+		return;
+	}
+
 	if (!depth_count) {
-		(*curr_leaf) = malloc(sizeof(TreeNode));
+		(*curr_leaf) = malloc(sizeof(MoveTreeNode));
 		(*curr_leaf)->depth = 0;
 		(*curr_leaf)->parent = NULL;
 	}
@@ -108,7 +118,7 @@ void _createAIMoveTree(TreeNode **curr_leaf, ch_template chb[][8], const int col
 		if (move_list_count > 5) {
 			(*curr_leaf)->child[i] = NULL;
 		} else {
-			(*curr_leaf)->child[i] = malloc(sizeof(TreeNode));
+			(*curr_leaf)->child[i] = malloc(sizeof(MoveTreeNode));
 			(*curr_leaf)->child[i]->parent = (*curr_leaf);
 			(*curr_leaf)->child[i]->color = color;
 			(*curr_leaf)->child[i]->depth = depth_count+1;
