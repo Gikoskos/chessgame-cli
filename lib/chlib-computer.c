@@ -32,22 +32,25 @@ typedef struct TreeNode {
  *********/
 
 static unsigned short max_depth;
+unsigned short __attribute__((unused)) total_black_pieces;
+unsigned short __attribute__((unused)) total_white_pieces;
 
 
-/***********************************************************************
- *prototypes for functions used only in chlib-computer.c and chesslib.c*
- ***********************************************************************/
+/******************************************************************
+ *prototypes for functions used in chlib-computer.c and chesslib.c*
+ ******************************************************************/
 
 void _copyBoard(ch_template to[][8], ch_template from[][8]);
 bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color, const bool ListCheck);
 
 
-/********************************************************
- *prototypes for functions used only in chlib-computer.c*
- ********************************************************/
+/***************************************************
+ *prototypes for functions used in chlib-computer.c*
+ ***************************************************/
 
-void _createAIMoveTree(TreeNode **curr_leaf, ch_template chb[][8], const int color, unsigned short depth_count);
+void _createAIMoveTree(TreeNode **curr_leaf, ch_template chb[][8], const int color, const unsigned short depth_count);
 void _printAIMoveTree(TreeNode *curr_leaf, const int color);
+int _Evaluate(ch_template chb[][8], const int color);
 
 
 char *getAImove(ch_template chb[][8], const int color, const unsigned short depth)
@@ -83,7 +86,7 @@ void _printAIMoveTree(TreeNode *curr_leaf, const int color)
 	}
 }
 
-void _createAIMoveTree(TreeNode **curr_leaf, ch_template chb[][8], const int color, unsigned short depth_count)
+void _createAIMoveTree(TreeNode **curr_leaf, ch_template chb[][8], const int color, const unsigned short depth_count)
 {
 	ch_template next_chb[8][8];
 	int move_list_count = 0;
@@ -126,7 +129,37 @@ void _createAIMoveTree(TreeNode **curr_leaf, ch_template chb[][8], const int col
 			}
 			_copyBoard(next_chb, chb);
 			_makeMove(next_chb, (*curr_leaf)->child[i]->start, (*curr_leaf)->child[i]->end, (*curr_leaf)->child[i]->color, false);
+#ifndef DEBUG
+			(*curr_leaf)->child[i]->score = _Evaluate(next_chb, color);
+#endif
 			_createAIMoveTree(&((*curr_leaf)->child[i]), next_chb, (color == BLACK)?WHITE:BLACK, depth_count+1);
 		}
 	}
+}
+
+int _Evaluate(ch_template chb[][8], const int color)
+{
+	unsigned short b_pawn_count, b_queen_count, b_king_count, b_bishop_count, b_rook_count, b_knight_count;
+	unsigned short w_pawn_count, w_queen_count, w_king_count, w_bishop_count, w_rook_count, w_knight_count;
+	int black_material_balance, white_material_balance;
+
+	b_pawn_count = b_queen_count = b_king_count = b_bishop_count = b_rook_count = b_knight_count = 0;
+	w_pawn_count = w_queen_count = w_king_count = w_bishop_count = w_rook_count = w_knight_count = 0;
+	for (int row = 0; row < 8; row++) {
+		for (int col = 0; col < 8; col++) {
+			if (chb[row][col].current == PAWN) (chb[row][col].c == BLACK)?(b_pawn_count++):(w_pawn_count++);
+			if (chb[row][col].current == QUEEN) (chb[row][col].c == BLACK)?(b_queen_count++):(w_queen_count++);
+			if (chb[row][col].current == KING) (chb[row][col].c == BLACK)?(b_king_count++):(w_king_count++);
+			if (chb[row][col].current == BISHOP) (chb[row][col].c == BLACK)?(b_bishop_count++):(w_bishop_count++);
+			if (chb[row][col].current == ROOK) (chb[row][col].c == BLACK)?(b_rook_count++):(w_rook_count++);
+			if (chb[row][col].current == KNIGHT) (chb[row][col].c == BLACK)?(b_knight_count++):(w_knight_count++);
+		}
+	}
+	black_material_balance = (b_pawn_count*100) + (b_queen_count*900) + (b_rook_count*500) + (b_bishop_count*325) + (b_knight_count*300);
+	white_material_balance = (w_pawn_count*100) + (w_queen_count*900) + (w_rook_count*500) + (w_bishop_count*325) + (w_knight_count*300);
+	if ((!w_king_count && color == WHITE) || (!b_king_count && color == BLACK)) {
+		return -1;
+	}
+
+	return (color == BLACK)?black_material_balance:white_material_balance;
 }
