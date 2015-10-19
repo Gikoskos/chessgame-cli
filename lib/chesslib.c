@@ -34,17 +34,17 @@ MoveNode *b_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 MoveNode *w_moves[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 
 
-/**************************************************
- *prototypes for functions used only in chesslib.c*
- **************************************************/
+/*********************************************
+ *prototypes for functions used in chesslib.c*
+ *********************************************/
 
 void _initChessboard(ch_template chb[][8], unsigned k, char col);
 bool _isOnList(const char *start_move, const char *end_move, const char piece, const int color);
 
 
-/***********************************************************************
- *prototypes for functions used only in chesslib.c and chlib-computer.c*
- ***********************************************************************/
+/******************************************************************
+ *prototypes for functions used in chesslib.c and chlib-computer.c*
+ ******************************************************************/
 
 bool _isKingOnTheBoard(ch_template chb[][8], int color);
 void _removeMove(MoveNode **llt, char *st_todel, char *en_todel);
