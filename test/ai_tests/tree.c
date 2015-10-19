@@ -21,6 +21,6 @@ int main(void)
 	getAImove(chb, WHITE, TEST_DEPTH);
 	stop = clock();
 	total_time_elapsed = ((double)(stop-start))/CLOCKS_PER_SEC;
-	printf("At depth %d time elapsed is %lf seconds.\n", TEST_DEPTH, total_time_elapsed);
+	printf("For depth %d time elapsed is %lf seconds.\n", TEST_DEPTH, total_time_elapsed);
 	return 0;
 }
