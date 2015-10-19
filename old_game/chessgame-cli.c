@@ -12,7 +12,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 /********************************************************************
- *                             main.c                               *
+ *                         chessgame-cli.c                          *
  *       small game making use of the chesslib.c chess library      *
  *                                                                  *
  *                 (C)2015 <cyberchiller@gmail.com>                 *

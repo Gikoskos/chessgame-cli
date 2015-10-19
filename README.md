@@ -1,8 +1,10 @@
 # ChessLib
 
-Work in progress
+W.I.P.
 
 ## TODO
+
+W.I.P.
 
 ## License stuff
 
