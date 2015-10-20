@@ -52,11 +52,11 @@ bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int col
  *prototypes for functions used in chlib-computer.c*
  ***************************************************/
 
-void _createAIMoveTree(MoveTreeNode **curr_leaf, ch_template chb[][8], const int color, const unsigned short depth_count);
-void _printAIMoveTree(MoveTreeNode *curr_leaf, const int color);
 int _Evaluate(ch_template chb[][8], const int color);
 int _evaluateNext(ch_template chb[][8], const int color, char *st, char *en);
 void _deleteAIMoveTree(MoveTreeNode **head);
+void _printAIMoveTree(MoveTreeNode *curr_leaf, const int color);
+void _createAIMoveTree(MoveTreeNode **curr_leaf, ch_template chb[][8], const int color, const unsigned short depth_count);
 
 
 char *getAImove(ch_template chb[][8], const int color, const unsigned short depth)
@@ -127,7 +127,7 @@ void _printAIMoveTree(MoveTreeNode *curr_leaf, const int color)
 void _createAIMoveTree(MoveTreeNode **curr_leaf, ch_template chb[][8], const int color, const unsigned short depth_count)
 {
 	ch_template next_chb[8][8];
-	int temp_eval = 0;
+	int __attribute__((unused)) temp_eval = 0;
 	int move_list_count = 0;
 	unsigned short no_move_count = 0;
 
@@ -156,7 +156,7 @@ void _createAIMoveTree(MoveTreeNode **curr_leaf, ch_template chb[][8], const int
 			(*curr_leaf)->child[i] = NULL;
 		} else {
 			/*moves with fixed low score are not added to the tree*/
-#ifdef DEBUG
+#ifndef DEBUG
 			temp_eval = _evaluateNext(chb, color, temp_moves[move_list_count]->start, temp_moves[move_list_count]->end);
 			if (temp_eval < -1) {
 				i--;
@@ -165,7 +165,7 @@ void _createAIMoveTree(MoveTreeNode **curr_leaf, ch_template chb[][8], const int
 			}
 #endif
 			(*curr_leaf)->child[i] = malloc(sizeof(MoveTreeNode));
-#ifdef DEBUG
+#ifndef DEBUG
 			(*curr_leaf)->child[i]->score = temp_eval;
 #endif
 			(*curr_leaf)->child[i]->parent = (*curr_leaf);
@@ -188,7 +188,7 @@ void _createAIMoveTree(MoveTreeNode **curr_leaf, ch_template chb[][8], const int
 			}
 			_copyBoard(next_chb, chb);
 			_makeMove(next_chb, (*curr_leaf)->child[i]->start, (*curr_leaf)->child[i]->end, (*curr_leaf)->child[i]->color, false);
-#ifndef DEBUG
+#ifdef DEBUG
 			(*curr_leaf)->child[i]->score = _Evaluate(next_chb, color);
 #endif
 			_createAIMoveTree(&((*curr_leaf)->child[i]), next_chb, (color == BLACK)?WHITE:BLACK, depth_count+1);
