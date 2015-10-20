@@ -46,13 +46,13 @@ bool _isOnList(const char *start_move, const char *end_move, const char piece, c
  *prototypes for functions used in chesslib.c and chlib-computer.c*
  ******************************************************************/
 
-bool _isKingOnTheBoard(ch_template chb[][8], int color);
+int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, const int flag);
 void _removeMove(MoveNode **llt, char *st_todel, char *en_todel);
 void _removeThreatsToKing(ch_template chb[][8], int color);
 void _addMove(MoveNode **llt, const char *st, const char *en);
-int _fillMoveLists(ch_template chb[][8], MoveNode ***move_array, const int flag);
-bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color, const bool ListCheck);
 void _copyBoard(ch_template to[][8], ch_template from[][8]);
+bool _isKingOnTheBoard(ch_template chb[][8], int color);
+bool _makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color, const bool ListCheck);
 
 
 void _addMove(MoveNode **llt, const char *st, const char *en)

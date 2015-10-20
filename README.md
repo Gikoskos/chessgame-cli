@@ -1,10 +1,10 @@
 # ChessLib
 
-W.I.P.
+WIP
 
 ## TODO
 
-W.I.P.
+WIP
 
 ## License stuff
 

@@ -127,23 +127,23 @@ CastlingBool check_castling;
  *function prototypes for the main library*
  ******************************************/
 
-void initChessboard(ch_template chb[][8]);
-
 int getAllMoves(ch_template chb[][8], int c_flag);
+
+int findOnMoveList(MoveNode *llt, char *tofind);
+
+void initChessboard(ch_template chb[][8]);
 
 void printMoveList(MoveNode *llt, FILE *fd);
 
 void deleteMoveList(MoveNode **llt);
 
-bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color);
-
-__attribute__((destructor)) void deleteMoves();
-
-int findOnMoveList(MoveNode *llt, char *tofind);
-
 void write_to_log(int round, FILE* logf, char *plInput, char piece[2]);
 
 void date_filename(char *buf, int ln);
+
+__attribute__((destructor)) void deleteMoves();
+
+bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color);
 
 char *getAImove(ch_template chb[][8], const int color, const unsigned short depth);
 
