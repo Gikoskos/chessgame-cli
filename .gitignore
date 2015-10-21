@@ -5,3 +5,4 @@ build/
 .kateproject
 .kateproject.d/
 src/.chesslib.c.kate-swp
+!Doxyfile
