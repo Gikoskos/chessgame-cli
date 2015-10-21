@@ -616,20 +616,7 @@ extern void printInstructions(void)
 extern void clear_screen(void)
 {
 #ifndef _WIN32
-# if 0
-	char buf[1024];
-	char *str;
-
-	tgetent(buf, getenv("TERM"));
-	str = tgetstr("cl", NULL);
-	fputs(str, stdout);
-# else
-	/*Weird stuff: I'm using system("clear") because if I try to 
-	 *compile it with tgetent and tgetstr I get double free corruption,
-	 *which I don't get if I compile without AI. If you know 
-	 *what's happening please contact me.*/
 	system("clear");
-# endif
 #else
 	system("cls");
 #endif
