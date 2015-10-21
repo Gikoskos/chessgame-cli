@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -144,6 +145,8 @@ void date_filename(char *buf, int ln);
 __attribute__((destructor)) void deleteMoves();
 
 bool makeMove(ch_template chb[][8], char *st_move, char *en_move, const int color);
+
+void playMoves(ch_template chb[][8], int *round, unsigned short move_count, ...);
 
 char *getAImove(ch_template chb[][8], const int color, const unsigned short depth);
 

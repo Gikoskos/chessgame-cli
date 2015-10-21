@@ -898,6 +898,30 @@ void _removeThreatsToKing(ch_template chb[][8], const int color)
 	check_castling = tempCstl;
 }
 
+void playMoves(ch_template chb[][8], int *round, unsigned short move_count, ...)
+{
+	va_list next_move;
+	char temp[5], move_begin[3], move_end[3];
+
+	move_begin[2] = '\0';
+	move_end[2] = '\0';
+	va_start(next_move, move_count);
+	while (move_count--) {
+		char temp_arg[5];
+		strncpy(temp_arg, va_arg(next_move, const char *), 5);
+		for (int i = 0; i < 5; i++)
+			(i < 4)?(temp[i] = temp_arg[i]):(temp[i] = '\0');
+		move_begin[0] = temp[0];
+		move_begin[1] = temp[1];
+		move_end[0] = temp[2];
+		move_end[1] = temp[3];
+		getAllMoves(chb, (*round));
+		makeMove(chb, move_begin, move_end, (*round));
+		*round = ((*round)== BLACK)?WHITE:BLACK;
+	}
+	va_end(next_move);
+}
+
 bool _isKingOnTheBoard(ch_template chb[][8], const int color)
 {
 	for (int i = 0; i < 8; i++) {
