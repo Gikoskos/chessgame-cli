@@ -296,7 +296,7 @@ void printError(int i)
 			fprintf(stderr, "%s\n",
 			"Not a valid row entered. Please use only numbers from 1 to 8.");
 		else if (i == 8)
-			fprintf(stdout, "%s%s\n%s %s\n", "ChessLib-", CHESSLIB_VERSION_STRING,
+			fprintf(stdout, "%s%s\n%s %s\n", "ChessLib-", CHESSGAMECLI_VERSION_STRING,
 				"Copyright (C) 2015 George Koskeridis",
 				"<cyberchiller@gmail.com>");
 		else
