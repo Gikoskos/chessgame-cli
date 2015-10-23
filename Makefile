@@ -34,16 +34,8 @@ debug: chessgame-cli.c $(CHESSLIB) $(AIC)
 	if [ ! -e $(BLDFOLDER) ]; then mkdir $(BLDFOLDER); fi \
 	&& $(CC) $(CFLAGS) $< $(CHESSLIB) $(AIC) -o $@ $(LINKER); mv $@ $(BLDFOLDER)
 
-# Build DLL #
-dll: dllobject dllcompile
-dllobject: $(CHESSLIB) $(AIC)
-	$(CC) -c $(ENABLEDLL) $(NDEBUG) $(CFLAGS) $^
-	
-dllcompile:
-	$(CC) -shared -o $(DLL) chesslib.o chlib-computer.o -Wl,--out-implib,chesslib.a
-
-# Build Windows ELF with the above DLL #
-exe: chessgame-cli.c $(DLL)
+# Build Windows ELF
+exe: chessgame-cli.c $(CHESSLIB) $(AIC)
 	$(CC) $(NDEBUG) -o chessgame-cli.exe $^
 
 # Run the Linux executables #
