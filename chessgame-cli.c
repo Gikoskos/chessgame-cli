@@ -2,7 +2,7 @@
  *                         chessgame-cli.c                          *
  *       small game making use of the chesslib.c chess library      *
  *                                                                  *
- *                 (C)2015 <cyberchiller@gmail.com>                 *
+ *               (C)2015 <georgekoskerid@outlook.com>               *
  *                                                                  *
  ********************************************************************/
 

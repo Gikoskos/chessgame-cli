@@ -2,7 +2,7 @@
  *                            computer.c                             *
  *            computer player implementation for chesslib            *
  *                                                                   *
- *                 (C)2015 <cyberchiller@gmail.com>                  *
+ *               (C)2015 <georgekoskerid@outlook.com>                *
  *                                                                   *
  *********************************************************************/
 

@@ -2,7 +2,7 @@
  *                            chesslib.h                            *
  *                  API for the chesslib.c library                  *
  *                                                                  *
- *                 (C)2015 <cyberchiller@gmail.com>                 *
+ *               (C)2015 <georgekoskerid@outlook.com>               *
  *                                                                  *
  ********************************************************************/
 

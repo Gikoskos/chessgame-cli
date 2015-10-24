@@ -2,7 +2,7 @@
  *                            chesslib.c                             *
  *                standard chess game implementation                 *
  *                                                                   *
- *                 (C)2015 <cyberchiller@gmail.com>                  *
+ *               (C)2015 <georgekoskerid@outlook.com>                *
  *                                                                   *
  *********************************************************************/
 
