@@ -49,27 +49,6 @@ To play against the computer (chooses only random moves for now) run:
 
     ./build/chessgame-cli -c
 
-I will be releasing precompiled binaries made on Ubuntu 14.04 i386 
-and Windows 7 32bit, when bugs are fixed or something in the UI changes.
-
-## TODO
-
-* implement versioning (DONE)
-
-* add functionality for the engine to detect checkmate and end the game (WIP)
-
-* fix this weird bug that only happens with black Pawns (DONE)
-
-  <img src="http://i.imgur.com/cVGe6Sd.png" alt="step1" width = "257" height = "341"/> <img src="http://i.imgur.com/mkwlxOY.png" alt="step1" width = "257" height = "341"/>
-
-* prevent the King from moving to a square that might threaten him (WIP)
-
-* program a functional computer player (WIP)
-
-* split all the command line specific functions (such as printBoard) from the main chess engine and rewrite the Makefile accordingly
-
-* port the main engine to other languages
-
 ### License stuff
 
 MIT License
